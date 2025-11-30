@@ -26,6 +26,14 @@ export class RegisterComponent {
 
   private router = inject(Router);
 
+  ngOnChange() {
+    console.log(`Name : ${this.formData.name}`)
+    console.log(`Email : ${this.formData.email}`)
+    console.log(`Password : ${this.formData.password}`)
+    console.log(`confirmPassword : ${this.formData.confirmPassword}`)
+    console.log(`Address : ${this.formData.address}`)
+  }
+
   handleSubmit() {
     this.router.navigate(['/home']);
   }
