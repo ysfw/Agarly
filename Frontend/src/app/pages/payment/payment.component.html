@@ -1,0 +1,70 @@
+<div class="min-h-screen w-full bg-[#F5F7FA]">
+  <div class="max-w-2xl mx-auto px-6 py-8">
+    <div class="flex items-center gap-4 mb-8">
+      <button (click)="location.back()" class="w-10 h-10 flex items-center justify-center hover:bg-gray-100 rounded-full">
+        <lucide-icon [img]="ArrowLeftIcon" class="w-5 h-5 text-[#1A237E]"></lucide-icon>
+      </button>
+      <h1 class="text-3xl font-bold text-[#1A237E]">Payment</h1>
+    </div>
+    <div class="bg-white rounded-2xl p-6 shadow-sm mb-6">
+      <h2 class="text-xl font-semibold text-[#1A237E] mb-4">Rental Summary</h2>
+      <div class="flex items-center gap-4 mb-6">
+        <img src="https://images.unsplash.com/photo-1504148455328-c376907d081c?w=100" alt="Power Drill" class="w-20 h-20 rounded-xl object-cover" />
+        <div>
+          <h3 class="font-semibold text-[#1A237E] mb-1">Power Drill</h3>
+          <p class="text-sm text-gray-600">3 day rental</p>
+        </div>
+      </div>
+      <div class="space-y-2 border-t border-gray-200 pt-4">
+        <div class="flex justify-between text-gray-700">
+          <span>Rental Fee</span>
+          <span>$15.00</span>
+        </div>
+        <div class="flex justify-between text-gray-700">
+          <span>Service Fee</span>
+          <span>$2.00</span>
+        </div>
+        <div class="flex justify-between text-gray-700">
+          <span>Security Deposit</span>
+          <span>$25.00</span>
+        </div>
+        <div class="flex justify-between font-bold text-[#1A237E] text-lg pt-2 border-t border-gray-200">
+          <span>Total</span>
+          <span>$42.00</span>
+        </div>
+      </div>
+      <p class="text-sm text-gray-600 mt-4">Security deposit will be refunded upon item return</p>
+    </div>
+    <form (ngSubmit)="handleSubmit()" class="bg-white rounded-2xl p-6 shadow-sm">
+      <div class="flex items-center gap-2 mb-6">
+        <lucide-icon [img]="LockIcon" class="w-5 h-5 text-[#3949AB]"></lucide-icon>
+        <h2 class="text-xl font-semibold text-[#1A237E]">Payment Information</h2>
+      </div>
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-semibold text-[#1A237E] mb-2">Card Number</label>
+          <div class="relative">
+            <lucide-icon [img]="CreditCardIcon" class="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"></lucide-icon>
+            <input type="text" [(ngModel)]="formData.cardNumber" name="cardNumber" placeholder="1234 5678 9012 3456" class="w-full pl-12 pr-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E]" required />
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-[#1A237E] mb-2">Cardholder Name</label>
+          <input type="text" [(ngModel)]="formData.cardName" name="cardName" placeholder="John Doe" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E]" required />
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-semibold text-[#1A237E] mb-2">Expiry Date</label>
+            <input type="text" [(ngModel)]="formData.expiryDate" name="expiryDate" placeholder="MM/YY" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E]" required />
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-[#1A237E] mb-2">CVV</label>
+            <input type="text" [(ngModel)]="formData.cvv" name="cvv" placeholder="123" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E]" required />
+          </div>
+        </div>
+      </div>
+      <button type="submit" class="w-full mt-6 px-6 py-4 bg-[#3949AB] text-white rounded-xl font-semibold hover:bg-[#1A237E] transition-colors shadow-md">Complete Payment</button>
+      <p class="text-xs text-gray-500 text-center mt-4">Your payment information is encrypted and secure</p>
+    </form>
+  </div>
+</div>

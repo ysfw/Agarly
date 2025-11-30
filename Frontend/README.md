@@ -1,59 +1,48 @@
-# Frontend
+# Angular Project
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.10.
+This project was recreated in Angular 17+ with Tailwind CSS v3, following the original React design.
 
-## Development server
+## Prerequisites
 
-To start a local development server, run:
+- Node.js (v18 or higher)
+- Angular CLI (`npm install -g @angular/cli`)
 
-```bash
-ng serve
-```
+## Setup
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+1.  Navigate to the project directory:
+    ```bash
+    cd angular
+    ```
 
-## Code scaffolding
+2.  Install dependencies:
+    ```bash
+    npm install
+    ```
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+3.  Run the development server:
+    ```bash
+    ng serve
+    ```
 
-```bash
-ng generate component component-name
-```
+4.  Open your browser at `http://localhost:4200`.
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## Features
 
-```bash
-ng generate --help
-```
+-   **Standalone Components**: All components are standalone.
+-   **Tailwind CSS**: Styled using Tailwind CSS v3.
+-   **Routing**: Configured in `src/app/app.routes.ts`.
+-   **Backend Binding**: `ApiService` (`src/app/services/api.service.ts`) is used to fetch data, ready for backend integration.
+-   **Control Flow**: Uses new `@if` and `@for` syntax.
+-   **Messaging Removed**: Messaging features have been removed as requested.
 
-## Building
+## Project Structure
 
-To build the project run:
+-   `src/app/components`: Shared components (Navbar, Sidebar, etc.)
+-   `src/app/pages`: Page components (Home, Dashboard, Profile, etc.)
+-   `src/app/services`: API services.
+-   `src/app/models`: Data models.
 
-```bash
-ng build
-```
+## Notes
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+-   `lucide-angular` is used for icons.
+-   Placeholder components are used for pages that were not fully implemented in the initial migration but are routed.

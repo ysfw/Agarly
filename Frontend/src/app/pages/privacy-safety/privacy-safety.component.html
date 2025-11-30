@@ -1,0 +1,111 @@
+<div class="min-h-screen w-full bg-[#F5F7FA]">
+  <div class="max-w-3xl mx-auto px-6 py-8">
+    <div class="flex items-center gap-4 mb-8">
+      <button (click)="router.navigate(['/settings'])" class="w-10 h-10 flex items-center justify-center hover:bg-gray-100 rounded-full">
+        <lucide-icon [img]="ArrowLeftIcon" class="w-5 h-5 text-[#1A237E]"></lucide-icon>
+      </button>
+      <h1 class="text-3xl font-bold text-[#1A237E]">Privacy & Safety</h1>
+    </div>
+    <div class="space-y-6">
+      <div class="bg-white rounded-2xl overflow-hidden shadow-sm">
+        <div class="px-6 py-4 border-b border-gray-200">
+          <h2 class="text-lg font-semibold text-[#1A237E]">Privacy Controls</h2>
+        </div>
+        <div class="px-6 py-4 flex items-center justify-between border-b border-gray-100">
+          <div class="flex items-center gap-3">
+            <lucide-icon [img]="EyeIcon" class="w-5 h-5 text-[#3949AB]"></lucide-icon>
+            <div>
+              <p class="text-[#1A237E] font-medium">Profile Visibility</p>
+              <p class="text-sm text-gray-600">Who can see your profile</p>
+            </div>
+          </div>
+          <select class="px-4 py-2 rounded-lg border-2 border-gray-200 text-[#1A237E] focus:border-[#3949AB] focus:outline-none">
+            <option>Everyone</option>
+            <option>Verified Members Only</option>
+            <option>Private</option>
+          </select>
+        </div>
+        <div class="px-6 py-4 flex items-center justify-between border-b border-gray-100">
+          <div class="flex items-center gap-3">
+            <lucide-icon [img]="LockIcon" class="w-5 h-5 text-[#3949AB]"></lucide-icon>
+            <div>
+              <p class="text-[#1A237E] font-medium">Contact Information</p>
+              <p class="text-sm text-gray-600">Show email and phone number</p>
+            </div>
+          </div>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" class="sr-only peer" />
+            <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#3949AB]"></div>
+          </label>
+        </div>
+        <div class="px-6 py-4 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <lucide-icon [img]="EyeOffIcon" class="w-5 h-5 text-[#3949AB]"></lucide-icon>
+            <div>
+              <p class="text-[#1A237E] font-medium">Hide Address</p>
+              <p class="text-sm text-gray-600">Only show general area</p>
+            </div>
+          </div>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" class="sr-only peer" checked />
+            <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#3949AB]"></div>
+          </label>
+        </div>
+      </div>
+      <div class="bg-white rounded-2xl overflow-hidden shadow-sm">
+        <div class="px-6 py-4 border-b border-gray-200">
+          <h2 class="text-lg font-semibold text-[#1A237E]">Safety Features</h2>
+        </div>
+        <div class="px-6 py-4 flex items-center justify-between border-b border-gray-100">
+          <div class="flex items-center gap-3">
+            <lucide-icon [img]="ShieldCheckIcon" class="w-5 h-5 text-[#3949AB]"></lucide-icon>
+            <div>
+              <p class="text-[#1A237E] font-medium">Verified Members Only</p>
+              <p class="text-sm text-gray-600">Only interact with verified users</p>
+            </div>
+          </div>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" class="sr-only peer" checked />
+            <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#3949AB]"></div>
+          </label>
+        </div>
+        <div class="px-6 py-4 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <lucide-icon [img]="AlertTriangleIcon" class="w-5 h-5 text-[#3949AB]"></lucide-icon>
+            <div>
+              <p class="text-[#1A237E] font-medium">Require Deposit for Items</p>
+              <p class="text-sm text-gray-600">Add security deposit requirement</p>
+            </div>
+          </div>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" class="sr-only peer" />
+            <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#3949AB]"></div>
+          </label>
+        </div>
+      </div>
+      <div class="bg-white rounded-2xl overflow-hidden shadow-sm">
+        <div class="px-6 py-4 border-b border-gray-200">
+          <h2 class="text-lg font-semibold text-[#1A237E]">Blocked Users</h2>
+        </div>
+        <div class="px-6 py-8 text-center">
+          <lucide-icon [img]="UserXIcon" class="w-12 h-12 text-gray-400 mx-auto mb-3"></lucide-icon>
+          <p class="text-gray-600">No blocked users</p>
+          <p class="text-sm text-gray-500 mt-1">Users you block will not be able to contact you or see your items</p>
+        </div>
+      </div>
+      <div class="bg-white rounded-2xl overflow-hidden shadow-sm">
+        <div class="px-6 py-4 border-b border-gray-200">
+          <h2 class="text-lg font-semibold text-[#1A237E]">Data & Account</h2>
+        </div>
+        <button (click)="alertData()" class="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors border-b border-gray-100">
+          <span class="text-[#1A237E] font-medium">Download Your Data</span>
+          <span class="text-[#3949AB] text-sm">Request</span>
+        </button>
+        <button (click)="handleDelete()" class="w-full px-6 py-4 flex items-center justify-between hover:bg-red-50 transition-colors">
+          <span class="text-red-600 font-medium">Delete Account</span>
+          <span class="text-red-600 text-sm">Permanent</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

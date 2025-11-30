@@ -1,0 +1,184 @@
+<div class="min-h-screen w-full bg-[#F5F7FA]">
+  <div class="max-w-3xl mx-auto px-6 py-8">
+    <div class="flex items-center gap-4 mb-8">
+      <button (click)="handleBack()" class="w-10 h-10 flex items-center justify-center hover:bg-gray-100 rounded-full">
+        <lucide-icon [img]="ArrowLeftIcon" class="w-5 h-5 text-[#1A237E]"></lucide-icon>
+      </button>
+      <h1 class="text-3xl font-bold text-[#1A237E]">Book Item</h1>
+    </div>
+
+    <div class="flex items-center justify-center mb-8">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-full flex items-center justify-center font-semibold"
+             [class.bg-[#3949AB]]="step >= 1" [class.text-white]="step >= 1"
+             [class.bg-gray-200]="step < 1" [class.text-gray-600]="step < 1">
+          1
+        </div>
+        <div class="w-16 h-1" [class.bg-[#3949AB]]="step >= 2" [class.bg-gray-200]="step < 2"></div>
+        <div class="w-8 h-8 rounded-full flex items-center justify-center font-semibold"
+             [class.bg-[#3949AB]]="step >= 2" [class.text-white]="step >= 2"
+             [class.bg-gray-200]="step < 2" [class.text-gray-600]="step < 2">
+          2
+        </div>
+        <div class="w-16 h-1" [class.bg-[#3949AB]]="step >= 3" [class.bg-gray-200]="step < 3"></div>
+        <div class="w-8 h-8 rounded-full flex items-center justify-center font-semibold"
+             [class.bg-[#3949AB]]="step >= 3" [class.text-white]="step >= 3"
+             [class.bg-gray-200]="step < 3" [class.text-gray-600]="step < 3">
+          3
+        </div>
+      </div>
+    </div>
+
+    @if (step === 1) {
+      <form (ngSubmit)="handleSubmit()" class="space-y-6">
+        <div class="bg-white rounded-2xl p-6 shadow-sm">
+          <h2 class="text-xl font-semibold text-[#1A237E] mb-4">
+            Select Dates
+          </h2>
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-semibold text-[#1A237E] mb-2">
+                Start Date
+              </label>
+              <div class="relative">
+                <lucide-icon [img]="CalendarIcon" class="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"></lucide-icon>
+                <input type="date" [(ngModel)]="bookingData.startDate" name="startDate" class="w-full pl-12 pr-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E]" required />
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-[#1A237E] mb-2">
+                End Date
+              </label>
+              <div class="relative">
+                <lucide-icon [img]="CalendarIcon" class="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"></lucide-icon>
+                <input type="date" [(ngModel)]="bookingData.endDate" name="endDate" class="w-full pl-12 pr-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E]" required />
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-[#1A237E] mb-2">
+                Additional Notes (Optional)
+              </label>
+              <textarea [(ngModel)]="bookingData.notes" name="notes" placeholder="Any special requests or questions for the owner..." rows="4" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E] resize-none"></textarea>
+            </div>
+          </div>
+        </div>
+        <button type="submit" class="w-full px-6 py-4 bg-[#3949AB] text-white rounded-xl font-semibold hover:bg-[#1A237E] transition-colors shadow-md">
+          Continue
+        </button>
+      </form>
+    }
+
+    @if (step === 2) {
+      <form (ngSubmit)="handleSubmit()" class="space-y-6">
+        <div class="bg-white rounded-2xl p-6 shadow-sm">
+          <h2 class="text-xl font-semibold text-[#1A237E] mb-4">
+            Review & Agree
+          </h2>
+          <div class="bg-[#F5F7FA] rounded-xl p-6 mb-6">
+            <h3 class="font-semibold text-[#1A237E] mb-3">
+              Rental Terms
+            </h3>
+            <ul class="space-y-2 text-gray-700 text-sm">
+              <li class="flex items-start gap-2">
+                <lucide-icon [img]="CheckCircleIcon" class="w-4 h-4 text-[#3949AB] mt-0.5 flex-shrink-0"></lucide-icon>
+                <span>You agree to return the item in the same condition as received</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <lucide-icon [img]="CheckCircleIcon" class="w-4 h-4 text-[#3949AB] mt-0.5 flex-shrink-0"></lucide-icon>
+                <span>You are responsible for any damage or loss during the rental period</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <lucide-icon [img]="CheckCircleIcon" class="w-4 h-4 text-[#3949AB] mt-0.5 flex-shrink-0"></lucide-icon>
+                <span>You will return the item on or before the agreed end date</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <lucide-icon [img]="CheckCircleIcon" class="w-4 h-4 text-[#3949AB] mt-0.5 flex-shrink-0"></lucide-icon>
+                <span>You will communicate promptly with the owner regarding any issues</span>
+              </li>
+            </ul>
+          </div>
+          <div class="bg-[#FFF9E6] border-2 border-[#FFB300] rounded-xl p-4 mb-6">
+            <div class="flex items-start gap-3">
+              <lucide-icon [img]="AlertCircleIcon" class="w-5 h-5 text-[#FFB300] flex-shrink-0 mt-0.5"></lucide-icon>
+              <div>
+                <p class="font-semibold text-[#1A237E] mb-1">
+                  Important Notice
+                </p>
+                <p class="text-sm text-gray-700">
+                  The owner will review your booking request and may accept or decline. You will be notified of their decision.
+                </p>
+              </div>
+            </div>
+          </div>
+          <label class="flex items-start gap-3 cursor-pointer">
+            <input type="checkbox" [(ngModel)]="bookingData.agreeToTerms" name="agreeToTerms" class="mt-1 w-5 h-5 text-[#3949AB] border-gray-300 rounded focus:ring-[#3949AB]" required />
+            <span class="text-gray-700">
+              I agree to the rental terms and conditions
+            </span>
+          </label>
+        </div>
+        <button type="submit" [disabled]="!bookingData.agreeToTerms" class="w-full px-6 py-4 bg-[#3949AB] text-white rounded-xl font-semibold hover:bg-[#1A237E] transition-colors shadow-md disabled:bg-gray-300 disabled:cursor-not-allowed">
+          Review Booking
+        </button>
+      </form>
+    }
+
+    @if (step === 3) {
+      <div class="space-y-6">
+        <div class="bg-white rounded-2xl p-6 shadow-sm">
+          <h2 class="text-xl font-semibold text-[#1A237E] mb-4">
+            Confirm Booking
+          </h2>
+          <div class="space-y-4 mb-6">
+            <div class="flex items-center gap-3 p-4 bg-[#F5F7FA] rounded-xl">
+              <img src="https://images.unsplash.com/photo-1504148455328-c376907d081c?w=100" alt="Power Drill" class="w-16 h-16 rounded-lg object-cover" />
+              <div>
+                <h3 class="font-semibold text-[#1A237E]">
+                  Power Drill
+                </h3>
+                <p class="text-sm text-gray-600">
+                  Owner: Sarah Mitchell
+                </p>
+              </div>
+            </div>
+            <div class="p-4 bg-[#F5F7FA] rounded-xl">
+              <div class="flex items-center gap-2 mb-2">
+                <lucide-icon [img]="CalendarIcon" class="w-5 h-5 text-[#3949AB]"></lucide-icon>
+                <p class="font-semibold text-[#1A237E]">
+                  Rental Period
+                </p>
+              </div>
+              <p class="text-gray-700">
+                {{bookingData.startDate}} to {{bookingData.endDate}}
+              </p>
+            </div>
+            @if (bookingData.notes) {
+              <div class="p-4 bg-[#F5F7FA] rounded-xl">
+                <p class="font-semibold text-[#1A237E] mb-2">
+                  Your Notes
+                </p>
+                <p class="text-gray-700">{{bookingData.notes}}</p>
+              </div>
+            }
+          </div>
+          <div class="bg-[#E8F5E9] border-2 border-[#4CAF50] rounded-xl p-4 mb-6">
+            <div class="flex items-start gap-3">
+              <lucide-icon [img]="CheckCircleIcon" class="w-5 h-5 text-[#4CAF50] flex-shrink-0 mt-0.5"></lucide-icon>
+              <div>
+                <p class="font-semibold text-[#1A237E] mb-1">
+                  Almost Done!
+                </p>
+                <p class="text-sm text-gray-700">
+                  Your booking request will be sent to the owner. They will review and respond within 24 hours.
+                </p>
+              </div>
+            </div>
+          </div>
+          <button (click)="handleConfirm()" class="w-full px-6 py-4 bg-[#3949AB] text-white rounded-xl font-semibold hover:bg-[#1A237E] transition-colors shadow-md">
+            Send Booking Request
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+</div>
