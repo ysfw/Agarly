@@ -1,0 +1,74 @@
+<div class="min-h-screen flex items-center justify-center bg-[#F5F7FA] p-4">
+    <div class="w-full max-w-md">
+        <!-- Back Button -->
+        <button (click)="goBack()" class="flex items-center gap-2 text-[#1A237E] font-normal text-sm mb-12 hover:opacity-80 transition-opacity">
+            <lucide-icon [img]="ArrowLeftIcon" class="w-4 h-4"></lucide-icon>
+            Back to Sign Up
+        </button>
+
+        <!-- Email Icon -->
+        <div class="flex justify-center mb-6">
+            <div class="w-16 h-16 rounded-full bg-[#E8EAF6] flex items-center justify-center">
+                <lucide-icon [img]="MailIcon" class="w-8 h-8 text-[#1A237E]"></lucide-icon>
+            </div>
+        </div>
+
+        <!-- Heading -->
+        <h1 class="text-center text-3xl font-bold text-[#1A237E] mb-3">
+            Verify Your Email
+        </h1>
+
+        <!-- Description -->
+        <p class="text-center text-sm text-gray-600 mb-1">
+            We've sent a 6-digit code to
+        </p>
+        <p class="text-center text-sm font-semibold text-[#1A237E] mb-8">
+            {{ email() }}
+        </p>
+
+        <!-- OTP Input Section -->
+        <div class="bg-white rounded-2xl shadow-sm p-8 mb-6">
+            <!-- Label -->
+            <label class="block text-center text-xs font-semibold text-[#1A237E] mb-4">
+                Enter Verification Code
+            </label>
+
+            <!-- OTP Inputs -->
+            <div class="flex justify-center gap-2 mb-6">
+                @for (i of [0, 1, 2, 3, 4, 5]; track i) {
+                <input #otpInput type="text" inputmode="numeric" pattern="[0-9]" maxlength="1"
+                    [(ngModel)]="otpDigits()[i]" (input)="handleOtpInput(i, $event)"
+                    (keydown)="handleKeyDown(i, $event)"
+                    class="w-12 h-14 text-center text-2xl font-bold border-2 border-gray-200 rounded-lg focus:outline-none focus:border-[#3949AB] transition-colors bg-white text-[#1A237E]" />
+                }
+            </div>
+
+            <!-- Verify Button -->
+            <button (click)="verifyEmail()" [disabled]="!isOtpComplete()" [class.opacity-60]="!isOtpComplete()"
+                class="w-full bg-[#3949AB] text-white font-semibold rounded-xl shadow-md py-3 hover:bg-[#1A237E] disabled:cursor-not-allowed transition-colors">
+                Verify Email
+            </button>
+
+            <!-- Resend Section -->
+            <div class="mt-6 text-center text-sm space-y-2">
+                <p class="text-gray-600">
+                    Didn't receive the code?
+                </p>
+                @if (countdown() > 0) {
+                <p class="text-gray-500">
+                    Resend in <span class="font-semibold">{{ countdown() }}</span>s
+                </p>
+                } @else {
+                <button (click)="resendCode()" class="text-[#3949AB] font-semibold hover:underline">
+                    Resend Code
+                </button>
+                }
+            </div>
+        </div>
+
+        <!-- Footer Help Text -->
+        <p class="text-center text-xs text-gray-500">
+            Check your spam folder if you don't see the email
+        </p>
+    </div>
+</div>

@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, Mail, Lock } from 'lucide-angular';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -18,9 +19,11 @@ export class LoginComponent {
   password = '';
 
   private router = inject(Router);
+  private authService = inject(AuthService);
 
   handleSubmit() {
     // Backend logic goes here
+    this.authService.login();
     this.router.navigate(['/home']);
   }
 }

@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
-import { LucideAngularModule, Home, ClipboardList, LayoutDashboard, User } from 'lucide-angular';
+import { LucideAngularModule, Home, ClipboardList, LayoutDashboard, User, LogIn } from 'lucide-angular';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-navbar',
@@ -27,10 +28,17 @@ import { LucideAngularModule, Home, ClipboardList, LayoutDashboard, User } from 
               <span class="hidden sm:inline">My Items</span>
             </button>
             <!-- Messages removed -->
-            <button routerLink="/profile" routerLinkActive="bg-[#3949AB] text-white" class="flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-colors text-[#1A237E] hover:bg-gray-100">
-              <lucide-icon [img]="UserIcon" class="w-5 h-5"></lucide-icon>
-              <span class="hidden sm:inline">Profile</span>
-            </button>
+            @if (authService.isLoggedIn()) {
+              <button routerLink="/profile" routerLinkActive="bg-[#3949AB] text-white" class="flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-colors text-[#1A237E] hover:bg-gray-100">
+                <lucide-icon [img]="UserIcon" class="w-5 h-5"></lucide-icon>
+                <span class="hidden sm:inline">Profile</span>
+              </button>
+            } @else {
+              <button routerLink="/login" routerLinkActive="bg-[#3949AB] text-white" class="flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-colors text-[#1A237E] hover:bg-gray-100">
+                <lucide-icon [img]="LogInIcon" class="w-5 h-5"></lucide-icon>
+                <span class="hidden sm:inline">Login</span>
+              </button>
+            }
           </div>
         </div>
       </div>
@@ -38,8 +46,10 @@ import { LucideAngularModule, Home, ClipboardList, LayoutDashboard, User } from 
   `
 })
 export class NavbarComponent {
+  authService = inject(AuthService);
   readonly HomeIcon = Home;
   readonly ClipboardListIcon = ClipboardList;
   readonly LayoutDashboardIcon = LayoutDashboard;
   readonly UserIcon = User;
+  readonly LogInIcon = LogIn;
 }

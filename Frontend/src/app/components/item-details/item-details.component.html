@@ -1,0 +1,93 @@
+<div class="min-h-screen" style="background-color: #F5F7FA;" *ngIf="item">
+    <div class="sticky top-0 z-10 bg-white border-b border-slate-200">
+        <div class="px-4 lg:px-8 py-4 flex items-center gap-3">
+            <button (click)="onBack.emit()" class="p-2 hover:bg-slate-100 rounded-full transition-colors">
+                <lucide-icon [img]="ArrowLeftIcon" class="w-5 h-5 text-slate-700"></lucide-icon>
+            </button>
+            <h3 class="flex-1 font-semibold text-lg">Item Details</h3>
+        </div>
+    </div>
+
+    <div class="max-w-6xl mx-auto px-4 lg:px-8 py-6 lg:py-8">
+        <div class="grid lg:grid-cols-2 gap-8">
+            <div class="relative aspect-square lg:sticky lg:top-24 lg:h-fit bg-slate-100 rounded-2xl overflow-hidden">
+                <img [src]="item.image" [alt]="item.name" class="w-full h-full object-cover"
+                    (error)="handleImageError($event)" />
+                <div class="absolute top-4 right-4">
+                    <span
+                        class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent shadow"
+                        [style.background-color]="item.status === 'Available' ? '#C6FF00' : '#90CAF9'"
+                        [style.color]="'#1A237E'">
+                        {{ item.status }}
+                    </span>
+                </div>
+            </div>
+
+            <div class="space-y-6 bg-white rounded-2xl p-6 lg:p-8 h-fit">
+                <div>
+                    <h1 class="text-2xl font-bold text-slate-900 mb-2">{{ item.name }}</h1>
+                    <div class="flex items-center text-slate-600">
+                        <lucide-icon [img]="MapPinIcon" class="w-4 h-4 mr-1"></lucide-icon>
+                        <span>{{ item.distance }} away</span>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="font-semibold text-slate-900 mb-2">Description</h3>
+                    <p class="text-slate-600">{{ item.description }}</p>
+                </div>
+
+                <div class="rounded-xl p-4 flex items-start gap-3" style="background-color: #E8EAF6;">
+                    <lucide-icon [img]="CalendarIcon" class="w-5 h-5 mt-0.5" style="color: #3949AB;"></lucide-icon>
+                    <div>
+                        <p class="font-medium text-slate-900">Availability</p>
+                        <p class="text-slate-600 text-sm">Available now</p>
+                    </div>
+                </div>
+
+                <div *ngIf="item.owner">
+                    <h3 class="font-semibold text-slate-900 mb-3">Owner</h3>
+                    <div class="flex items-center gap-3 p-4 bg-slate-50 rounded-xl">
+                        <div class="relative flex h-12 w-12 shrink-0 overflow-hidden rounded-full">
+                            <img *ngIf="item.ownerImage" [src]="item.ownerImage" class="h-full w-full object-cover" />
+                            <div *ngIf="!item.ownerImage" class="flex h-full w-full items-center justify-center rounded-full bg-muted text-white"
+                                style="background-color: #3949AB;">
+                                {{ getOwnerInitials(item.owner.name) }}
+                            </div>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2">
+                                <p class="font-medium text-slate-900">{{ item.owner.name }}</p>
+                                @if (item.owner.verified) {
+                                <lucide-icon [img]="ShieldIcon" class="w-4 h-4" style="color: #3949AB;"></lucide-icon>
+                                }
+                            </div>
+                            <div class="flex items-center gap-3 text-sm text-slate-600">
+                                <span *ngIf="item.rating">⭐ {{ item.rating }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div *ngIf="item.location">
+                    <h3 class="font-semibold text-slate-900 mb-3">Pickup Location</h3>
+                    <div class="bg-slate-100 rounded-xl h-40 flex items-center justify-center text-slate-500">
+                        <div class="text-center">
+                            <lucide-icon [img]="MapPinIcon" class="w-8 h-8 mx-auto mb-2"></lucide-icon>
+                            <p class="text-sm">{{ item.location.area }}</p>
+                            <p class="text-xs">{{ item.location.description }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-6 border-t border-slate-200">
+                    <button (click)="onRequestToBorrow.emit()"
+                        class="inline-flex items-center justify-center whitespace-nowrap rounded-xl text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 w-full text-white h-12 lg:h-14 hover:bg-[#303F9F]"
+                        style="background-color: #3949AB;">
+                        Request to Borrow
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

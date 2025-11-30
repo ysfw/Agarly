@@ -35,6 +35,6 @@ export class RegisterComponent {
   }
 
   handleSubmit() {
-    this.router.navigate(['/home']);
+    this.router.navigate(['/verify-email']);
   }
 }

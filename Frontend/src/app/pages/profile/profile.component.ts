@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
+import { AuthService } from '../../services/auth.service';
 import { 
   LucideAngularModule, 
   Settings, 
@@ -14,7 +15,8 @@ import {
   Plus,
   Leaf,
   MessageCircle,
-  Heart
+  Heart,
+  LogOut
 } from 'lucide-angular';
 
 @Component({
@@ -37,6 +39,13 @@ export class ProfileComponent {
   readonly LeafIcon = Leaf;
   readonly MessageCircleIcon = MessageCircle;
   readonly HeartIcon = Heart;
+  readonly LogOutIcon = LogOut;
 
   router = inject(Router);
+  authService = inject(AuthService);
+
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['/home']);
+  }
 }

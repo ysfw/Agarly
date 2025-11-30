@@ -18,6 +18,7 @@ import { PaymentComponent } from './pages/payment/payment.component';
 import { EditProfileComponent } from './pages/edit-profile/edit-profile.component';
 import { SearchResultsComponent } from './pages/search-results/search-results.component';
 import { RequestItemComponent } from './pages/request-item/request-item.component';
+import { VerifyEmailComponent } from './pages/verify-email/verify-email.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -27,6 +28,7 @@ export const routes: Routes = [
   { path: 'item/:id', component: ItemDetailsComponent },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
+  { path: 'verify-email', component: VerifyEmailComponent },
   { path: 'admin-login', component: AdminLoginComponent },
   { path: 'book-item/:id', component: BookItemComponent },
   { path: 'settings', component: SettingsComponent },
