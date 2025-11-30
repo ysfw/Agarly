@@ -1,0 +1,49 @@
+package com.agarly.backend;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/users")
+public class UserController {
+    @Autowired
+    UserService userService;
+
+    @GetMapping("username/{username}")
+    public ResponseEntity<User> findByUsername(@PathVariable String username) {
+        User user = userService.findByUsername(username);
+
+        if (user != null) {
+            return new ResponseEntity<>(user, HttpStatus.OK);
+        }
+        else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("email/{email}")
+    public ResponseEntity<User> findByEmail(@PathVariable String email) {
+        User user = userService.findByEmail(email);
+
+        if (user != null) {
+            return new ResponseEntity<>(user, HttpStatus.OK);
+        }
+        else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PostMapping
+    public ResponseEntity<User> signup(@RequestBody User user) {
+        if(!(userService.existsByEmail(user.getUsername())) &&
+                !(userService.existsByEmail(user.getEmail()))) {
+            return new ResponseEntity<>(userService.save(user), HttpStatus.CREATED);
+        }
+
+        return new ResponseEntity<>(HttpStatus.CONFLICT);
+    }
+
+
+}
