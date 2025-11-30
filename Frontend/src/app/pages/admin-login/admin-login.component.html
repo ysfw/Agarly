@@ -1,0 +1,60 @@
+<div class="min-h-screen w-full bg-[#F5F7FA] flex items-center justify-center p-6">
+  <div class="max-w-md w-full">
+    <div class="text-center mb-8">
+      <div class="w-16 h-16 bg-[#3949AB] rounded-full flex items-center justify-center mx-auto mb-4">
+        <lucide-icon [img]="ShieldIcon" class="w-8 h-8 text-white"></lucide-icon>
+      </div>
+      <h1 class="text-4xl font-bold text-[#3949AB] mb-2">
+        Admin Portal
+      </h1>
+      <p class="text-lg text-gray-600">Agarly Management</p>
+    </div>
+    <div class="bg-white rounded-2xl p-8 shadow-sm">
+      <h2 class="text-2xl font-bold text-[#1A237E] mb-6">
+        Admin Login
+      </h2>
+      <form (ngSubmit)="handleSubmit()" class="space-y-6">
+        <div>
+          <label class="block text-sm font-semibold text-[#1A237E] mb-2">
+            Admin Email
+          </label>
+          <div class="relative">
+            <lucide-icon [img]="MailIcon" class="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"></lucide-icon>
+            <input 
+              type="email" 
+              [(ngModel)]="email" 
+              name="email"
+              placeholder="admin@agarly.com" 
+              class="w-full pl-12 pr-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E]" 
+              required 
+            />
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-[#1A237E] mb-2">
+            Password
+          </label>
+          <div class="relative">
+            <lucide-icon [img]="LockIcon" class="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"></lucide-icon>
+            <input 
+              type="password" 
+              [(ngModel)]="password" 
+              name="password"
+              placeholder="Enter admin password" 
+              class="w-full pl-12 pr-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E]" 
+              required 
+            />
+          </div>
+        </div>
+        <button type="submit" class="w-full px-6 py-3 bg-[#3949AB] text-white rounded-xl font-semibold hover:bg-[#1A237E] transition-colors shadow-md">
+          Access Admin Portal
+        </button>
+      </form>
+      <div class="mt-6 text-center">
+        <button routerLink="/login" class="text-sm text-gray-500 hover:text-[#3949AB]">
+          Back to User Login
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

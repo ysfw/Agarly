@@ -1,0 +1,59 @@
+<div class="min-h-screen w-full bg-[#F5F7FA]">
+  <div class="max-w-7xl mx-auto px-6 py-8">
+    <div class="flex items-center justify-between mb-8">
+      <div class="flex items-center gap-4">
+        <button (click)="router.navigate(['/home'])" class="w-10 h-10 flex items-center justify-center hover:bg-gray-100 rounded-full">
+          <lucide-icon [img]="ArrowLeftIcon" class="w-5 h-5 text-[#1A237E]"></lucide-icon>
+        </button>
+        <div>
+          <h1 class="text-3xl font-bold text-[#1A237E]">Search Results</h1>
+          <p class="text-gray-600">{{sampleItems.length}} items found</p>
+        </div>
+      </div>
+      <button (click)="showFilters = !showFilters" class="flex items-center gap-2 px-6 py-3 bg-white rounded-xl font-semibold text-[#1A237E] hover:bg-gray-50 shadow-sm">
+        <lucide-icon [img]="SlidersHorizontalIcon" class="w-5 h-5"></lucide-icon>
+        Filters
+      </button>
+    </div>
+
+    @if (showFilters) {
+      <div class="bg-white rounded-2xl p-6 shadow-sm mb-8">
+        <h2 class="text-xl font-semibold text-[#1A237E] mb-4">Filter Results</h2>
+        <div class="grid md:grid-cols-3 gap-6">
+          <div>
+            <label class="block text-sm font-semibold text-[#1A237E] mb-2">Category</label>
+            <select [(ngModel)]="filters.category" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E]">
+              <option value="">All Categories</option>
+              <option value="tools">Tools</option>
+              <option value="kitchen">Kitchen</option>
+              <option value="cleaning">Cleaning</option>
+              <option value="electronics">Electronics</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-[#1A237E] mb-2">Max Distance</label>
+            <select [(ngModel)]="filters.distance" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E]">
+              <option value="1">Within 1 mile</option>
+              <option value="3">Within 3 miles</option>
+              <option value="5">Within 5 miles</option>
+              <option value="10">Within 10 miles</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-[#1A237E] mb-2">Availability</label>
+            <select [(ngModel)]="filters.availability" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E]">
+              <option value="all">All Items</option>
+              <option value="available">Available Only</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    }
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      @for (item of sampleItems; track item.id) {
+        <app-item-card [item]="item"></app-item-card>
+      }
+    </div>
+  </div>
+</div>

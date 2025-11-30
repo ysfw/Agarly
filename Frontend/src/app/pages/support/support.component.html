@@ -1,0 +1,139 @@
+<div class="min-h-screen w-full bg-[#F5F7FA]">
+  <div class="max-w-3xl mx-auto px-6 py-8">
+    <div class="flex items-center gap-4 mb-8">
+      <button (click)="goBack()" class="w-10 h-10 flex items-center justify-center hover:bg-gray-100 rounded-full">
+        <lucide-icon [img]="ArrowLeftIcon" class="w-5 h-5 text-[#1A237E]"></lucide-icon>
+      </button>
+      <h1 class="text-3xl font-bold text-[#1A237E]">Help & Support</h1>
+    </div>
+
+    <div class="space-y-6">
+      <div class="bg-white rounded-2xl p-6 shadow-sm">
+        <h2 class="text-xl font-semibold text-[#1A237E] mb-4">Quick Help</h2>
+        <div class="grid md:grid-cols-2 gap-4">
+          <button class="flex items-center gap-3 p-4 bg-[#E8EAF6] rounded-xl hover:bg-[#C5CAE9] transition-colors">
+            <lucide-icon [img]="BookOpenIcon" class="w-6 h-6 text-[#3949AB]"></lucide-icon>
+            <div class="text-left">
+              <p class="font-semibold text-[#1A237E]">User Guide</p>
+              <p class="text-sm text-gray-600">Learn how to use Agarly</p>
+            </div>
+          </button>
+          <button class="flex items-center gap-3 p-4 bg-[#E8EAF6] rounded-xl hover:bg-[#C5CAE9] transition-colors">
+            <lucide-icon [img]="HelpCircleIcon" class="w-6 h-6 text-[#3949AB]"></lucide-icon>
+            <div class="text-left">
+              <p class="font-semibold text-[#1A237E]">FAQs</p>
+              <p class="text-sm text-gray-600">Common questions</p>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl overflow-hidden shadow-sm">
+        <div class="px-6 py-4 border-b border-gray-200">
+          <h2 class="text-lg font-semibold text-[#1A237E]">Frequently Asked Questions</h2>
+        </div>
+        <div class="divide-y divide-gray-100">
+          
+          <details class="group px-6 py-4">
+            <summary class="flex items-center justify-between cursor-pointer list-none">
+              <span class="font-medium text-[#1A237E]">How do I list an item?</span>
+              <span class="transition group-open:rotate-180">
+                <svg fill="none" height="24" shapeRendering="geometricPrecision" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" viewBox="0 0 24 24" width="24">
+                  <path d="M6 9l6 6 6-6"></path>
+                </svg>
+              </span>
+            </summary>
+            <p class="text-gray-600 mt-3 text-sm">
+              Click the "Add Item" button, upload photos, fill in the details about your item, and submit. Your item will be visible to neighbors in your area.
+            </p>
+          </details>
+
+          <details class="group px-6 py-4">
+            <summary class="flex items-center justify-between cursor-pointer list-none">
+              <span class="font-medium text-[#1A237E]">How does verification work?</span>
+              <span class="transition group-open:rotate-180">
+                <svg fill="none" height="24" shapeRendering="geometricPrecision" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" viewBox="0 0 24 24" width="24">
+                  <path d="M6 9l6 6 6-6"></path>
+                </svg>
+              </span>
+            </summary>
+            <p class="text-gray-600 mt-3 text-sm">
+              Verification requires confirming your email, phone number, and address. Verified members get a badge and are trusted more in the community.
+            </p>
+          </details>
+
+          <details class="group px-6 py-4">
+            <summary class="flex items-center justify-between cursor-pointer list-none">
+              <span class="font-medium text-[#1A237E]">What if an item is damaged?</span>
+              <span class="transition group-open:rotate-180">
+                <svg fill="none" height="24" shapeRendering="geometricPrecision" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" viewBox="0 0 24 24" width="24">
+                  <path d="M6 9l6 6 6-6"></path>
+                </svg>
+              </span>
+            </summary>
+            <p class="text-gray-600 mt-3 text-sm">
+              Contact support immediately. We recommend taking photos and documenting the condition. Security deposits help protect against damages.
+            </p>
+          </details>
+
+          <details class="group px-6 py-4">
+            <summary class="flex items-center justify-between cursor-pointer list-none">
+              <span class="font-medium text-[#1A237E]">How do I report a user?</span>
+              <span class="transition group-open:rotate-180">
+                <svg fill="none" height="24" shapeRendering="geometricPrecision" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" viewBox="0 0 24 24" width="24">
+                  <path d="M6 9l6 6 6-6"></path>
+                </svg>
+              </span>
+            </summary>
+            <p class="text-gray-600 mt-3 text-sm">
+              Go to the user's profile and click "Report User". Provide details about the issue and our team will investigate.
+            </p>
+          </details>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl p-6 shadow-sm">
+        <h2 class="text-xl font-semibold text-[#1A237E] mb-4">Contact Support</h2>
+        <form (ngSubmit)="handleSubmit()" class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-[#1A237E] mb-2">How can we help?</label>
+            <textarea 
+              [(ngModel)]="message" 
+              name="message"
+              rows="6" 
+              placeholder="Describe your issue or question..." 
+              class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E] resize-none" 
+              required>
+            </textarea>
+          </div>
+          <button type="submit" class="w-full flex items-center justify-center gap-2 px-6 py-4 bg-[#3949AB] text-white rounded-xl font-semibold hover:bg-[#1A237E] transition-colors shadow-md">
+            <lucide-icon [img]="SendIcon" class="w-5 h-5"></lucide-icon>
+            Send Message
+          </button>
+        </form>
+      </div>
+
+      <div class="bg-white rounded-2xl p-6 shadow-sm">
+        <h2 class="text-xl font-semibold text-[#1A237E] mb-4">Other Ways to Reach Us</h2>
+        <div class="space-y-3">
+          <div class="flex items-center gap-3">
+            <lucide-icon [img]="MailIcon" class="w-5 h-5 text-[#3949AB]"></lucide-icon>
+            <div>
+              <p class="font-medium text-[#1A237E]">Email</p>
+              <a href="mailto:support@agarly.com" class="text-sm text-[#3949AB] hover:underline">
+                support&#64;agarly.com
+              </a>
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <lucide-icon [img]="MessageCircleIcon" class="w-5 h-5 text-[#3949AB]"></lucide-icon>
+            <div>
+              <p class="font-medium text-[#1A237E]">Live Chat</p>
+              <p class="text-sm text-gray-600">Available Mon-Fri, 9am-5pm PST</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

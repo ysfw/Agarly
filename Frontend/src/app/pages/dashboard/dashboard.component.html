@@ -1,0 +1,70 @@
+<div class="min-h-screen w-full bg-[#F5F7FA]">
+  <app-navbar></app-navbar>
+  <div class="max-w-5xl mx-auto px-6 py-8">
+    <h1 class="text-3xl font-bold text-[#1A237E] mb-8">My Items</h1>
+    <div class="flex gap-4 mb-8">
+      <button (click)="activeTab = 'borrowed'" 
+              class="flex-1 px-6 py-4 rounded-xl font-semibold text-lg transition-colors"
+              [ngClass]="activeTab === 'borrowed' ? 'bg-[#3949AB] text-white shadow-md' : 'bg-white text-[#1A237E] hover:bg-gray-50'">
+        Borrowed Items
+      </button>
+      <button (click)="activeTab = 'lent'" 
+              class="flex-1 px-6 py-4 rounded-xl font-semibold text-lg transition-colors"
+              [ngClass]="activeTab === 'lent' ? 'bg-[#3949AB] text-white shadow-md' : 'bg-white text-[#1A237E] hover:bg-gray-50'">
+        Lent Items
+      </button>
+    </div>
+    <div class="space-y-4">
+      @if (activeTab === 'borrowed') {
+        @for (item of borrowedItems; track item.id) {
+          <div class="bg-white rounded-2xl p-6 shadow-sm flex items-center gap-6">
+            <img [src]="item.image" [alt]="item.name" class="w-24 h-24 rounded-xl object-cover" />
+            <div class="flex-1">
+              <h3 class="text-xl font-semibold text-[#1A237E] mb-2">
+                {{ item.name }}
+              </h3>
+              <div class="flex items-center gap-4 text-gray-600">
+                <div class="flex items-center gap-2">
+                  <lucide-icon [img]="CalendarIcon" class="w-4 h-4"></lucide-icon>
+                  <span>Due: {{ item.dueDate }}</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <lucide-icon [img]="UserIcon" class="w-4 h-4"></lucide-icon>
+                  <span>Owner: {{ item.owner }}</span>
+                </div>
+              </div>
+            </div>
+            <button class="px-6 py-3 bg-[#90CAF9] text-[#1A237E] rounded-xl font-semibold hover:bg-[#3949AB] hover:text-white transition-colors">
+              Contact
+            </button>
+          </div>
+        }
+      }
+      @if (activeTab === 'lent') {
+        @for (item of lentItems; track item.id) {
+          <div class="bg-white rounded-2xl p-6 shadow-sm flex items-center gap-6">
+            <img [src]="item.image" [alt]="item.name" class="w-24 h-24 rounded-xl object-cover" />
+            <div class="flex-1">
+              <h3 class="text-xl font-semibold text-[#1A237E] mb-2">
+                {{ item.name }}
+              </h3>
+              <div class="flex items-center gap-4 text-gray-600">
+                <div class="flex items-center gap-2">
+                  <lucide-icon [img]="CalendarIcon" class="w-4 h-4"></lucide-icon>
+                  <span>Due: {{ item.dueDate }}</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <lucide-icon [img]="UserIcon" class="w-4 h-4"></lucide-icon>
+                  <span>Borrower: {{ item.borrower }}</span>
+                </div>
+              </div>
+            </div>
+            <button class="px-6 py-3 bg-[#90CAF9] text-[#1A237E] rounded-xl font-semibold hover:bg-[#3949AB] hover:text-white transition-colors">
+              Contact
+            </button>
+          </div>
+        }
+      }
+    </div>
+  </div>
+</div>
