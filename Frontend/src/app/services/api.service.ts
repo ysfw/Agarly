@@ -128,7 +128,7 @@ export class ApiService {
   }
   
   sendToken(token : string): Observable<any> {
-    const url = this.baseUrl + "/api/auth/google-verify"
+    const url = this.baseUrl + "/accounts/gAuth"
     return this.http.post(url, { idToken: token }, this.httpOptions)
   }
 

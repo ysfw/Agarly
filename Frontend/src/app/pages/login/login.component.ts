@@ -56,8 +56,8 @@ export class LoginComponent implements AfterViewInit {
       google.accounts.id.renderButton(
         btnContainer,
         { 
-          theme: 'outline', 
-          size: 'large', 
+          theme: 'outline',
+          size: 'large',
           text: 'signin_with',
           width: btnContainer.clientWidth.toString(),
           shape: 'rectangular'
@@ -75,6 +75,8 @@ export class LoginComponent implements AfterViewInit {
   }
 
   private sendTokenToBackend(token: string): void {
+
+    console.log(token)
 
     this.api.sendToken(token).subscribe({
       next: (res: any) => {
