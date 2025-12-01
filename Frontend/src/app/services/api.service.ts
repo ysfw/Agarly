@@ -9,6 +9,11 @@ export interface UserRegistration {
   password: string;
   address: string;
 }
+export interface LoggingIn {
+  email: string;
+  password: string;
+}
+
 
 @Injectable({
   providedIn: 'root',
@@ -51,8 +56,8 @@ export class ApiService {
       rating: 4.9,
       ownerImage:
         'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400',
-    },
-    {
+      },
+      {
       id: 3,
       name: 'Ladder',
       category: 'Tools',
@@ -76,7 +81,7 @@ export class ApiService {
       price: '$30/day',
       rating: 4.7,
       ownerImage:
-        'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400',
+      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400',
     },
     {
       id: 5,
@@ -102,7 +107,7 @@ export class ApiService {
       price: '$20/day',
       rating: 4.4,
       ownerImage:
-        'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400',
+      'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400',
     },
   ];
 
@@ -114,6 +119,15 @@ export class ApiService {
     return this.http.post(`${this.baseUrl}/register`, data);
   }
 
+  loginUser(data: LoggingIn): Observable<any> {
+    return this.http.post(`${this.baseUrl}/login`, data);
+  }
+  
+  loginAdmin(data: LoggingIn): Observable<any> {
+    return this.http.post(`${this.baseUrl}/Admin-login`, data);
+  }
+  
+
   getItems(): Observable<Item[]> {
     return of(this.items);
   }
@@ -124,3 +138,4 @@ export class ApiService {
 
   // Add more methods for other endpoints
 }
+
