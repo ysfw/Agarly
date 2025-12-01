@@ -75,7 +75,7 @@ export class LoginComponent {
     this.loading = true;
     this.backendError = '';
 
-    // Backend call (make sure loginUser returns Observable)
+    // Backend call 
     this.api.loginUser(this.formData).subscribe({
       next: () => {
         this.loading = false;
