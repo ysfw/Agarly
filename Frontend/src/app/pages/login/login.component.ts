@@ -141,7 +141,7 @@ export class LoginComponent implements AfterViewInit {
       },
       error: (err) => {
         this.loading = false;
-        this.backendError = err?.message || 'Invalid email or password';
+        this.backendError = 'Invalid email or password';
       },
     });
   }

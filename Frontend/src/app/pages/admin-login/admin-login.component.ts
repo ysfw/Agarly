@@ -91,7 +91,7 @@ export class AdminLoginComponent {
         console.error('An error occurred, Status Code:', err.status)
         console.error('Error body:', err.error)
         this.loading = false;
-        this.backendError = err?.message || 'Invalid email or password';
+        this.backendError = 'Invalid email or password';
       },
     });
   }

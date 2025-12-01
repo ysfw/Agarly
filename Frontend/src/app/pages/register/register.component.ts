@@ -205,7 +205,7 @@ export class RegisterComponent {
         console.error('An error occurred, Status Code:', err.status)
         console.error('Error body:', err.error)
         this.loading = false;
-        this.backendError = err?.message || 'Registration failed. Try again';
+        this.backendError = 'Registration failed. Try again';
       },
     });
   }
