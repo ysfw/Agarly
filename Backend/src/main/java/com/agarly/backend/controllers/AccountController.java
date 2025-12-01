@@ -1,6 +1,8 @@
 package com.agarly.backend.controllers;
 
+import com.agarly.backend.models.JWTResponse;
 import com.agarly.backend.models.LoginCredentials;
+import com.agarly.backend.models.StatusResponse;
 import com.agarly.backend.models.User;
 import com.agarly.backend.services.EmailService;
 import com.agarly.backend.services.JWTService;
@@ -26,35 +28,35 @@ public class AccountController {
     private JWTService jwtService;
 
     @PostMapping("/register")
-    public ResponseEntity <String> signup(@RequestBody User user) {
+    public ResponseEntity <StatusResponse> signup(@RequestBody User user) {
         if (userService.findByUsername(user.getUsername()) != null) {
-            return new ResponseEntity<>("Username is already in use", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new StatusResponse("Username is already in use"), HttpStatus.BAD_REQUEST);
         }
         User existingUser = userService.findByEmail(user.getEmail());
         if(existingUser != null) {
             if(existingUser.getVerified()) {
-                return new ResponseEntity<>("Email is already in use", HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(new StatusResponse("Email is already in use"), HttpStatus.BAD_REQUEST);
             }
             String verificationToken = JwtTokenUtil.generateToken(existingUser.getEmail());
             existingUser.setVerificationToken(verificationToken);
             userService.save(existingUser);
             emailService.sendVerificationEmail(existingUser.getEmail(), verificationToken);
-            return new ResponseEntity<>("Verification email sent", HttpStatus.OK);
+            return new ResponseEntity<>(new StatusResponse("Verification email sent"), HttpStatus.OK);
         }
         String verificationToken = JwtTokenUtil.generateToken(user.getEmail());
         user.setVerificationToken(verificationToken);
         userService.save(user);
         emailService.sendVerificationEmail(user.getEmail(), verificationToken);
-        return new ResponseEntity<>("Registration successful, please verify your email", HttpStatus.OK);
+        return new ResponseEntity<>(new StatusResponse("Registration successful, please verify your email"), HttpStatus.OK);
     }
 
     @PostMapping("/login")
 
-    public ResponseEntity<String> login(@RequestBody LoginCredentials user) {
+    public ResponseEntity<JWTResponse> login(@RequestBody LoginCredentials user) {
         if((userService.existsByEmail(user.getEmail()))) {
             String JwtToken=userService.verify(user);
             if(!(JwtToken.equals("Fail"))) {
-                return new ResponseEntity<>(JwtToken,HttpStatus.OK);
+                return new ResponseEntity<>(new JWTResponse(JwtToken),HttpStatus.OK);
             }
             else{
                 System.out.println("Invalid Credentials");
@@ -66,14 +68,14 @@ public class AccountController {
     }
     @PostMapping("/gAuth")
 
-    public ResponseEntity<String> googleLogin(@RequestBody com.agarly.backend.models.GoogleLoginRequest request) {
+    public ResponseEntity<JWTResponse> googleLogin(@RequestBody com.agarly.backend.models.GoogleLoginRequest request) {
         User user = userService.loginWithGoogle(request.getIdToken());
         if (user == null) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
         userService.save(user);
         String token = jwtService.generateToken(user.getUsername());
-        return new ResponseEntity<>(token, HttpStatus.OK);
+        return new ResponseEntity<>(new JWTResponse(token), HttpStatus.OK);
     }
 
 
