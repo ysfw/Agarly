@@ -137,6 +137,11 @@ export class ApiService {
     return this.http.post(url, { idToken: token }, this.httpOptions)
   }
 
+  sendOTP(userEmail : string, enteredOTP : string): Observable<any> {
+    const url = this.baseUrl + "/account/register/verify"
+    return this.http.request('GET', url, {body: {email : userEmail, otp : enteredOTP}, responseType: 'json'})
+  }
+
   getItems(): Observable<Item[]> {
     return of(this.items);
   }
