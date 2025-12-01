@@ -1,5 +1,7 @@
 <div class="min-h-screen w-full bg-[#F5F7FA]">
-  <app-navbar></app-navbar>
+  <!-- <app-navbar></app-navbar> -->
+  <app-navbar-logged-in *ngIf="auth()"></app-navbar-logged-in>
+  <app-navbar *ngIf="!auth()"></app-navbar>
   <div class="max-w-7xl mx-auto px-6 py-8">
     <div class="mb-8">
       <div class="relative max-w-2xl mx-auto">

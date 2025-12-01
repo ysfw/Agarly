@@ -1,5 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { LucideAngularModule, Search, Plus, Wrench, Utensils, Sparkles, Monitor, MessageSquare } from 'lucide-angular';
@@ -7,17 +7,22 @@ import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { ItemCardComponent } from '../../components/item-card/item-card.component';
 import { ApiService } from '../../services/api.service';
 import { Item } from '../../models/item.model';
+import { NavbarLoggedInComponent } from 'src/app/components/navbar-logged-in/navbar-logged-in.component';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, FormsModule, LucideAngularModule, NavbarComponent, ItemCardComponent],
+  imports: [CommonModule, FormsModule, LucideAngularModule, ItemCardComponent, NavbarLoggedInComponent, NavbarComponent, NgIf, CommonModule],
   templateUrl: './home.component.html',
-  styleUrl: './home.component.css'
+  styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
   private router = inject(Router);
   private apiService = inject(ApiService);
+  private authService = inject(AuthService);
+
+  auth = this.authService.isLoggedIn;
   
   searchQuery = '';
   selectedCategory: string | null = null;

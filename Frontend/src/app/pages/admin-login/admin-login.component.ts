@@ -71,23 +71,29 @@ export class AdminLoginComponent {
     return Object.values(this.errors).every((e) => e === '');
   }
 
-  handleSubmit() {
+  // handleSubmit() {
+  //   if (!this.validateForm()) return;
+
+  //   this.loading = true;
+  //   this.backendError = '';
+
+  //   // Backend call 
+  //   this.api.loginAdmin(this.formData).subscribe({
+  //     next: () => {
+  //       this.loading = false;
+  //       this.authService.login();
+  //       this.router.navigate(['/home']);
+  //     },
+  //     error: (err) => {
+  //       this.loading = false;
+  //       this.backendError = err?.message || 'Invalid email or password';
+  //     },
+  //   });
+  // }
+
+  handleSubmit() {      // placeholder for testing front
     if (!this.validateForm()) return;
-
-    this.loading = true;
-    this.backendError = '';
-
-    // Backend call 
-    this.api.loginAdmin(this.formData).subscribe({
-      next: () => {
-        this.loading = false;
-        this.authService.login();
-        this.router.navigate(['/home']);
-      },
-      error: (err) => {
-        this.loading = false;
-        this.backendError = err?.message || 'Invalid email or password';
-      },
-    });
+    this.authService.login();
+    this.router.navigate(['/home']);
   }
 }

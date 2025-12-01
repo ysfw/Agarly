@@ -2,11 +2,14 @@ import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { LucideAngularModule, Calendar, User, Clock, Plus } from 'lucide-angular';
 import { NavbarComponent } from '../../components/navbar/navbar.component'; // Adjust path as needed
+import { NavbarLoggedInComponent } from 'src/app/components/navbar-logged-in/navbar-logged-in.component';
+import { AuthService } from 'src/app/services/auth.service';
+import { NgIf, CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-requests',
   standalone: true,
-  imports: [LucideAngularModule, NavbarComponent],
+  imports: [LucideAngularModule, NavbarComponent, NavbarLoggedInComponent, NgIf, CommonModule],
   templateUrl: './requests.component.html',
   styleUrl: './requests.component.css'
 })
@@ -17,6 +20,8 @@ export class RequestsComponent {
   readonly PlusIcon = Plus;
   
   router = inject(Router);
+  authService = inject(AuthService);
+  auth = this.authService.isLoggedIn;
 
   requests = [{
     id: 1,

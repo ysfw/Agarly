@@ -1,15 +1,10 @@
 import { inject, Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { Item } from '../models/item.model';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { UserDTO } from '../models/user';
 
-export interface UserRegistration {
-  name: string;
-  email: string;
-  password: string;
-  address: string;
-}
-export interface LoggingIn {
+export interface LoginCredentials {
   email: string;
   password: string;
 }
@@ -21,6 +16,11 @@ export interface LoggingIn {
 export class ApiService {
   http = inject(HttpClient); // now we have access to http get/post/...
   private baseUrl = 'http://localhost:8080'; // backend URL
+  private httpOptions = {
+    headers: new HttpHeaders({
+      'Content-Type': 'application/json'
+    })
+  };
 
   // Mock data
   private items: Item[] = [
@@ -115,18 +115,22 @@ export class ApiService {
   //   return this.http.get<Array<Item>>(this.baseUrl);
   // }
 
-  registerUser(data: UserRegistration): Observable<any> {
-    return this.http.post(`${this.baseUrl}/register`, data);
+  registerUser(userData: UserDTO): Observable<any> {
+    return this.http.post(`${this.baseUrl}/account/register`, userData, this.httpOptions);
   }
 
-  loginUser(data: LoggingIn): Observable<any> {
-    return this.http.post(`${this.baseUrl}/login`, data);
+  loginUser(loginData: LoginCredentials): Observable<any> {
+    return this.http.post(`${this.baseUrl}/account/login`, loginData, this.httpOptions);
   }
   
-  loginAdmin(data: LoggingIn): Observable<any> {
-    return this.http.post(`${this.baseUrl}/Admin-login`, data);
+  loginAdmin(data: LoginCredentials): Observable<any> {
+    return this.http.post(`${this.baseUrl}/account/Admin-login`, data, this.httpOptions);
   }
   
+  sendToken(token : string): Observable<any> {
+    const url = this.baseUrl + "/account/gAuth"
+    return this.http.post(url, { idToken: token }, this.httpOptions)
+  }
 
   getItems(): Observable<Item[]> {
     return of(this.items);

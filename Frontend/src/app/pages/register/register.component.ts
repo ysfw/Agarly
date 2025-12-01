@@ -1,9 +1,12 @@
 import { Component, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, Mail, Lock, User, MapPin, Eye, EyeOff } from 'lucide-angular';
+import { LucideAngularModule, Mail, Lock, User, MapPin, Eye, EyeOff, Phone } from 'lucide-angular';
 import { NgIf } from '@angular/common';
 import { ApiService } from '../../services/api.service';
+import { UserDTO } from 'src/app/models/user';
+import { AuthService } from '../../services/auth.service';
+
 
 @Component({
   selector: 'app-register',
@@ -13,12 +16,15 @@ import { ApiService } from '../../services/api.service';
   styleUrl: './register.component.css',
 })
 export class RegisterComponent {
+
+  // Icons for the form 
   readonly MailIcon = Mail;
   readonly LockIcon = Lock;
   readonly UserIcon = User;
   readonly MapPinIcon = MapPin;
   readonly EyeIcon = Eye;
   readonly EyeOffIcon = EyeOff;
+  readonly PhoneIcon = Phone;
 
   showPassword = false;
   togglePassword() {
@@ -28,8 +34,12 @@ export class RegisterComponent {
   toggleConfirmPassword() {
     this.showConfirmPassword = !this.showConfirmPassword;
   }
+
   formData = {
-    name: '',
+    username: '',
+    firstName: '',
+    lastName: '',
+    phoneNumber: '',
     email: '',
     password: '',
     confirmPassword: '',
@@ -37,7 +47,10 @@ export class RegisterComponent {
   };
 
   errors = {
-    name: '',
+    username: '',
+    firstName: '',
+    lastName: '',
+    phoneNumber: '',
     email: '',
     password: '',
     confirmPassword: '',
@@ -51,17 +64,32 @@ export class RegisterComponent {
 
   validateField(field: string) {
     switch (field) {
-      case 'name':
-        const name = this.formData.name.trim();
-        const words = name.split(/\s+/);
-        if (!name) this.errors.name = 'Name is required';
-        else if (words.length < 2)
-          this.errors.name = 'Enter at least two names';
-        else if (words.some((w) => w.length < 3))
-          this.errors.name = 'Each name part must be at least 3 characters';
-        else if (!/^[A-Za-z ]+$/.test(name))
-          this.errors.name = 'Name can only contain letters and spaces';
-        else this.errors.name = '';
+      case 'firstName':
+        if (!this.formData.firstName.trim()) this.errors.firstName = 'First name is required';
+        else if (!/^[A-Za-z]+$/.test(this.formData.firstName.trim()))
+          this.errors.firstName = 'First name can only contain letters';
+        else this.errors.firstName = '';
+        break;
+
+      case 'lastName':
+        if (!this.formData.lastName.trim()) this.errors.lastName = 'Last name is required';
+        else if (!/^[A-Za-z]+$/.test(this.formData.lastName.trim()))
+          this.errors.lastName = 'Last name can only contain letters';
+        else this.errors.lastName = '';
+        break;
+
+      case 'username':
+        if (!this.formData.username.trim()) this.errors.username = 'Username is required';
+        else if (this.formData.username.length < 3)
+          this.errors.username = 'Username must be at least 3 characters';
+        else this.errors.username = '';
+        break;
+
+      case 'phoneNumber':
+        if (!this.formData.phoneNumber.trim()) this.errors.phoneNumber = 'Phone number is required';
+        else if (!/^\d{11}$/.test(this.formData.phoneNumber.trim()))
+          this.errors.phoneNumber = 'Phone number must be 11 digits';
+        else this.errors.phoneNumber = '';
         break;
 
       case 'email':
@@ -118,7 +146,7 @@ export class RegisterComponent {
 
   validateForm() {
     // Validate all fields
-    ['name', 'email', 'password', 'confirmPassword', 'address'].forEach((f) =>
+    ['name', 'username', 'firstName', 'lastName', 'phoneNumber', 'email', 'password', 'confirmPassword', 'address'].forEach((f) =>
       this.validateField(f)
     );
 
@@ -132,32 +160,47 @@ export class RegisterComponent {
 
   private router = inject(Router); // gives access to navigation
   private api = inject(ApiService);
+  authService = inject(AuthService);
 
-  // handleSubmit() {      // placeholder for testing front
-  //   if (!this.validateForm()) return;
-  //   this.router.navigate(['/home']);
-  // }
-
-  handleSubmit() {
+  handleSubmit() {      // placeholder for testing front
     if (!this.validateForm()) return;
+    this.authService.login();
 
-    this.loading = true;
-    this.success = false;
-    this.backendError = '';
-
-    // Simulated backend call
-    this.api.registerUser(this.formData).subscribe({
-      next: () => {
-        // a callback function called when the Observable emits a successful response
-        this.loading = false;
-        this.success = true;
-        this.router.navigate(['/home']);
-      },
-      error: (err) => {
-        // a callback function called if the Observable emits an error
-        this.loading = false;
-        this.backendError = err?.message || 'Registration failed. Try again';
-      },
-    });
   }
+
+  // handleSubmit() {
+  //   if (!this.validateForm()) return;
+
+  //   this.loading = true;
+  //   this.success = false;
+  //   this.backendError = '';
+
+  //   const userData : UserDTO = {
+  //     username : this.formData.username,
+  //     password : this.formData.password,
+  //     email : this.formData.email,
+  //     phoneNumber : this.formData.phoneNumber,
+  //     firstName : this.formData.firstName,
+  //     lastName : this.formData.lastName,
+  //     address : this.formData.address,
+  //     activated : true,
+  //     blocked : false
+  //   }
+
+
+  //   // Simulated backend call
+  //   this.api.registerUser(userData).subscribe({
+  //     next: () => {
+  //       // a callback function called when the Observable emits a successful response
+  //       this.loading = false;
+  //       this.success = true;
+  //       this.authService.login();
+  //       this.router.navigate(['/home']);
+  //     },
+  //     error: (err) => {
+  //       // a callback function called if the Observable emits an error
+  //       this.loading = false;
+  //       this.backendError = err?.message || 'Registration failed. Try again';
+  //     },
+  //   });
 }
