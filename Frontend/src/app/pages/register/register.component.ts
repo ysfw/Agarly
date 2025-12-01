@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, Mail, Lock, User, MapPin } from 'lucide-angular';
+import { LucideAngularModule, Mail, Lock, User, MapPin, Eye, EyeOff } from 'lucide-angular';
 import { NgIf } from '@angular/common';
 import { ApiService } from '../../services/api.service';
 
@@ -17,7 +17,17 @@ export class RegisterComponent {
   readonly LockIcon = Lock;
   readonly UserIcon = User;
   readonly MapPinIcon = MapPin;
+  readonly EyeIcon = Eye;
+  readonly EyeOffIcon = EyeOff;
 
+  showPassword = false;
+  togglePassword() {
+    this.showPassword = !this.showPassword;
+  }
+  showConfirmPassword = false;
+  toggleConfirmPassword() {
+    this.showConfirmPassword = !this.showConfirmPassword;
+  }
   formData = {
     name: '',
     email: '',
