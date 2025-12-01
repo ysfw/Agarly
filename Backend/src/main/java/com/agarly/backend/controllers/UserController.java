@@ -1,5 +1,7 @@
-package com.agarly.backend;
+package com.agarly.backend.controllers;
 
+import com.agarly.backend.models.User;
+import com.agarly.backend.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,16 +36,5 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
-
-    @PostMapping
-    public ResponseEntity<User> signup(@RequestBody User user) {
-        if(!(userService.existsByEmail(user.getUsername())) &&
-                !(userService.existsByEmail(user.getEmail()))) {
-            return new ResponseEntity<>(userService.save(user), HttpStatus.CREATED);
-        }
-
-        return new ResponseEntity<>(HttpStatus.CONFLICT);
-    }
-
 
 }

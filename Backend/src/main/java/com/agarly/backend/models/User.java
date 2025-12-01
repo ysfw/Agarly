@@ -1,15 +1,13 @@
-package com.agarly.backend;
+package com.agarly.backend.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
 @Entity
+@Table(name = "\"user\"")
 public class User {
     @Id
 
@@ -23,6 +21,8 @@ public class User {
     private String firstName;
     private String lastName;
     private String address;
+    private Boolean activated;
+    private Boolean blocked;
 
     public User() {
 
