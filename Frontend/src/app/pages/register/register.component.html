@@ -13,9 +13,9 @@
           <label class="block text-sm font-semibold text-[#1A237E] mb-2">Full Name</label>
           <div class="relative">
             <lucide-icon [img]="UserIcon" class="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"></lucide-icon>
-            <input type="text" [(ngModel)]="formData.name" (ngModelChange)="ngOnChange('name')" name="name" placeholder="  John Doe" class="w-full pl-12 pr-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E]" required />
-            <p class="error text-red-500 text-sm mt-1" *ngIf="errors.name">{{ errors.name }}</p>
+            <input type="text" [(ngModel)]="formData.name" (ngModelChange)="ngOnChange('name')" name="name" placeholder="  John Doe" class="w-full pl-14 pr-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E]" required />
           </div>
+          <p class="error text-red-500 text-sm mt-1" *ngIf="errors.name">{{ errors.name }}</p>
         </div>
 
         <!-- Email -->
@@ -23,9 +23,9 @@
           <label class="block text-sm font-semibold text-[#1A237E] mb-2">Email</label>
           <div class="relative">
             <lucide-icon [img]="MailIcon" class="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"></lucide-icon>
-            <input type="email" [(ngModel)]="formData.email" (ngModelChange)="ngOnChange('email')" name="email" placeholder="  your@email.com" class="w-full pl-12 pr-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E]" required />
-            <p class="error text-red-500 text-sm mt-1" *ngIf="errors.email">{{ errors.email }}</p>
+            <input type="email" [(ngModel)]="formData.email" (ngModelChange)="ngOnChange('email')" name="email" placeholder="  your@email.com" class="w-full pl-14 pr-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E]" required />
           </div>
+          <p class="error text-red-500 text-sm mt-1" *ngIf="errors.email">{{ errors.email }}</p>
         </div>
 
         <!-- Address -->
@@ -33,9 +33,9 @@
           <label class="block text-sm font-semibold text-[#1A237E] mb-2">Address</label>
           <div class="relative">
             <lucide-icon [img]="MapPinIcon" class="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"></lucide-icon>
-            <input type="text" [(ngModel)]="formData.address" (ngModelChange)="ngOnChange('address')" name="address" placeholder="  123 Main Street Downtown City" class="w-full pl-12 pr-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E]" required />
-            <p class="error text-red-500 text-sm mt-1" *ngIf="errors.address">{{ errors.address }}</p>
+            <input type="text" [(ngModel)]="formData.address" (ngModelChange)="ngOnChange('address')" name="address" placeholder="  123 Main Street Downtown City" class="w-full pl-14 pr-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E]" required />
           </div>
+          <p class="error text-red-500 text-sm mt-1" *ngIf="errors.address">{{ errors.address }}</p>
         </div>
 
         <!-- Password -->
@@ -43,12 +43,12 @@
           <label class="block text-sm font-semibold text-[#1A237E] mb-2">Password</label>
           <div class="relative">
             <lucide-icon [img]="LockIcon" class="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"></lucide-icon>
-            <input [type]="showPassword ? 'text' : 'password'" [(ngModel)]="formData.password" (ngModelChange)="ngOnChange('password')" name="password" placeholder="  Create a password" class="w-full pl-12 pr-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E]" required />
+            <input [type]="showPassword ? 'text' : 'password'" [(ngModel)]="formData.password" (ngModelChange)="ngOnChange('password')" name="password" placeholder="  Create a password" class="w-full pl-14 pr-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E]" required />
              <button type="button" (click)="togglePassword()" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400">
               <lucide-icon [img]="showPassword ? EyeOffIcon : EyeIcon" class="w-5 h-5"></lucide-icon>
             </button>
-            <p class="error text-red-500 text-sm mt-1" *ngIf="errors.password">{{ errors.password }}</p>
           </div>
+          <p class="error text-red-500 text-sm mt-1" *ngIf="errors.password">{{ errors.password }}</p>
         </div>
 
         <!-- Confirm Password -->
@@ -56,12 +56,12 @@
           <label class="block text-sm font-semibold text-[#1A237E] mb-2">Confirm Password</label>
           <div class="relative">
             <lucide-icon [img]="LockIcon" class="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"></lucide-icon>
-            <input [type]="showConfirmPassword ? 'text' : 'password'" [(ngModel)]="formData.confirmPassword" (ngModelChange)="ngOnChange('confirmPassword')" name="confirmPassword" placeholder="  Confirm your password" class="w-full pl-12 pr-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E]" required />
+            <input [type]="showConfirmPassword ? 'text' : 'password'" [(ngModel)]="formData.confirmPassword" (ngModelChange)="ngOnChange('confirmPassword')" name="confirmPassword" placeholder="  Confirm your password" class="w-full pl-14 pr-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E]" required />
              <button type="button" (click)="toggleConfirmPassword()" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400">
               <lucide-icon [img]="showConfirmPassword ? EyeOffIcon : EyeIcon" class="w-5 h-5"></lucide-icon>
             </button>
-            <p class="error text-red-500 text-sm mt-1" *ngIf="errors.confirmPassword">{{ errors.confirmPassword }}</p>
           </div>
+          <p class="error text-red-500 text-sm mt-1" *ngIf="errors.confirmPassword">{{ errors.confirmPassword }}</p>
         </div>
 
         <!-- Submit -->
