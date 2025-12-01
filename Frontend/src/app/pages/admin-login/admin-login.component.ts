@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, Mail, Lock, Eye, EyeOff, Shield } from 'lucide-angular';
 import { ApiService } from '../../services/api.service';
 import { NgIf } from '@angular/common';
+import { AuthService } from '../../services/auth.service';
 
 
 @Component({
@@ -39,6 +40,7 @@ export class AdminLoginComponent {
   backendError = '';
   private router = inject(Router);
   private api = inject(ApiService);
+  private authService = inject(AuthService);
 
   ngOnChange(field: string) {
     this.validateField(field);
@@ -79,6 +81,7 @@ export class AdminLoginComponent {
     this.api.loginAdmin(this.formData).subscribe({
       next: () => {
         this.loading = false;
+        this.authService.login();
         this.router.navigate(['/home']);
       },
       error: (err) => {

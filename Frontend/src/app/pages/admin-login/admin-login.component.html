@@ -23,11 +23,11 @@
                    [(ngModel)]="formData.email"
                    (ngModelChange)="ngOnChange('email')"
                    name="email"
-                   placeholder="  your@email.com"
-                   class="w-full pl-12 pr-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E]"
+                   placeholder="your@email.com"
+                   class="w-full pl-14 pr-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E]"
                    required />
-            <p class="error text-red-500 text-sm mt-1" *ngIf="errors.email">{{ errors.email }}</p>
           </div>
+          <p class="error text-red-500 text-sm mt-1" *ngIf="errors.email">{{ errors.email }}</p>
         </div>
 
         <!-- Password -->
@@ -39,14 +39,14 @@
                    [(ngModel)]="formData.password"
                    (ngModelChange)="ngOnChange('password')"
                    name="password"
-                   placeholder="  Enter your password"
-                   class="w-full pl-12 pr-12 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E]"
+                   placeholder="Enter your password"
+                   class="w-full pl-14 pr-12 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E]"
                    required />
             <button type="button" (click)="togglePassword()" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400">
               <lucide-icon [img]="showPassword ? EyeOffIcon : EyeIcon" class="w-5 h-5"></lucide-icon>
             </button>
-            <p class="error text-red-500 text-sm mt-1" *ngIf="errors.password">{{ errors.password }}</p>
           </div>
+          <p class="error text-red-500 text-sm mt-1" *ngIf="errors.password">{{ errors.password }}</p>
         </div>
 
         <!-- Submit -->
