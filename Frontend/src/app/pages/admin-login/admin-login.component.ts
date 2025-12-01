@@ -80,9 +80,8 @@ export class AdminLoginComponent {
 
     // Backend call 
     this.api.loginAdmin(this.formData).subscribe({
-      next: (res: HttpResponse<string>) => {
-        console.log("Success, Status Code:", res.status)
-        console.log("Response Body:", res.body)
+      next: (res: any) => {
+        console.log("Response from Backend: ", res)
         this.loading = false;
         // this.authService.login();
         this.router.navigate(['/home']);

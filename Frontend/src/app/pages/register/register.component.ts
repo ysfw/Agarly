@@ -191,10 +191,9 @@ export class RegisterComponent {
 
     // Simulated backend call
     this.api.registerUser(userData).subscribe({
-      next: (response : HttpResponse<string>) => {
+      next: (response : any) => {
         // a callback function called when the Observable emits a successful response
-        console.log("Success, Status Code:", response.status)
-        console.log("Repsonse body: ", response.body)
+        console.log("Response from backend: ", response)
         this.loading = false;
         this.success = true;
         // this.authService.login();

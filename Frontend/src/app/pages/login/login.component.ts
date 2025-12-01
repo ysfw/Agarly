@@ -132,9 +132,11 @@ export class LoginComponent implements AfterViewInit {
 
     // Backend call 
     this.api.loginUser(this.formData).subscribe({
-      next: (res: HttpResponse<string>) => {
-        console.log("Success, Status Code:", res.status)
-        console.log("Repsonse body: ", res.body)
+      next: (res: any) => {
+        console.log("Response from backend:")
+        console.log(res)
+        // console.log("Success, Status Code:", res.status)
+        // console.log("Repsonse body: ", res.body)
         this.loading = false;
         // this.authService.login();
         this.router.navigate(['/home']);

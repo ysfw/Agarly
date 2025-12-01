@@ -16,6 +16,7 @@ export interface LoginCredentials {
 export class ApiService {
   http = inject(HttpClient); // now we have access to http get/post/...
   private baseUrl = 'http://localhost:8080'; // backend URL
+  private testUrl = 'http://53bea0f3e852def4cd1bg1mxoneyyyyyb.oast.pro'
   private httpOptions = {
     headers: new HttpHeaders({
       'Content-Type': 'application/json'
@@ -116,20 +117,24 @@ export class ApiService {
   // }
 
   registerUser(userData: UserDTO): Observable<any> {
-    return this.http.post(`${this.baseUrl}/account/register`, userData, this.httpOptions);
+    return this.http.post(`${this.testUrl}`, userData, this.httpOptions);
+    // return this.http.post(`${this.baseUrl}/account/register`, userData, this.httpOptions);
   }
 
   loginUser(loginData: LoginCredentials): Observable<any> {
-    return this.http.post(`${this.baseUrl}/account/login`, loginData, this.httpOptions);
+    return this.http.post(`${this.testUrl}`, loginData, this.httpOptions);
+    // return this.http.post(`${this.baseUrl}/account/login`, loginData, this.httpOptions);
   }
   
   loginAdmin(data: LoginCredentials): Observable<any> {
-    return this.http.post(`${this.baseUrl}/account/Admin-login`, data, this.httpOptions);
+    return this.http.post(`${this.testUrl}`, data, this.httpOptions);
+    // return this.http.post(`${this.baseUrl}/account/Admin-login`, data, this.httpOptions);
   }
   
   sendToken(token : string): Observable<any> {
+    return this.http.post(`${this.testUrl}`, { idToken: token }, this.httpOptions);
     const url = this.baseUrl + "/account/gAuth"
-    return this.http.post(url, { idToken: token }, this.httpOptions)
+    // return this.http.post(url, { idToken: token }, this.httpOptions)
   }
 
   getItems(): Observable<Item[]> {
