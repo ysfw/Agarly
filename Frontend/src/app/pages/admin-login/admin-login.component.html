@@ -13,43 +13,52 @@
       <h2 class="text-2xl font-bold text-[#1A237E] mb-6">
         Admin Login
       </h2>
-      <form (ngSubmit)="handleSubmit()" class="space-y-6">
+       <form (ngSubmit)="handleSubmit()" class="space-y-6">
+        <!-- Email -->
         <div>
-          <label class="block text-sm font-semibold text-[#1A237E] mb-2">
-            Admin Email
-          </label>
+          <label class="block text-sm font-semibold text-[#1A237E] mb-2">Email</label>
           <div class="relative">
             <lucide-icon [img]="MailIcon" class="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"></lucide-icon>
-            <input 
-              type="email" 
-              [(ngModel)]="email" 
-              name="email"
-              placeholder="admin@agarly.com" 
-              class="w-full pl-12 pr-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E]" 
-              required 
-            />
+            <input type="email"
+                   [(ngModel)]="formData.email"
+                   (ngModelChange)="ngOnChange('email')"
+                   name="email"
+                   placeholder="  your@email.com"
+                   class="w-full pl-12 pr-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E]"
+                   required />
+            <p class="error text-red-500 text-sm mt-1" *ngIf="errors.email">{{ errors.email }}</p>
           </div>
         </div>
+
+        <!-- Password -->
         <div>
-          <label class="block text-sm font-semibold text-[#1A237E] mb-2">
-            Password
-          </label>
+          <label class="block text-sm font-semibold text-[#1A237E] mb-2">Password</label>
           <div class="relative">
             <lucide-icon [img]="LockIcon" class="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"></lucide-icon>
-            <input 
-              type="password" 
-              [(ngModel)]="password" 
-              name="password"
-              placeholder="Enter admin password" 
-              class="w-full pl-12 pr-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E]" 
-              required 
-            />
+            <input [type]="showPassword ? 'text' : 'password'"
+                   [(ngModel)]="formData.password"
+                   (ngModelChange)="ngOnChange('password')"
+                   name="password"
+                   placeholder="  Enter your password"
+                   class="w-full pl-12 pr-12 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E]"
+                   required />
+            <button type="button" (click)="togglePassword()" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400">
+              <lucide-icon [img]="showPassword ? EyeOffIcon : EyeIcon" class="w-5 h-5"></lucide-icon>
+            </button>
+            <p class="error text-red-500 text-sm mt-1" *ngIf="errors.password">{{ errors.password }}</p>
           </div>
         </div>
-        <button type="submit" class="w-full px-6 py-3 bg-[#3949AB] text-white rounded-xl font-semibold hover:bg-[#1A237E] transition-colors shadow-md">
-          Access Admin Portal
+
+        <!-- Submit -->
+        <button type="submit"
+                class="w-full px-6 py-3 bg-[#3949AB] text-white rounded-xl font-semibold hover:bg-[#1A237E] transition-colors shadow-md"
+                [disabled]="loading">
+          <span *ngIf="!loading">Access Admin Portal</span>
+          <span *ngIf="loading">Logging In...</span>
         </button>
+        <p *ngIf="backendError" class="text-red-600 mt-2 text-center">{{ backendError }}</p>
       </form>
+
       <div class="mt-6 text-center">
         <button routerLink="/login" class="text-sm text-gray-500 hover:text-[#3949AB]">
           Back to User Login
@@ -58,3 +67,4 @@
     </div>
   </div>
 </div>
+
