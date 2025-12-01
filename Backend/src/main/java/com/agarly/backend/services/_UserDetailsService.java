@@ -1,6 +1,7 @@
 package com.agarly.backend.services;
 
 import com.agarly.backend.models.User;
+import com.agarly.backend.models.UserPrincipal;
 import com.agarly.backend.repos.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,6 +23,6 @@ public class _UserDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException(username+" not found");
         }
 
-        return null;
+        return new UserPrincipal(user);
     }
 }

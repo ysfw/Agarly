@@ -1,12 +1,12 @@
 package com.agarly.backend.services;
 
+import com.agarly.backend.models.LoginCredentials;
 import com.agarly.backend.models.User;
 import com.agarly.backend.repos.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +18,8 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
     @Autowired
-    private AuthenticationManagerBuilder authenticationManagerBuilder;
+    private AuthenticationManager authManager;
+
     @Autowired
     private JWTService jwtService;
 
@@ -43,14 +44,14 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public String verify(User user) {
-        Authentication authentication = authenticationManagerBuilder.getObject()
-                .authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(),
-                        user.getPassword()));
-        if (authentication.isAuthenticated()){
+    public String verify(LoginCredentials userCredentials) {
+        User user = findByEmail(userCredentials.getEmail());
+            Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), userCredentials.getPassword()));
+        if (authentication.isAuthenticated()) {
             return jwtService.generateToken(user.getUsername());
+        } else {
+            return "fail";
         }
-        return "Fail";
     }
 //    public void deleteById(Long id) {
 //        userRepository.deleteById(id);

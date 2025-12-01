@@ -30,7 +30,7 @@ public class AccountController {
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody LoginCredentials user) {
         if((userService.existsByEmail(user.getEmail()))) {
-            String JwtToken=userService.verify(userService.findByEmail(user.getEmail()));
+            String JwtToken=userService.verify(user);
             if(!(JwtToken.equals("Fail"))) {
                 return new ResponseEntity<>(JwtToken,HttpStatus.OK);
             }
@@ -39,6 +39,7 @@ public class AccountController {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
         }
+        System.out.println("Invalid Credentials2");
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 }
