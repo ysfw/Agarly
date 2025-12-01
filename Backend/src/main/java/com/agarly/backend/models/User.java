@@ -23,6 +23,8 @@ public class User {
     private String address;
     private Boolean activated;
     private Boolean blocked;
+    private String verificationToken;
+    private Boolean verified;
 
     public User() {
 

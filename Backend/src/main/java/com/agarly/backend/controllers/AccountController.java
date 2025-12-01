@@ -2,6 +2,7 @@ package com.agarly.backend.controllers;
 
 import com.agarly.backend.models.LoginCredentials;
 import com.agarly.backend.models.User;
+import com.agarly.backend.services.EmailService;
 import com.agarly.backend.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,20 +12,37 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/account")
 public class AccountController {
     @Autowired
     private UserService userService;
+    @Autowired
+    private EmailService emailService;
 
     @PostMapping("/register")
-    public ResponseEntity<User> signup(@RequestBody User user) {
-        if(!(userService.existsByUsername(user.getUsername())) &&
-                !(userService.existsByEmail(user.getEmail()))) {
-            return new ResponseEntity<>(userService.save(user), HttpStatus.CREATED);
+    public ResponseEntity <String> signup(@RequestBody User user) {
+        if (userService.findByUsername(user.getUsername()) != null) {
+            return new ResponseEntity<>("Username is already in use", HttpStatus.BAD_REQUEST);
         }
-
-        return new ResponseEntity<>(HttpStatus.CONFLICT);
+        User existingUser = userService.findByEmail(user.getEmail());
+        if(existingUser != null) {
+            if(existingUser.getVerified()) {
+                return new ResponseEntity<>("Email is already in use", HttpStatus.BAD_REQUEST);
+            }
+            String verificationToken = "1234";
+            existingUser.setVerificationToken(verificationToken);
+            userService.save(existingUser);
+            emailService.sendVerificationEmail(existingUser.getEmail(), verificationToken);
+            return new ResponseEntity<>("Verification email sent", HttpStatus.OK);
+        }
+        String verificationToken = "1234";
+        user.setVerificationToken(verificationToken);
+        userService.save(user);
+        emailService.sendVerificationEmail(user.getEmail(), verificationToken);
+        return new ResponseEntity<>("Registration successful, please verify your email", HttpStatus.OK);
     }
 
     @PostMapping("/login")
@@ -42,4 +60,6 @@ public class AccountController {
         System.out.println("Invalid Credentials2");
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
+
+
 }
