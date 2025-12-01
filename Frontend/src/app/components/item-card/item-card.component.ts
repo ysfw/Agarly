@@ -2,6 +2,7 @@ import { Component, Input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { LucideAngularModule, MapPin } from 'lucide-angular';
+import { AuthService } from 'src/app/services/auth.service';
 
 export interface Item {
   id: number;
@@ -43,10 +44,15 @@ export interface Item {
 export class ItemCardComponent {
   @Input({ required: true }) item!: Item;
   private router = inject(Router);
+  private authService = inject(AuthService);
 
   readonly MapPinIcon = MapPin;
 
   navigateToItem() {
+    if (!this.authService.isLoggedIn()) {
+      this.router.navigate(['/login']);
+      return;
+    }
     this.router.navigate(['/item', this.item.id]);
   }
 }
