@@ -1,5 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { CommonModule, NgIf } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { LucideAngularModule, Search, Plus, Wrench, Utensils, Sparkles, Monitor, MessageSquare } from 'lucide-angular';
@@ -13,7 +13,7 @@ import { AuthService } from 'src/app/services/auth.service';
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, FormsModule, LucideAngularModule, ItemCardComponent, NavbarLoggedInComponent, NavbarComponent, NgIf, CommonModule],
+  imports: [CommonModule, FormsModule, LucideAngularModule, ItemCardComponent, NavbarLoggedInComponent, NavbarComponent],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
@@ -56,16 +56,24 @@ export class HomeComponent implements OnInit {
       this.router.navigate(['/search']);
     }
   }
-
+  
   toggleCategory(category: string) {
     this.selectedCategory = this.selectedCategory === category ? null : category;
   }
 
   navigateToRequestItem() {
+    if (!this.authService.isLoggedIn()) {
+      this.router.navigate(['/login']);
+      return;
+    }
     this.router.navigate(['/request-item']);
   }
 
   navigateToAddItem() {
+    if (!this.authService.isLoggedIn()) {
+      this.router.navigate(['/login']);
+      return;
+    }
     this.router.navigate(['/add-item']);
   }
 }
