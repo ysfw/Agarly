@@ -5,6 +5,7 @@ import { LucideAngularModule, Mail, Lock, Eye, EyeOff } from 'lucide-angular';
 import { CommonModule, NgIf } from '@angular/common';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
+import { HttpResponse } from '@angular/common/http';
 
 declare var google: any; // Declare google object from the loaded script
 
@@ -123,33 +124,35 @@ export class LoginComponent implements AfterViewInit {
     return Object.values(this.errors).every((e) => e === '');
   }
 
-  // handleSubmit() {
-  //   if (!this.validateForm()) return;
+  handleSubmit() {
+    if (!this.validateForm()) return;
 
-  //   this.loading = true;
-  //   this.backendError = '';
+    this.loading = true;
+    this.backendError = '';
 
-  //   // Backend call 
-  //   this.api.loginUser(this.formData).subscribe({
-  //     next: () => {
-  //       this.loading = false;
-  //       this.authService.login();
-  //       this.router.navigate(['/home']);
-  //     },
-  //     error: (err) => {
-  //       this.loading = false;
-  //       this.backendError = err?.message || 'Invalid email or password';
-  //     },
-  //   });
-  // }
+    // Backend call 
+    this.api.loginUser(this.formData).subscribe({
+      next: (res: HttpResponse<string>) => {
+        console.log("Success, Status Code:", res.status)
+        console.log("Repsonse body: ", res.body)
+        this.loading = false;
+        // this.authService.login();
+        this.router.navigate(['/home']);
+      },
+      error: (err) => {
+        this.loading = false;
+        this.backendError = 'Invalid email or password';
+      },
+    });
+  }
 
   // goToForgot() {
   //   this.router.navigate(['/forgot-password']);
   // }
 
-  handleSubmit() {      // placeholder for testing front
-    if (!this.validateForm()) return;
-    this.authService.login();
-    this.router.navigate(['/home']);
-  }
+  // handleSubmit() {      // placeholder for testing front
+  //   if (!this.validateForm()) return;
+  //   this.authService.login();
+  //   this.router.navigate(['/home']);
+  // }
 }

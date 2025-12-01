@@ -5,10 +5,12 @@ import {
   ArrowLeft, 
   MapPin, 
   Shield, 
-  Calendar 
+  Calendar, 
 } from 'lucide-angular';
 import { ApiService } from '../../services/api.service';
 import { Item } from '../../models/item.model';
+import { AuthService } from 'src/app/services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-item-details-component',
@@ -22,6 +24,8 @@ export class ItemDetailsComponent implements OnChanges {
   @Output() onRequestToBorrow = new EventEmitter<void>();
 
   private apiService = inject(ApiService);
+  private authService = inject(AuthService);
+  private router = inject(Router);
 
   readonly ArrowLeftIcon = ArrowLeft;
   readonly MapPinIcon = MapPin;

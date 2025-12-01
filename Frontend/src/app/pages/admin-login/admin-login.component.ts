@@ -5,6 +5,7 @@ import { LucideAngularModule, Mail, Lock, Eye, EyeOff, Shield } from 'lucide-ang
 import { ApiService } from '../../services/api.service';
 import { NgIf } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
+import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 
 
 @Component({
@@ -71,29 +72,33 @@ export class AdminLoginComponent {
     return Object.values(this.errors).every((e) => e === '');
   }
 
-  // handleSubmit() {
-  //   if (!this.validateForm()) return;
-
-  //   this.loading = true;
-  //   this.backendError = '';
-
-  //   // Backend call 
-  //   this.api.loginAdmin(this.formData).subscribe({
-  //     next: () => {
-  //       this.loading = false;
-  //       this.authService.login();
-  //       this.router.navigate(['/home']);
-  //     },
-  //     error: (err) => {
-  //       this.loading = false;
-  //       this.backendError = err?.message || 'Invalid email or password';
-  //     },
-  //   });
-  // }
-
-  handleSubmit() {      // placeholder for testing front
+  handleSubmit() {
     if (!this.validateForm()) return;
-    this.authService.login();
-    this.router.navigate(['/home']);
+
+    this.loading = true;
+    this.backendError = '';
+
+    // Backend call 
+    this.api.loginAdmin(this.formData).subscribe({
+      next: (res: HttpResponse<string>) => {
+        console.log("Success, Status Code:", res.status)
+        console.log("Response Body:", res.body)
+        this.loading = false;
+        // this.authService.login();
+        this.router.navigate(['/home']);
+      },
+      error: (err: HttpErrorResponse) => {
+        console.error('An error occurred, Status Code:', err.status)
+        console.error('Error body:', err.error)
+        this.loading = false;
+        this.backendError = 'Invalid email or password';
+      },
+    });
   }
+
+  // handleSubmit() {      // placeholder for testing front
+  //   if (!this.validateForm()) return;
+  //   this.authService.login();
+  //   this.router.navigate(['/home']);
+  // }
 }
