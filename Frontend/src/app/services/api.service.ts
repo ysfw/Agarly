@@ -117,24 +117,24 @@ export class ApiService {
   // }
 
   registerUser(userData: UserDTO): Observable<any> {
-    return this.http.post(`${this.testUrl}`, userData, this.httpOptions);
-    // return this.http.post(`${this.baseUrl}/account/register`, userData, this.httpOptions);
+    // return this.http.post(`${this.testUrl}`, userData, this.httpOptions);
+    return this.http.post(`${this.baseUrl}/account/register`, userData, this.httpOptions);
   }
 
   loginUser(loginData: LoginCredentials): Observable<any> {
-    return this.http.post(`${this.testUrl}`, loginData, this.httpOptions);
-    // return this.http.post(`${this.baseUrl}/account/login`, loginData, this.httpOptions);
+    // return this.http.post(`${this.testUrl}`, loginData, this.httpOptions);
+    return this.http.post(`${this.baseUrl}/account/login`, loginData, this.httpOptions);
   }
   
   loginAdmin(data: LoginCredentials): Observable<any> {
-    return this.http.post(`${this.testUrl}`, data, this.httpOptions);
-    // return this.http.post(`${this.baseUrl}/account/Admin-login`, data, this.httpOptions);
+    // return this.http.post(`${this.testUrl}`, data, this.httpOptions);
+    return this.http.post(`${this.baseUrl}/account/Admin-login`, data, this.httpOptions);
   }
   
   sendToken(token : string): Observable<any> {
-    return this.http.post(`${this.testUrl}`, { idToken: token }, this.httpOptions);
+    // return this.http.post(`${this.testUrl}`, { idToken: token }, this.httpOptions);
     const url = this.baseUrl + "/account/gAuth"
-    // return this.http.post(url, { idToken: token }, this.httpOptions)
+    return this.http.post(url, { idToken: token }, this.httpOptions)
   }
 
   getItems(): Observable<Item[]> {
