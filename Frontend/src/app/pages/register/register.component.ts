@@ -196,7 +196,7 @@ export class RegisterComponent {
         console.log("Response from backend: ", response)
         this.loading = false;
         this.success = true;
-        // this.authService.login();
+        this.authService.login();
         this.router.navigate(['/login']);
       },
       error: (err : HttpErrorResponse) => {

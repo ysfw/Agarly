@@ -96,6 +96,7 @@ export class LoginComponent implements OnInit {
         // Store your application's session/JWT token (if returned)
         this.ngZone.run(() => {
           // localStorage.setItem('jwt_token', res.token); // Save YOUR app token
+          this.authService.login();
           this.router.navigate(['/home']);
         });
       },
@@ -150,7 +151,7 @@ export class LoginComponent implements OnInit {
         // console.log("Success, Status Code:", res.status)
         // console.log("Repsonse body: ", res.body)
         this.loading = false;
-        // this.authService.login();
+        this.authService.login();
         this.router.navigate(['/home']);
       },
       error: (err) => {

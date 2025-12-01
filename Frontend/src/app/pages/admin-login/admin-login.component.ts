@@ -83,7 +83,7 @@ export class AdminLoginComponent {
       next: (res: any) => {
         console.log("Response from Backend: ", res)
         this.loading = false;
-        // this.authService.login();
+        this.authService.login();
         this.router.navigate(['/home']);
       },
       error: (err: HttpErrorResponse) => {
