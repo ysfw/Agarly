@@ -9,14 +9,12 @@ import com.agarly.backend.utils.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:4200/")
 @RequestMapping("/account")
 public class AccountController {
     @Autowired
@@ -51,6 +49,7 @@ public class AccountController {
     }
 
     @PostMapping("/login")
+
     public ResponseEntity<String> login(@RequestBody LoginCredentials user) {
         if((userService.existsByEmail(user.getEmail()))) {
             String JwtToken=userService.verify(user);
@@ -66,6 +65,7 @@ public class AccountController {
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
     @PostMapping("/gAuth")
+
     public ResponseEntity<String> googleLogin(@RequestBody com.agarly.backend.models.GoogleLoginRequest request) {
         User user = userService.loginWithGoogle(request.getIdToken());
         if (user == null) {

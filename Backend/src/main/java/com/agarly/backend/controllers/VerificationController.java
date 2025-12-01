@@ -6,10 +6,12 @@ import com.agarly.backend.utils.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@CrossOrigin(origins = "http://localhost:4200/")
 @RestController
 public class VerificationController {
 
@@ -19,7 +21,9 @@ public class VerificationController {
     @Autowired
     private JwtTokenUtil jwtUtil;
 
-    @GetMapping("/signup/verify")
+    @CrossOrigin(origins = "http://localhost:4200/signup/verify")
+    @GetMapping("/register/verify")
+
     public ResponseEntity<String> verifyEmail(@RequestParam("token") String token) {
         String emailString = jwtUtil.extractEmail(token);
         User user = myAppUserRepository.findByEmail(emailString);
