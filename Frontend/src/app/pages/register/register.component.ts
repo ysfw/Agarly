@@ -6,6 +6,7 @@ import { NgIf } from '@angular/common';
 import { ApiService } from '../../services/api.service';
 import { UserDTO } from 'src/app/models/user';
 import { AuthService } from '../../services/auth.service';
+import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 
 
 @Component({
@@ -162,45 +163,50 @@ export class RegisterComponent {
   private api = inject(ApiService);
   authService = inject(AuthService);
 
-  handleSubmit() {      // placeholder for testing front
-    if (!this.validateForm()) return;
-    this.authService.login();
-
-  }
-
-  // handleSubmit() {
+  // handleSubmit() {      // placeholder for testing front
   //   if (!this.validateForm()) return;
+  //   this.authService.login();
 
-  //   this.loading = true;
-  //   this.success = false;
-  //   this.backendError = '';
+  // }
 
-  //   const userData : UserDTO = {
-  //     username : this.formData.username,
-  //     password : this.formData.password,
-  //     email : this.formData.email,
-  //     phoneNumber : this.formData.phoneNumber,
-  //     firstName : this.formData.firstName,
-  //     lastName : this.formData.lastName,
-  //     address : this.formData.address,
-  //     activated : true,
-  //     blocked : false
-  //   }
+  handleSubmit() {
+    if (!this.validateForm()) return;
+
+    this.loading = true;
+    this.success = false;
+    this.backendError = '';
+
+    const userData: UserDTO = {
+      username: this.formData.username,
+      password: this.formData.password,
+      email: this.formData.email,
+      phoneNumber: this.formData.phoneNumber,
+      firstName: this.formData.firstName,
+      lastName: this.formData.lastName,
+      address: this.formData.address,
+      activated: true,
+      blocked: false
+    }
 
 
-  //   // Simulated backend call
-  //   this.api.registerUser(userData).subscribe({
-  //     next: () => {
-  //       // a callback function called when the Observable emits a successful response
-  //       this.loading = false;
-  //       this.success = true;
-  //       this.authService.login();
-  //       this.router.navigate(['/home']);
-  //     },
-  //     error: (err) => {
-  //       // a callback function called if the Observable emits an error
-  //       this.loading = false;
-  //       this.backendError = err?.message || 'Registration failed. Try again';
-  //     },
-  //   });
+    // Simulated backend call
+    this.api.registerUser(userData).subscribe({
+      next: (response : HttpResponse<string>) => {
+        // a callback function called when the Observable emits a successful response
+        console.log("Success, Status Code:", response.status)
+        console.log("Repsonse body: ", response.body)
+        this.loading = false;
+        this.success = true;
+        // this.authService.login();
+        this.router.navigate(['/login']);
+      },
+      error: (err : HttpErrorResponse) => {
+        // a callback function called if the Observable emits an error
+        console.error('An error occurred, Status Code:', err.status)
+        console.error('Error body:', err.error)
+        this.loading = false;
+        this.backendError = err?.message || 'Registration failed. Try again';
+      },
+    });
+  }
 }
