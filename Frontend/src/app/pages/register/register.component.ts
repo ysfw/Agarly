@@ -180,8 +180,6 @@ export class RegisterComponent {
       activated : true,
       blocked : false
     }
-    console.log("userData after registeration:")
-    console.log(userData)
 
     // Simulated backend call
     this.api.registerUser(userData).subscribe({
