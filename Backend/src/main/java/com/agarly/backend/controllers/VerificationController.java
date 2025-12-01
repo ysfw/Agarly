@@ -1,5 +1,6 @@
 package com.agarly.backend.controllers;
 
+import com.agarly.backend.models.StatusResponse;
 import com.agarly.backend.models.User;
 import com.agarly.backend.repos.UserRepository;
 import com.agarly.backend.utils.JwtTokenUtil;
@@ -24,21 +25,22 @@ public class VerificationController {
     @CrossOrigin(origins = "http://localhost:4200/signup/verify")
     @GetMapping("/register/verify")
 
-    public ResponseEntity<String> verifyEmail(@RequestParam("token") String token) {
+    public ResponseEntity<StatusResponse> verifyEmail(@RequestParam("token") String token) {
         String emailString = jwtUtil.extractEmail(token);
         User user = myAppUserRepository.findByEmail(emailString);
         if (user == null || user.getVerificationToken() == null) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Token Expired!");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new StatusResponse("Token Expired!"));
+
         }
 
         if (!jwtUtil.validateToken(token) || !user.getVerificationToken().equals(token)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Token Expired!");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new StatusResponse("Token Expired!"));
         }
         user.setVerificationToken(null);
         user.setVerified(true);
         myAppUserRepository.save(user);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body("Email successfully verified!");
+        return ResponseEntity.status(HttpStatus.CREATED).body(new StatusResponse("Email successfully verified!"));
     }
 
 }
