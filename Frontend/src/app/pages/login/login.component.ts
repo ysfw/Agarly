@@ -2,7 +2,7 @@ import { Component, inject, AfterViewInit } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, Mail, Lock, Eye, EyeOff } from 'lucide-angular';
-import { NgIf } from '@angular/common';
+import { CommonModule, NgIf } from '@angular/common';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
 
@@ -121,27 +121,33 @@ export class LoginComponent implements AfterViewInit {
     return Object.values(this.errors).every((e) => e === '');
   }
 
-  handleSubmit() {
+  // handleSubmit() {
+  //   if (!this.validateForm()) return;
+
+  //   this.loading = true;
+  //   this.backendError = '';
+
+  //   // Backend call 
+  //   this.api.loginUser(this.formData).subscribe({
+  //     next: () => {
+  //       this.loading = false;
+  //       this.authService.login();
+  //       this.router.navigate(['/home']);
+  //     },
+  //     error: (err) => {
+  //       this.loading = false;
+  //       this.backendError = err?.message || 'Invalid email or password';
+  //     },
+  //   });
+  // }
+
+  // goToForgot() {
+  //   this.router.navigate(['/forgot-password']);
+  // }
+
+  handleSubmit() {      // placeholder for testing front
     if (!this.validateForm()) return;
-
-    this.loading = true;
-    this.backendError = '';
-
-    // Backend call 
-    this.api.loginUser(this.formData).subscribe({
-      next: () => {
-        this.loading = false;
-        this.authService.login();
-        this.router.navigate(['/home']);
-      },
-      error: (err) => {
-        this.loading = false;
-        this.backendError = err?.message || 'Invalid email or password';
-      },
-    });
-  }
-
-  goToForgot() {
-    this.router.navigate(['/forgot-password']);
+    this.authService.login();
+    this.router.navigate(['/home']);
   }
 }

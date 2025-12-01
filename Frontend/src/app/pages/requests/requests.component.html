@@ -1,5 +1,6 @@
 <div class="min-h-screen w-full bg-[#F5F7FA]">
-  <app-navbar></app-navbar>
+  <app-navbar-logged-in *ngIf="auth()"></app-navbar-logged-in>
+  <app-navbar *ngIf="!auth()"></app-navbar>
   <div class="max-w-5xl mx-auto px-6 py-8">
     <div class="flex items-center justify-between mb-8">
       <div>

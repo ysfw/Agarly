@@ -5,6 +5,8 @@ import { LucideAngularModule, Mail, Lock, User, MapPin, Eye, EyeOff, Phone } fro
 import { NgIf } from '@angular/common';
 import { ApiService } from '../../services/api.service';
 import { UserDTO } from 'src/app/models/user';
+import { AuthService } from '../../services/auth.service';
+
 
 @Component({
   selector: 'app-register',
@@ -14,6 +16,8 @@ import { UserDTO } from 'src/app/models/user';
   styleUrl: './register.component.css',
 })
 export class RegisterComponent {
+
+  // Icons for the form 
   readonly MailIcon = Mail;
   readonly LockIcon = Lock;
   readonly UserIcon = User;
@@ -156,44 +160,47 @@ export class RegisterComponent {
 
   private router = inject(Router); // gives access to navigation
   private api = inject(ApiService);
+  authService = inject(AuthService);
 
-  // handleSubmit() {      // placeholder for testing front
-  //   if (!this.validateForm()) return;
-  //   this.router.navigate(['/home']);
-  // }
-
-  handleSubmit() {
+  handleSubmit() {      // placeholder for testing front
     if (!this.validateForm()) return;
+    this.authService.login();
 
-    this.loading = true;
-    this.success = false;
-    this.backendError = '';
-
-    const userData : UserDTO = {
-      username : this.formData.username,
-      password : this.formData.password,
-      email : this.formData.email,
-      phoneNumber : this.formData.phoneNumber,
-      firstName : this.formData.firstName,
-      lastName : this.formData.lastName,
-      address : this.formData.address,
-      activated : true,
-      blocked : false
-    }
-
-    // Simulated backend call
-    this.api.registerUser(userData).subscribe({
-      next: () => {
-        // a callback function called when the Observable emits a successful response
-        this.loading = false;
-        this.success = true;
-        this.router.navigate(['/home']);
-      },
-      error: (err) => {
-        // a callback function called if the Observable emits an error
-        this.loading = false;
-        this.backendError = err?.message || 'Registration failed. Try again';
-      },
-    });
   }
+
+  // handleSubmit() {
+  //   if (!this.validateForm()) return;
+
+  //   this.loading = true;
+  //   this.success = false;
+  //   this.backendError = '';
+
+  //   const userData : UserDTO = {
+  //     username : this.formData.username,
+  //     password : this.formData.password,
+  //     email : this.formData.email,
+  //     phoneNumber : this.formData.phoneNumber,
+  //     firstName : this.formData.firstName,
+  //     lastName : this.formData.lastName,
+  //     address : this.formData.address,
+  //     activated : true,
+  //     blocked : false
+  //   }
+
+
+  //   // Simulated backend call
+  //   this.api.registerUser(userData).subscribe({
+  //     next: () => {
+  //       // a callback function called when the Observable emits a successful response
+  //       this.loading = false;
+  //       this.success = true;
+  //       this.authService.login();
+  //       this.router.navigate(['/home']);
+  //     },
+  //     error: (err) => {
+  //       // a callback function called if the Observable emits an error
+  //       this.loading = false;
+  //       this.backendError = err?.message || 'Registration failed. Try again';
+  //     },
+  //   });
 }
