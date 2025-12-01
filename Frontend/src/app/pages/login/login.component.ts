@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, Mail, Lock, Eye, EyeOff } from 'lucide-angular';
 import { NgIf } from '@angular/common';
 import { ApiService } from '../../services/api.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -38,6 +39,7 @@ export class LoginComponent {
 
   private router = inject(Router);
   private api = inject(ApiService);
+  private authService = inject(AuthService);
 
   // reactive validation
   ngOnChange(field: string) {
@@ -79,6 +81,7 @@ export class LoginComponent {
     this.api.loginUser(this.formData).subscribe({
       next: () => {
         this.loading = false;
+        this.authService.login();
         this.router.navigate(['/home']);
       },
       error: (err) => {
