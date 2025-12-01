@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { Item } from '../models/item.model';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { UserDTO } from '../models/user';
 
 export interface LoginCredentials {
@@ -138,6 +138,9 @@ export class ApiService {
   }
 
   sendOTP(userEmail : string, enteredOTP : string): Observable<any> {
+    const params = new HttpParams()
+    .set('email', userEmail)
+    .set('otp', enteredOTP);
     const url = this.baseUrl + "/register/verify"
     console.log(enteredOTP);
     return this.http.post(url,{email : userEmail, otp : enteredOTP},this.httpOptions)
