@@ -15,28 +15,26 @@ public class EmailService {
     @Value("${spring.mail.username}")
     private String from;
 
-    public void sendVerificationEmail(String email, String verificationToken) {
+    public void sendVerificationEmail(String email, String otp) {
         String subject = "Email Verification";
-        String path = "/signup/verify";
-        String message = "Click the button below to verify your email address:";
-        sendEmail(email, verificationToken, subject, path, message);
+//      String path = "/signup/verify";
+        String message = "Your verification code is:";
+        sendEmail(email, otp, subject, message);
     }
 
-    private void sendEmail(String email, String token, String subject, String path, String message) {
+    private void sendEmail(String email, String otp, String subject, String message) {
         try {
-            String frontendUrl = "http://localhost:4200";
-            String actionUrl = frontendUrl + path + "?token=" + token;
+//            String frontendUrl = "http://localhost:4200";
+//            String actionUrl = frontendUrl + path + "?token=" + token;
 
             String content = """
-                        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border-radius: 8px; background-color: #f9f9f9; text-align: center;">
-                            <h2 style="color: #333;">%s</h2>
-                            <p style="font-size: 16px; color: #555;">%s</p>
-                            <a href="%s" style="display: inline-block; margin: 20px 0; padding: 10px 20px; font-size: 16px; color: #fff; background-color: #007bff; text-decoration: none; border-radius: 5px;">Proceed</a>
-                            <p style="font-size: 14px; color: #777;">Or copy and paste this link into your browser:</p>
-                            <p style="font-size: 14px; color: #007bff;">%s</p>
-                            <p style="font-size: 12px; color: #aaa;">This is an automated message. Please do not reply.</p>
-                        </div>
-                    """.formatted(subject, message, actionUrl, actionUrl);
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border-radius: 8px; background-color: #f9f9f9; text-align: center;">
+                    <h2 style="color: #333;">%s</h2>
+                    <p style="font-size: 16px; color: #555;">%s</p>
+                    <p style="font-size: 20px; font-weight: bold; color: #007bff;">%s</p>
+                    <p style="font-size: 12px; color: #aaa;">This code expires in 10 minutes. Do not share it with anyone.</p>
+                </div>
+            """.formatted(subject, message, otp);
 
             MimeMessage mimeMessage = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);

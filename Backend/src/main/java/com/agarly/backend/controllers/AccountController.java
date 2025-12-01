@@ -5,7 +5,8 @@ import com.agarly.backend.models.User;
 import com.agarly.backend.services.EmailService;
 import com.agarly.backend.services.JWTService;
 import com.agarly.backend.services.UserService;
-import com.agarly.backend.utils.JwtTokenUtil;
+//import com.agarly.backend.utils.JwtTokenUtil;
+import com.agarly.backend.utils.OtpGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +29,7 @@ public class AccountController {
     private JWTService jwtService;
 
     @PostMapping("/register")
-    public ResponseEntity <String> signup(@RequestBody User user) {
+    public ResponseEntity <String> register(@RequestBody User user) {
         if (userService.findByUsername(user.getUsername()) != null) {
             return new ResponseEntity<>("Username is already in use", HttpStatus.BAD_REQUEST);
         }
@@ -37,17 +38,21 @@ public class AccountController {
             if(existingUser.getVerified()) {
                 return new ResponseEntity<>("Email is already in use", HttpStatus.BAD_REQUEST);
             }
-            String verificationToken = JwtTokenUtil.generateToken(existingUser.getEmail());
-            existingUser.setVerificationToken(verificationToken);
+//            String otp = JwtTokenUtil.generateToken(existingUser.getEmail());
+            OtpGenerator generator = new OtpGenerator();
+            String otp = generator.generateOTP();
+            existingUser.setOtp(otp);
             userService.save(existingUser);
-            emailService.sendVerificationEmail(existingUser.getEmail(), verificationToken);
-            return new ResponseEntity<>("Verification email sent", HttpStatus.OK);
+            emailService.sendVerificationEmail(existingUser.getEmail(), otp);
+            return new ResponseEntity<>(otp, HttpStatus.OK);
         }
-        String verificationToken = JwtTokenUtil.generateToken(user.getEmail());
-        user.setVerificationToken(verificationToken);
+//        String verificationToken = JwtTokenUtil.generateToken(user.getEmail());
+//        user.setVerificationToken(verificationToken);
+        OtpGenerator generator = new OtpGenerator();
+        String otp = generator.generateOTP();
         userService.save(user);
-        emailService.sendVerificationEmail(user.getEmail(), verificationToken);
-        return new ResponseEntity<>("Registration successful, please verify your email", HttpStatus.OK);
+        emailService.sendVerificationEmail(user.getEmail(), otp);
+        return new ResponseEntity<>(otp, HttpStatus.OK);
     }
 
     @PostMapping("/login")
