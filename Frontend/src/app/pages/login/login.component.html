@@ -58,7 +58,15 @@
           Don't have an account?
           <button routerLink="/register" class="text-[#3949AB] font-semibold hover:underline">Sign Up</button>
         </p>
-        <button (click)="goToForgot()" class="mt-2 text-sm text-gray-500 hover:text-[#3949AB]">Forgot Password?</button>
+        <!--<button (click)="goToForgot()" class="mt-2 text-sm text-gray-500 hover:text-[#3949AB]">Forgot Password?</button>-->
+        <div class="mt-4 text-center">
+          <button 
+            routerLink="/admin-login" 
+            class="text-sm text-gray-500 hover:text-[#3949AB] underline"
+          >
+            Admin Login
+          </button>
+        </div>
       </div>
     </div>
   </div>
