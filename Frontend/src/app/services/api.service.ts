@@ -4,7 +4,7 @@ import { Item } from '../models/item.model';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UserDTO } from '../models/user';
 
-export interface LoggingIn {
+export interface LoginCredentials {
   email: string;
   password: string;
 }
@@ -115,20 +115,20 @@ export class ApiService {
   //   return this.http.get<Array<Item>>(this.baseUrl);
   // }
 
-  registerUser(data: UserDTO): Observable<any> {
-    return this.http.post(`${this.baseUrl}/register`, data, this.httpOptions);
+  registerUser(userData: UserDTO): Observable<any> {
+    return this.http.post(`${this.baseUrl}/account/register`, userData, this.httpOptions);
   }
 
-  loginUser(data: LoggingIn): Observable<any> {
-    return this.http.post(`${this.baseUrl}/login`, data, this.httpOptions);
+  loginUser(loginData: LoginCredentials): Observable<any> {
+    return this.http.post(`${this.baseUrl}/account/login`, loginData, this.httpOptions);
   }
   
-  loginAdmin(data: LoggingIn): Observable<any> {
-    return this.http.post(`${this.baseUrl}/Admin-login`, data, this.httpOptions);
+  loginAdmin(data: LoginCredentials): Observable<any> {
+    return this.http.post(`${this.baseUrl}/account/Admin-login`, data, this.httpOptions);
   }
   
   sendToken(token : string): Observable<any> {
-    const url = this.baseUrl + "/accounts/gAuth"
+    const url = this.baseUrl + "/account/gAuth"
     return this.http.post(url, { idToken: token }, this.httpOptions)
   }
 
