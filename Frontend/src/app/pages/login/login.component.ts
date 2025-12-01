@@ -1,4 +1,4 @@
-import { Component, inject, AfterViewInit } from '@angular/core';
+import { Component, inject, NgZone, OnInit } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, Mail, Lock, Eye, EyeOff } from 'lucide-angular';
@@ -16,7 +16,7 @@ declare var google: any; // Declare google object from the loaded script
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
 })
-export class LoginComponent implements AfterViewInit {
+export class LoginComponent implements OnInit {
   readonly MailIcon = Mail;
   readonly LockIcon = Lock;
   readonly EyeIcon = Eye;
@@ -42,27 +42,38 @@ export class LoginComponent implements AfterViewInit {
 
   private router = inject(Router);
   private api = inject(ApiService);
+  private ngZone = inject(NgZone);
   private authService = inject(AuthService);
 
-  ngAfterViewInit(): void {
-    // Initialize the Google Identity Services client
+  ngOnInit(): void {
+    // 3. Check if the script loaded
+    if (typeof google !== 'undefined') {
+      this.initGoogleLogin();
+    } else {
+      console.error('Google script not loaded');
+    }
+  }
+
+  initGoogleLogin() {
+    // 4. Initialize the Client
     google.accounts.id.initialize({
       client_id: '665603013636-4q5rdlns1vsn254j42a2fqkg9p7nrc7p.apps.googleusercontent.com',
-      callback: this.handleCredentialResponse.bind(this) // Bind the Angular component context
+      // Arrow function is CRITICAL here to keep 'this' context
+      callback: (resp: any) => this.handleCredentialResponse(resp)
     });
 
-    // Render the Google Sign-In button
+    // 5. Render the Button
     const btnContainer = document.getElementById('google-button');
     if (btnContainer) {
       google.accounts.id.renderButton(
         btnContainer,
-        { 
+        {
           theme: 'outline',
           size: 'large',
           text: 'signin_with',
           width: btnContainer.clientWidth.toString(),
           shape: 'rectangular'
-        } 
+        }
       );
     }
   }
@@ -77,15 +88,17 @@ export class LoginComponent implements AfterViewInit {
 
   private sendTokenToBackend(token: string): void {
 
-    console.log(token)
+    // console.log(token)
 
     this.api.sendToken(token).subscribe({
       next: (res: any) => {
         console.log('Login successful on backend', res);
         // Store your application's session/JWT token (if returned)
-        localStorage.setItem('app_session_token', res.appToken);
-        // Redirect the user
-        this.router.navigate(['/home']);
+        this.ngZone.run(() => {
+          // localStorage.setItem('jwt_token', res.token); // Save YOUR app token
+          this.authService.login();
+          this.router.navigate(['/home']);
+        });
       },
       error: (err) => {
         console.error('Backend authentication failed', err);
@@ -132,11 +145,13 @@ export class LoginComponent implements AfterViewInit {
 
     // Backend call 
     this.api.loginUser(this.formData).subscribe({
-      next: (res: HttpResponse<string>) => {
-        console.log("Success, Status Code:", res.status)
-        console.log("Repsonse body: ", res.body)
+      next: (res: any) => {
+        console.log("Response from backend:")
+        console.log(res)
+        // console.log("Success, Status Code:", res.status)
+        // console.log("Repsonse body: ", res.body)
         this.loading = false;
-        // this.authService.login();
+        this.authService.login();
         this.router.navigate(['/home']);
       },
       error: (err) => {
