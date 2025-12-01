@@ -5,6 +5,7 @@ import com.agarly.backend.models.User;
 import com.agarly.backend.services.EmailService;
 import com.agarly.backend.services.JWTService;
 import com.agarly.backend.services.UserService;
+import com.agarly.backend.utils.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,13 +37,13 @@ public class AccountController {
             if(existingUser.getVerified()) {
                 return new ResponseEntity<>("Email is already in use", HttpStatus.BAD_REQUEST);
             }
-            String verificationToken = "1234";
+            String verificationToken = JwtTokenUtil.generateToken(existingUser.getEmail());
             existingUser.setVerificationToken(verificationToken);
             userService.save(existingUser);
             emailService.sendVerificationEmail(existingUser.getEmail(), verificationToken);
             return new ResponseEntity<>("Verification email sent", HttpStatus.OK);
         }
-        String verificationToken = "1234";
+        String verificationToken = JwtTokenUtil.generateToken(user.getEmail());
         user.setVerificationToken(verificationToken);
         userService.save(user);
         emailService.sendVerificationEmail(user.getEmail(), verificationToken);
