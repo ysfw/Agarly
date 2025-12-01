@@ -26,6 +26,8 @@ public class User {
     private String address;
     private Boolean activated;
     private Boolean blocked;
+    private String verificationToken;
+    private Boolean verified;
     @Enumerated(EnumType.STRING)
     private AuthProvider provider;
 
