@@ -2,6 +2,7 @@ package com.agarly.backend.controllers;
 
 import com.agarly.backend.models.LoginCredentials;
 import com.agarly.backend.models.User;
+import com.agarly.backend.services.JWTService;
 import com.agarly.backend.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class AccountController {
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private JWTService jwtService;
 
     @PostMapping("/register")
     public ResponseEntity<User> signup(@RequestBody User user) {
@@ -41,5 +45,15 @@ public class AccountController {
         }
         System.out.println("Invalid Credentials2");
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    }
+    @PostMapping("/gAuth")
+    public ResponseEntity<String> googleLogin(@RequestBody com.agarly.backend.models.GoogleLoginRequest request) {
+        User user = userService.loginWithGoogle(request.getIdToken());
+        if (user == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        userService.save(user);
+        String token = jwtService.generateToken(user.getUsername());
+        return new ResponseEntity<>(token, HttpStatus.OK);
     }
 }

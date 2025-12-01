@@ -1,8 +1,10 @@
 package com.agarly.backend.models;
 
+import com.agarly.backend.models.Enums.AuthProvider;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.jspecify.annotations.Nullable;
 
 @Getter
 @Setter
@@ -15,6 +17,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String username;
+    @Column(nullable = true)
     private String password;
     private String email;
     private String phoneNumber;
@@ -23,6 +26,8 @@ public class User {
     private String address;
     private Boolean activated;
     private Boolean blocked;
+    @Enumerated(EnumType.STRING)
+    private AuthProvider provider;
 
     public User() {
 
