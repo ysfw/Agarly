@@ -125,12 +125,12 @@ export class ApiService {
     // return this.http.post(`${this.testUrl}`, loginData, this.httpOptions);
     return this.http.post(`${this.baseUrl}/account/login`, loginData, this.httpOptions);
   }
-  
+
   loginAdmin(data: LoginCredentials): Observable<any> {
     // return this.http.post(`${this.testUrl}`, data, this.httpOptions);
     return this.http.post(`${this.baseUrl}/account/Admin-login`, data, this.httpOptions);
   }
-  
+
   sendToken(token : string): Observable<any> {
     // return this.http.post(`${this.testUrl}`, { idToken: token }, this.httpOptions);
     const url = this.baseUrl + "/account/gAuth"
@@ -138,8 +138,9 @@ export class ApiService {
   }
 
   sendOTP(userEmail : string, enteredOTP : string): Observable<any> {
-    const url = this.baseUrl + "/account/register/verify"
-    return this.http.request('GET', url, {body: {email : userEmail, otp : enteredOTP}, responseType: 'json'})
+    const url = this.baseUrl + "/register/verify"
+    console.log(enteredOTP);
+    return this.http.post(url,{email : userEmail, otp : enteredOTP},this.httpOptions)
   }
 
   getItems(): Observable<Item[]> {
