@@ -1,10 +1,12 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, AfterViewInit } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, Mail, Lock, Eye, EyeOff } from 'lucide-angular';
 import { NgIf } from '@angular/common';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
+
+declare var google: any; // Declare google object from the loaded script
 
 @Component({
   selector: 'app-login',
@@ -13,7 +15,7 @@ import { AuthService } from '../../services/auth.service';
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
 })
-export class LoginComponent {
+export class LoginComponent implements AfterViewInit {
   readonly MailIcon = Mail;
   readonly LockIcon = Lock;
   readonly EyeIcon = Eye;
@@ -40,6 +42,54 @@ export class LoginComponent {
   private router = inject(Router);
   private api = inject(ApiService);
   private authService = inject(AuthService);
+
+  ngAfterViewInit(): void {
+    // Initialize the Google Identity Services client
+    google.accounts.id.initialize({
+      client_id: '665603013636-4q5rdlns1vsn254j42a2fqkg9p7nrc7p.apps.googleusercontent.com',
+      callback: this.handleCredentialResponse.bind(this) // Bind the Angular component context
+    });
+
+    // Render the Google Sign-In button
+    const btnContainer = document.getElementById('google-button');
+    if (btnContainer) {
+      google.accounts.id.renderButton(
+        btnContainer,
+        { 
+          theme: 'outline', 
+          size: 'large', 
+          text: 'signin_with',
+          width: btnContainer.clientWidth.toString(),
+          shape: 'rectangular'
+        } 
+      );
+    }
+  }
+
+  // This function is called by the Google library when a token is received
+  handleCredentialResponse(response: any): void {
+    if (response.credential) {
+      // Send the ID token to the Spring Boot backend
+      this.sendTokenToBackend(response.credential);
+    }
+  }
+
+  private sendTokenToBackend(token: string): void {
+
+    this.api.sendToken(token).subscribe({
+      next: (res: any) => {
+        console.log('Login successful on backend', res);
+        // Store your application's session/JWT token (if returned)
+        localStorage.setItem('app_session_token', res.appToken);
+        // Redirect the user
+        this.router.navigate(['/home']);
+      },
+      error: (err) => {
+        console.error('Backend authentication failed', err);
+        // Handle error: show a notification to the user
+      }
+    });
+  }
 
   // reactive validation
   ngOnChange(field: string) {
