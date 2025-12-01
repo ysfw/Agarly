@@ -143,7 +143,7 @@ export class ApiService {
     .set('otp', enteredOTP);
     const url = this.baseUrl + "/register/verify"
     console.log(enteredOTP);
-    return this.http.post(url,{email : userEmail, otp : enteredOTP},this.httpOptions)
+    return this.http.post(url, {params},this.httpOptions)
   }
 
   getItems(): Observable<Item[]> {
