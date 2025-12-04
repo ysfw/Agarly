@@ -30,6 +30,8 @@ public class VerificationController {
 //        String emailString = jwtUtil.extractEmail(token);
         System.out.println("user verification");
         User user = userRepository.findByEmail(email);
+        System.out.println(user.getEmail());
+        System.out.println(user.getOtp());
 //        if (user == null || user.getOtp() == null) {
 //            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new StatusResponse(("OTP Expired!")));
 //        }

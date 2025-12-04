@@ -55,6 +55,8 @@ public class AccountController {
 //        user.setVerificationToken(verificationToken);
         OtpGenerator generator = new OtpGenerator();
         String otp = generator.generateOTP();
+        user.setOtp(otp);
+        System.out.println(user.getOtp());
         userService.save(user);
         emailService.sendVerificationEmail(user.getEmail(), otp);
         return new ResponseEntity<>(new StatusResponse(otp), HttpStatus.OK);
