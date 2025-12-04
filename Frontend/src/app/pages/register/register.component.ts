@@ -188,8 +188,6 @@ export class RegisterComponent {
       blocked: false
     }
 
-
-    // Simulated backend call
     this.api.registerUser(userData).subscribe({
       next: (response : any) => {
         // a callback function called when the Observable emits a successful response
@@ -197,6 +195,7 @@ export class RegisterComponent {
         this.loading = false;
         this.success = true;
         this.authService.login();
+        this.authService.register(userData)
         this.router.navigate(['/login']);
       },
       error: (err : HttpErrorResponse) => {

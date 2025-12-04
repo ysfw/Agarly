@@ -1,8 +1,12 @@
-import { Component, signal, computed, effect, ViewChildren, QueryList, AfterViewInit, ElementRef, inject } from '@angular/core';
+import { Component, signal, computed, effect, ViewChildren, QueryList, AfterViewInit, ElementRef, inject, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { LucideAngularModule, Mail, ArrowLeft } from 'lucide-angular';
+import { AuthService } from 'src/app/services/auth.service';
+import { ApiService } from 'src/app/services/api.service';
+import { UserDTO } from 'src/app/models/user';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-verify-email',
@@ -15,12 +19,20 @@ export class VerifyEmailComponent implements AfterViewInit {
 
   readonly MailIcon = Mail;
   readonly ArrowLeftIcon = ArrowLeft;
+  private ngZone = inject(NgZone)
+  private apiService = inject(ApiService)
   private router = inject(Router);
+  private authService = inject(AuthService);
+
+  email = signal<string>(this.authService.email());
+  userData = signal<UserDTO>(this.authService.userData())
 
   // Signals
   otpDigits = signal(['', '', '', '', '', '']);
-  email = signal('aaaa@fff.v');
+  
   countdown = signal(60);
+  successMessage = signal('');
+  errorMessage = signal('');
 
   // Computed signals
   isOtpComplete = computed(() => {
@@ -123,14 +135,36 @@ export class VerifyEmailComponent implements AfterViewInit {
   verifyEmail(): void {
     if (!this.isOtpComplete()) return;
     
+    this.successMessage.set('');
+    this.errorMessage.set('');
+
     const code = this.otpDigits().join('');
     console.log('Verifying code:', code);
     // TODO: Call API to verify the code
-    this.router.navigate(['/home'])
-
+    this.apiService.sendOTP(this.email(), code).subscribe({
+      next: (response : any) => {
+        this.successMessage.set(typeof response === 'string' ? response : 'Email verified successfully!');
+        setTimeout(() => {
+          this.router.navigate(['/login']);
+        }, 2000);
+      },
+      error: (err : "OTP Expired!" | "Incorrect OTP!") => {
+        this.errorMessage.set(err || 'Verification failed. Please try again.');
+      }
+    })
   }
 
   resendCode(): void {
+    this.apiService.registerUser(this.userData()).subscribe({
+      next : (response : any) => {
+        console.log("Response from backend: ", response)
+      },
+      error : (err : HttpErrorResponse) => {
+        console.error('An error occurred, Status Code:', err.status)
+        console.error('Error body:', err.error)
+      }
+    })
+
     // Reset OTP inputs
     this.otpDigits.set(['', '', '', '', '', '']);
     
@@ -144,7 +178,7 @@ export class VerifyEmailComponent implements AfterViewInit {
       }
     }, 0);
     
-    console.log('Resending code to:', this.email());
+    console.log('Resending code to:', this.authService.email());
     // TODO: Call API to resend the code
   }
 

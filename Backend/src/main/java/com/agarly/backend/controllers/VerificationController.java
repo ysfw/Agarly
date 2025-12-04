@@ -11,9 +11,11 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestParam;
 
-@CrossOrigin(origins = "http://localhost:4200/")
 @RestController
+@CrossOrigin(origins = "http://localhost:4200/")
 public class VerificationController {
 
     @Autowired
@@ -21,7 +23,8 @@ public class VerificationController {
 
 //    private JwtTokenUtil jwtUtil;
 //    @CrossOrigin(origins = "http://localhost:4200/")
-    @GetMapping("/register/verify")
+//    @GetMapping("/register/verify")
+    @PostMapping("/register/verify")
     public ResponseEntity<StatusResponse> verifyEmail(@RequestParam(name = "email") String email,
                                               @RequestParam(name = "otp") String otp) {
 //        String emailString = jwtUtil.extractEmail(token);
