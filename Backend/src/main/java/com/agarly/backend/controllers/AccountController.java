@@ -40,10 +40,15 @@ public class AccountController {
             }
 //            String otp = JwtTokenUtil.generateToken(existingUser.getEmail());
             OtpGenerator generator = new OtpGenerator();
+            System.out.println("otp initialized");
             String otp = generator.generateOTP();
+            System.out.println("otp generated");
             existingUser.setOtp(otp);
+            System.out.println("otp set");
             userService.save(existingUser);
+            System.out.println("user saved");
             emailService.sendVerificationEmail(existingUser.getEmail(), otp);
+            System.out.println("email sent");
             return new ResponseEntity<>(new StatusResponse(otp), HttpStatus.OK);
         }
 //        String verificationToken = JwtTokenUtil.generateToken(user.getEmail());
