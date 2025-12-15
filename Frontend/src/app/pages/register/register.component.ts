@@ -196,7 +196,7 @@ export class RegisterComponent {
         this.success = true;
         this.authService.login();
         this.authService.register(userData)
-        this.router.navigate(['/login']);
+        this.router.navigate(['/verify-email']);
       },
       error: (err : HttpErrorResponse) => {
         // a callback function called if the Observable emits an error

@@ -1,12 +1,37 @@
 <div class="min-h-screen w-full bg-[#F5F7FA]">
   <app-navbar-logged-in *ngIf="auth()"></app-navbar-logged-in>
   <app-navbar *ngIf="!auth()"></app-navbar>
+
+  <!-- Hero Section -->
+  <div class="relative bg-[#9FA8DA] overflow-hidden">
+    <div class="max-w-7xl mx-auto px-6 py-24 md:py-32 relative z-10">
+      <div class="max-w-2xl text-center mx-auto text-white">
+        <h1 class="text-3xl md:text-4xl font-bold mb-4">Share with Your Community</h1>
+        <p class="text-lg opacity-90">
+          Borrow and lend household items with trusted neighbors. Save money, reduce waste, and build stronger
+          connections.
+        </p>
+      </div>
+    </div>
+
+    <!-- Quarter Circle Add Item Button -->
+    <button (click)="navigateToAddItem()"
+      class="absolute top-0 right-0 h-full aspect-square bg-[#C6FF00] rounded-bl-full flex items-center justify-center hover:scale-105 transition-transform cursor-pointer group z-20 shadow-lg border-none outline-none">
+      <div class="flex flex-col items-center justify-center ml-10 mb-10">
+        <lucide-icon [img]="PlusIcon"
+          class="w-8 h-8 text-[#1A237E] mb-1 group-hover:rotate-90 transition-transform duration-300"></lucide-icon>
+        <span class="text-[#1A237E] font-medium text-lg">Add Item</span>
+      </div>
+    </button>
+  </div>
   <div class="max-w-7xl mx-auto px-6 py-8">
     <div class="mb-8">
       <div class="relative max-w-2xl mx-auto">
-        <lucide-icon [img]="SearchIcon" class="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"></lucide-icon>
-        <input type="text" placeholder="Find items near you" [(ngModel)]="searchQuery" 
-               class="w-full pl-12 pr-4 py-4 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E] text-lg" (keyup.enter)="handleSearch()">
+        <lucide-icon [img]="SearchIcon"
+          class="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"></lucide-icon>
+        <input type="text" placeholder="Find items near you" [(ngModel)]="searchQuery"
+          class="w-full pl-12 pr-4 py-4 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E] text-lg"
+          (keyup.enter)="handleSearch()">
       </div>
     </div>
     <div class="bg-gradient-to-r from-[#3949AB] to-[#5E35B1] rounded-2xl p-6 mb-8 shadow-md">
@@ -24,28 +49,30 @@
             </p>
           </div>
         </div>
-        <button (click)="navigateToRequestItem()" class="px-6 py-3 bg-white text-[#3949AB] rounded-xl font-semibold hover:bg-gray-100 transition-colors">
+        <button (click)="navigateToRequestItem()"
+          class="px-6 py-3 bg-white text-[#3949AB] rounded-xl font-semibold hover:bg-gray-100 transition-colors">
           Post Request
         </button>
       </div>
     </div>
     <div class="flex gap-3 mb-8 overflow-x-auto pb-2">
       @for (category of categories; track category.name) {
-        <button (click)="toggleCategory(category.name)"
-                class="flex items-center gap-2 px-6 py-3 rounded-full font-semibold whitespace-nowrap transition-colors"
-                [ngClass]="selectedCategory === category.name ? 'bg-[#3949AB] text-white' : 'bg-white text-[#1A237E] hover:bg-gray-50'">
-          <lucide-icon [img]="category.icon" class="w-5 h-5"></lucide-icon>
-          {{ category.name }}
-        </button>
+      <button (click)="toggleCategory(category.name)"
+        class="flex items-center gap-2 px-6 py-3 rounded-full font-semibold whitespace-nowrap transition-colors"
+        [ngClass]="selectedCategory === category.name ? 'bg-[#3949AB] text-white' : 'bg-white text-[#1A237E] hover:bg-gray-50'">
+        <lucide-icon [img]="category.icon" class="w-5 h-5"></lucide-icon>
+        {{ category.name }}
+      </button>
       }
     </div>
     <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
       @for (item of filteredItems; track item.id) {
-        <app-item-card [item]="item"></app-item-card>
+      <app-item-card [item]="item"></app-item-card>
       }
+      <button (click)="scrollToTop()"
+        class="fixed bottom-8 right-8 w-14 h-14 bg-[#3949AB] rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform z-50 opacity-60 hover:opacity-100">
+        <lucide-icon [img]="ArrowUpIcon" class="w-8 h-8 text-white"></lucide-icon>
+      </button>
     </div>
   </div>
-  <button (click)="navigateToAddItem()" class="fixed bottom-8 right-8 w-16 h-16 bg-[#C6FF00] rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform">
-    <lucide-icon [img]="PlusIcon" class="w-8 h-8 text-[#1A237E]"></lucide-icon>
-  </button>
 </div>

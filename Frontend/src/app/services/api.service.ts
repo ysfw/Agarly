@@ -139,11 +139,11 @@ export class ApiService {
 
   sendOTP(userEmail : string, enteredOTP : string): Observable<any> {
     const params = new HttpParams()
-    .set('email', userEmail)
-    .set('otp', enteredOTP);
-    const url = this.baseUrl + "/register/verify"
+      .set('email', userEmail)
+      .set('otp', enteredOTP);
+    const url = this.baseUrl + "/register/verify";
     console.log(enteredOTP);
-    return this.http.post(url, {params},this.httpOptions)
+    return this.http.post(url, null, { params });
   }
 
   getItems(): Observable<Item[]> {

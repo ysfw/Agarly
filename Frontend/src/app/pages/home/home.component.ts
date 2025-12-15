@@ -2,7 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { LucideAngularModule, Search, Plus, Wrench, Utensils, Sparkles, Monitor, MessageSquare } from 'lucide-angular';
+import { LucideAngularModule, Search, Plus, Wrench, Utensils, Sparkles, Monitor, MessageSquare, ArrowUp } from 'lucide-angular';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { ItemCardComponent } from '../../components/item-card/item-card.component';
 import { ApiService } from '../../services/api.service';
@@ -31,6 +31,7 @@ export class HomeComponent implements OnInit {
   readonly SearchIcon = Search;
   readonly PlusIcon = Plus;
   readonly MessageSquareIcon = MessageSquare;
+  readonly ArrowUpIcon = ArrowUp;
 
   categories = [
     { name: 'Tools', icon: Wrench },
@@ -75,5 +76,9 @@ export class HomeComponent implements OnInit {
       return;
     }
     this.router.navigate(['/add-item']);
+  }
+
+  scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 }

@@ -143,13 +143,18 @@ export class VerifyEmailComponent implements AfterViewInit {
     // TODO: Call API to verify the code
     this.apiService.sendOTP(this.email(), code).subscribe({
       next: (response : any) => {
-        this.successMessage.set(typeof response === 'string' ? response : 'Email verified successfully!');
+        console.log(response)
+        // Backend returns { status: "message" }
+        const message = response?.status || response?.message || 'Email verified successfully!';
+        this.successMessage.set(message);
         setTimeout(() => {
           this.router.navigate(['/login']);
         }, 2000);
       },
-      error: (err : "OTP Expired!" | "Incorrect OTP!") => {
-        this.errorMessage.set(err || 'Verification failed. Please try again.');
+      error: (err : HttpErrorResponse) => {
+        // Backend error also returns { status: "error message" }
+        const errorMsg = err.error?.status || err.error?.message || err.error || 'Verification failed. Please try again.';
+        this.errorMessage.set(errorMsg);
       }
     })
   }
