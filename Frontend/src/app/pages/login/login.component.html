@@ -21,7 +21,9 @@
                    class="w-full pl-14 pr-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E]"
                    required />
           </div>
-          <p class="error text-red-500 text-sm mt-1" *ngIf="errors.email">{{ errors.email }}</p>
+          @if (errors.email) {
+            <p class="error text-red-500 text-sm mt-1">{{ errors.email }}</p>
+          }
         </div>
 
         <!-- Password -->
@@ -40,17 +42,24 @@
               <lucide-icon [img]="showPassword ? EyeOffIcon : EyeIcon" class="w-5 h-5"></lucide-icon>
             </button>
           </div>
-          <p class="error text-red-500 text-sm mt-1" *ngIf="errors.password">{{ errors.password }}</p>
+          @if (errors.password) {
+            <p class="error text-red-500 text-sm mt-1">{{ errors.password }}</p>
+          }
         </div>
 
         <!-- Submit -->
         <button type="submit"
                 class="w-full px-6 py-3 bg-[#3949AB] text-white rounded-xl font-semibold hover:bg-[#1A237E] transition-colors shadow-md"
                 [disabled]="loading">
-          <span *ngIf="!loading">Log In</span>
-          <span *ngIf="loading">Logging In...</span>
+          @if (!loading) {
+            <span>Log In</span>
+          } @else {
+            <span>Logging In...</span>
+          }
         </button>
-        <p *ngIf="backendError" class="text-red-600 mt-2 text-center">{{ backendError }}</p>
+        @if (backendError) {
+          <p class="text-red-600 mt-2 text-center">{{ backendError }}</p>
+        }
         
         <div class="relative my-6">
           <div class="absolute inset-0 flex items-center">
@@ -96,4 +105,3 @@
     </div>
   </div>
 </div>
-

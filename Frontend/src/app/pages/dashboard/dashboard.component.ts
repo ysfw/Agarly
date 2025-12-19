@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { CommonModule, NgIf } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { LucideAngularModule, Calendar, User } from 'lucide-angular';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { AuthService } from '../../services/auth.service';
@@ -8,7 +8,7 @@ import { NavbarLoggedInComponent } from 'src/app/components/navbar-logged-in/nav
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule, NavbarComponent, NavbarLoggedInComponent, NgIf, CommonModule],
+  imports: [CommonModule, LucideAngularModule, NavbarComponent, NavbarLoggedInComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })

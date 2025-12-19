@@ -1,6 +1,9 @@
 <div class="min-h-screen w-full bg-[#F5F7FA]">
-  <app-navbar-logged-in *ngIf="auth()"></app-navbar-logged-in>
-  <app-navbar *ngIf="!auth()"></app-navbar>
+  @if (auth()) {
+    <app-navbar-logged-in></app-navbar-logged-in>
+  } @else {
+    <app-navbar></app-navbar>
+  }
   <div class="max-w-5xl mx-auto px-6 py-8">
     <h1 class="text-3xl font-bold text-[#1A237E] mb-8">My Items</h1>
     <div class="flex gap-4 mb-8">

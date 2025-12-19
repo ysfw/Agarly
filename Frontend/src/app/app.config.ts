@@ -1,4 +1,4 @@
-import { ApplicationConfig } from '@angular/core';
+import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
 import {provideRouter, withViewTransitions} from '@angular/router';
 
 import { routes } from './app.routes';
@@ -7,8 +7,8 @@ import {authInterceptor} from './interceptors/auth.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideHttpClient(),
-    provideRouter(routes,withViewTransitions()),
-    provideHttpClient(withInterceptors([authInterceptor]))
+    provideZoneChangeDetection({ eventCoalescing: true }),
+    provideHttpClient(withInterceptors([authInterceptor])),
+    provideRouter(routes, withViewTransitions())
   ]
 };

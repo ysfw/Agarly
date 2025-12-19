@@ -2,12 +2,11 @@ import { Component, inject } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { LucideAngularModule, Home, ClipboardList, LayoutDashboard, User, LogIn } from 'lucide-angular';
 import { AuthService } from '../../services/auth.service';
-import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [LucideAngularModule, NgIf],
+  imports: [LucideAngularModule],
   template: `
     <nav class="bg-white shadow-sm sticky top-0 z-50">
       <div class="max-w-7xl mx-auto px-6">
@@ -28,14 +27,17 @@ import { NgIf } from '@angular/common';
               <lucide-icon [img]="LayoutDashboardIcon" class="w-5 h-5"></lucide-icon>
               <span class="hidden sm:inline">My Items</span>
             </button>
-            <button *ngIf="authService.isLoggedIn()" (click)="navigate('/profile')" class="flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-colors text-[#1A237E] hover:bg-gray-100">
-              <lucide-icon [img]="UserIcon" class="w-5 h-5"></lucide-icon>
-              <span class="hidden sm:inline">Profile</span>
-            </button>
-            <button *ngIf="!authService.isLoggedIn()" (click)="navigate('/login')" class="flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-colors text-[#1A237E] hover:bg-gray-100">
-              <lucide-icon [img]="LogInIcon" class="w-5 h-5"></lucide-icon>
-              <span class="hidden sm:inline">Login</span>
-            </button>
+            @if (authService.isLoggedIn()) {
+              <button (click)="navigate('/profile')" class="flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-colors text-[#1A237E] hover:bg-gray-100">
+                <lucide-icon [img]="UserIcon" class="w-5 h-5"></lucide-icon>
+                <span class="hidden sm:inline">Profile</span>
+              </button>
+            } @else {
+              <button (click)="navigate('/login')" class="flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-colors text-[#1A237E] hover:bg-gray-100">
+                <lucide-icon [img]="LogInIcon" class="w-5 h-5"></lucide-icon>
+                <span class="hidden sm:inline">Login</span>
+              </button>
+            }
           </div>
         </div>
       </div>

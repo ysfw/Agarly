@@ -3,7 +3,7 @@ import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, Mail, Lock, Eye, EyeOff, Shield } from 'lucide-angular';
 import { ApiService } from '../../services/api.service';
-import { NgIf } from '@angular/common';
+
 import { AuthService } from '../../services/auth.service';
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 
@@ -11,7 +11,7 @@ import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 @Component({
   selector: 'app-admin-login',
   standalone: true,
-  imports: [FormsModule, RouterLink, LucideAngularModule, NgIf],
+  imports: [FormsModule, RouterLink, LucideAngularModule],
   templateUrl: './admin-login.component.html',
   styleUrl: './admin-login.component.css'
 })

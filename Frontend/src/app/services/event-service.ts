@@ -1,6 +1,6 @@
 import { inject, Injectable, NgZone } from '@angular/core';
 import { Observable, Observer, retry, Subject, takeUntil, tap, timer } from 'rxjs';
-import { AuthService } from './auth-service';
+import { AuthService } from './auth.service';
 import { map } from 'rxjs/operators';
 import { sseEvent } from '../models/sse-event.model';
 import { ActivatedRoute, Router } from '@angular/router';

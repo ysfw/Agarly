@@ -2,7 +2,7 @@ import { Component, inject, NgZone, OnInit } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, Mail, Lock, Eye, EyeOff } from 'lucide-angular';
-import { CommonModule, NgIf } from '@angular/common';
+
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
 import { HttpResponse } from '@angular/common/http';
@@ -12,7 +12,7 @@ declare var google: any; // Declare google object from the loaded script
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [FormsModule, RouterLink, LucideAngularModule, NgIf],
+  imports: [FormsModule, RouterLink, LucideAngularModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
 })
@@ -148,6 +148,8 @@ export class LoginComponent implements OnInit {
       next: (res: any) => {
         console.log("Response from backend:")
         console.log(res)
+        const token = res.Token
+        this.authService.setToken(token)
         // console.log("Success, Status Code:", res.status)
         // console.log("Repsonse body: ", res.body)
         this.loading = false;

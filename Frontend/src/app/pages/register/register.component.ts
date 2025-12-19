@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, Mail, Lock, User, MapPin, Eye, EyeOff, Phone } from 'lucide-angular';
-import { NgIf } from '@angular/common';
+
 import { ApiService } from '../../services/api.service';
 import { UserDTO } from 'src/app/models/user';
 import { AuthService } from '../../services/auth.service';
@@ -12,7 +12,7 @@ import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [FormsModule, RouterLink, LucideAngularModule, NgIf],
+  imports: [FormsModule, RouterLink, LucideAngularModule],
   templateUrl: './register.component.html',
   styleUrl: './register.component.css',
 })

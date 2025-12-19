@@ -4,12 +4,12 @@ import { LucideAngularModule, Calendar, User, Clock, Plus } from 'lucide-angular
 import { NavbarComponent } from '../../components/navbar/navbar.component'; // Adjust path as needed
 import { NavbarLoggedInComponent } from 'src/app/components/navbar-logged-in/navbar-logged-in.component';
 import { AuthService } from 'src/app/services/auth.service';
-import { NgIf, CommonModule } from '@angular/common';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-requests',
   standalone: true,
-  imports: [LucideAngularModule, NavbarComponent, NavbarLoggedInComponent, NgIf, CommonModule],
+  imports: [LucideAngularModule, NavbarComponent, NavbarLoggedInComponent, CommonModule],
   templateUrl: './requests.component.html',
   styleUrl: './requests.component.css'
 })
