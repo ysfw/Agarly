@@ -4,7 +4,6 @@ import com.agarly.backend.dtos.PasswordChangeRequest;
 import com.agarly.backend.dtos.UserProfileDTO;
 import com.agarly.backend.models.UserPrincipal;
 import com.agarly.backend.services.UserProfileService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -23,8 +22,11 @@ import java.lang.annotation.Target;
 @RestController
 @RequestMapping("/users")
 public class UserProfileController {
-    @Autowired
-    private UserProfileService userProfileService;
+    private final UserProfileService userProfileService;
+
+    public UserProfileController(UserProfileService userProfileService) {
+        this.userProfileService = userProfileService;
+    }
 
     @GetMapping("/profile")
     public ResponseEntity<UserProfileDTO> getProfile(@CurrentUser UserPrincipal principal) {
