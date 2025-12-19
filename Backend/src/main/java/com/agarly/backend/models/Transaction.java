@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 @Entity
 @Data
@@ -15,7 +16,7 @@ public class Transaction {
     private BigDecimal amount;
     private String type; // e.g., CREDIT, DEBIT
     private String status; // e.g., PENDING, COMPLETED, FAILED
-    private LocalDateTime timestamp;
+    private LocalDateTime timestamp = LocalDateTime.now(ZoneId.of("Africa/Cairo"));
 
     @ManyToOne
     private User user;
