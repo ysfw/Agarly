@@ -19,29 +19,30 @@ import { EditProfileComponent } from './pages/edit-profile/edit-profile.componen
 import { SearchResultsComponent } from './pages/search-results/search-results.component';
 import { RequestItemComponent } from './pages/request-item/request-item.component';
 import { VerifyEmailComponent } from './pages/verify-email/verify-email.component';
+import {AuthGuard} from './services/auth-gaurd';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'home', pathMatch: 'full' },
-  { path: 'home', component: HomeComponent },
-  { path: 'dashboard', component: DashboardComponent },
-  { path: 'profile', component: ProfileComponent },
-  { path: 'item/:id', component: ItemDetailsComponent },
-  { path: 'login', component: LoginComponent },
-  { path: 'register', component: RegisterComponent },
-  { path: 'verify-email', component: VerifyEmailComponent },
-  { path: 'admin-login', component: AdminLoginComponent },
-  { path: 'book-item/:id', component: BookItemComponent },
-  { path: 'settings', component: SettingsComponent },
-  { path: 'support', component: SupportComponent },
-  { path: 'add-item', component: AddItemComponent },
-  { path: 'requests', component: RequestsComponent },
-  { path: 'request/:id', component: RequestDetailsComponent },
-  { path: 'privacy-safety', component: PrivacySafetyComponent },
-  { path: 'payment', component: PaymentComponent },
-  { path: 'edit-profile', component: EditProfileComponent },
-  { path: 'search', component: SearchResultsComponent },
-  { path: 'request-item', component: RequestItemComponent },
-  
+  { path: '', redirectTo: 'home', pathMatch: 'full',canActivate: [AuthGuard] },
+  { path: 'home', component: HomeComponent ,canActivate: [AuthGuard]},
+  { path: 'dashboard', component: DashboardComponent,canActivate: [AuthGuard] },
+  { path: 'profile', component: ProfileComponent,canActivate: [AuthGuard] },
+  { path: 'item/:id', component: ItemDetailsComponent,canActivate: [AuthGuard] },
+  { path: 'login', component: LoginComponent,canActivate: [AuthGuard] },
+  { path: 'register', component: RegisterComponent,canActivate: [AuthGuard] },
+  { path: 'verify-email', component: VerifyEmailComponent,canActivate: [AuthGuard] },
+  { path: 'admin-login', component: AdminLoginComponent,canActivate: [AuthGuard] },
+  { path: 'book-item/:id', component: BookItemComponent,canActivate: [AuthGuard] },
+  { path: 'settings', component: SettingsComponent,canActivate: [AuthGuard] },
+  { path: 'support', component: SupportComponent,canActivate: [AuthGuard] },
+  { path: 'add-item', component: AddItemComponent,canActivate: [AuthGuard] },
+  { path: 'requests', component: RequestsComponent,canActivate: [AuthGuard] },
+  { path: 'request/:id', component: RequestDetailsComponent,canActivate: [AuthGuard] },
+  { path: 'privacy-safety', component: PrivacySafetyComponent,canActivate: [AuthGuard] },
+  { path: 'payment', component: PaymentComponent,canActivate: [AuthGuard]},
+  { path: 'edit-profile', component: EditProfileComponent,canActivate: [AuthGuard] },
+  { path: 'search', component: SearchResultsComponent ,canActivate: [AuthGuard]},
+  { path: 'request-item', component: RequestItemComponent,canActivate: [AuthGuard] },
+
   // Fallback
   { path: '**', redirectTo: 'home' }
 ];
