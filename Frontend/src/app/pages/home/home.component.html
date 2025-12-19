@@ -1,8 +1,8 @@
 <div class="min-h-screen w-full bg-[#F5F7FA]">
   @if (auth()) {
-    <app-navbar-logged-in></app-navbar-logged-in>
+  <app-navbar-logged-in></app-navbar-logged-in>
   } @else {
-    <app-navbar></app-navbar>
+  <app-navbar></app-navbar>
   }
 
   <!-- Hero Section -->
@@ -28,15 +28,40 @@
     </button>
   </div>
   <div class="max-w-7xl mx-auto px-6 py-8">
-    <div class="mb-8">
-      <div class="relative max-w-2xl mx-auto">
-        <lucide-icon [img]="SearchIcon"
-          class="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"></lucide-icon>
-        <input type="text" placeholder="Find items near you" [(ngModel)]="searchQuery"
-          class="w-full pl-12 pr-4 py-4 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E] text-lg"
-          (keyup.enter)="handleSearch()">
+    <div class="mb-12 -mt-16 relative z-30">
+      <!-- Rich Search Bar -->
+      <div class="relative max-w-5xl mx-auto">
+        <div
+          class="bg-white rounded-full shadow-xl p-2 flex flex-col md:flex-row items-center gap-2 border border-gray-100">
+          <!-- What Input -->
+          <div
+            class="flex-1 w-full relative group px-6 py-2 hover:bg-gray-50 rounded-full transition-colors cursor-text">
+            <label class="block text-xs font-bold text-[#1A237E] uppercase tracking-wider mb-0.5 ml-1">What</label>
+            <input type="text" placeholder="Search for items..." [(ngModel)]="searchQuery"
+              class="w-full bg-transparent border-none p-0 text-gray-800 placeholder-gray-400 focus:ring-0 focus:outline-none text-lg font-medium"
+              (keyup.enter)="handleSearch()">
+          </div>
+
+          <div class="hidden md:block w-px h-10 bg-gray-200"></div>
+
+          <!-- Where Input -->
+          <div
+            class="flex-1 w-full relative group px-6 py-2 hover:bg-gray-50 rounded-full transition-colors cursor-pointer"
+            (click)="openMap()">
+            <label class="block text-xs font-bold text-[#1A237E] uppercase tracking-wider mb-0.5 ml-1">Where</label>
+            <input type="text" placeholder="Location" [(ngModel)]="searchLocation" readonly
+              class="w-full bg-transparent border-none p-0 text-gray-800 placeholder-gray-400 focus:ring-0 focus:outline-none text-lg font-medium cursor-pointer">
+          </div>
+
+          <!-- Search Button -->
+          <button (click)="handleSearch()"
+            class="bg-[#3949AB] text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg hover:bg-[#1A237E] hover:scale-105 transition-all duration-300 shrink-0 md:mr-1">
+            <lucide-icon [img]="SearchIcon" class="w-6 h-6"></lucide-icon>
+          </button>
+        </div>
       </div>
     </div>
+
     <div class="bg-gradient-to-r from-[#3949AB] to-[#5E35B1] rounded-2xl p-6 mb-8 shadow-md">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-4">
@@ -78,4 +103,8 @@
       </button>
     </div>
   </div>
+
+  <app-location-picker [isOpen]="isMapOpen" [initialLat]="searchLat || undefined" [initialLng]="searchLng || undefined"
+    (closePicker)="closeMap()" (locationPicked)="onLocationPicked($event)">
+  </app-location-picker>
 </div>

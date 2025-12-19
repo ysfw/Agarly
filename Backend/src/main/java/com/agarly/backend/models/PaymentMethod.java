@@ -46,6 +46,6 @@ public class PaymentMethod {
     private Boolean isDefault;
     private Boolean isActive;
 
-    private LocalDateTime createdAt = LocalDateTime.now(ZoneId.of("Africa/Cair  o"));
+    private LocalDateTime createdAt = LocalDateTime.now(ZoneId.of("Africa/Cairo"));
     private LocalDateTime updatedAt;
 }

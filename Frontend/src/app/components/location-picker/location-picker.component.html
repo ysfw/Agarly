@@ -1,0 +1,70 @@
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50" *ngIf="isOpen">
+  <div class="bg-white rounded-2xl w-full max-w-4xl h-[80vh] flex flex-col shadow-2xl overflow-hidden">
+    <!-- Header -->
+    <div class="p-4 border-b flex items-center justify-between bg-white z-10">
+      <h3 class="text-xl font-bold text-[#1A237E]">Pick Location</h3>
+      <button (click)="close()" class="p-2 hover:bg-gray-100 rounded-full transition-colors">
+        <lucide-icon [img]="XIcon" class="w-6 h-6 text-gray-500"></lucide-icon>
+      </button>
+    </div>
+
+    <!-- Map Container -->
+    <div class="flex-1 relative">
+      <div id="map" class="w-full h-full"></div>
+
+      <!-- Search Overlay -->
+      <div class="absolute top-4 left-4 right-4 z-[1000] max-w-md mx-auto">
+        <div class="bg-white rounded-xl shadow-lg flex flex-col overflow-hidden">
+          <div class="flex items-center p-2 gap-2">
+            <lucide-icon [img]="SearchIcon" class="w-5 h-5 text-gray-400 ml-2"></lucide-icon>
+            <input type="text" [(ngModel)]="searchQuery" (input)="onSearchInput()" (keyup.enter)="searchAddress()"
+              placeholder="Search location..."
+              class="flex-1 px-2 py-2 border-none focus:ring-0 text-sm outline-none text-gray-700 placeholder-gray-400" />
+            <button *ngIf="searchQuery" (click)="searchQuery = ''; suggestions = []"
+              class="p-1 hover:bg-gray-100 rounded-full">
+              <lucide-icon [img]="XIcon" class="w-4 h-4 text-gray-400"></lucide-icon>
+            </button>
+          </div>
+
+          <!-- Suggestions Dropdown -->
+          <div *ngIf="suggestions.length > 0" class="border-t border-gray-100 max-h-60 overflow-y-auto">
+            @for (suggestion of suggestions; track suggestion.place_id) {
+            <button (click)="selectSuggestion(suggestion)"
+              class="w-full text-left px-4 py-3 hover:bg-gray-50 flex items-start gap-3 transition-colors border-b border-gray-50 last:border-0">
+              <lucide-icon [img]="MapPinIcon" class="w-4 h-4 text-gray-400 mt-0.5 shrink-0"></lucide-icon>
+              <div class="flex-1 min-w-0">
+                <div class="text-sm font-medium text-[#1A237E] truncate">{{ suggestion.display_name.split(',')[0] }}
+                </div>
+                <div class="text-xs text-gray-500 truncate">{{ suggestion.display_name }}</div>
+              </div>
+            </button>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="p-4 border-t bg-white flex justify-between items-center">
+      <div class="text-sm text-gray-600">
+        <span *ngIf="selectedAddress" class="font-medium text-[#1A237E]">
+          Selected: {{ selectedAddress }}
+        </span>
+        <span *ngIf="!selectedAddress && selectedLat">
+          Selected: {{ selectedLat | number:'1.4-4' }}, {{ selectedLng | number:'1.4-4' }}
+        </span>
+        <span *ngIf="!selectedLat">Click on the map to select a location</span>
+      </div>
+      <div class="flex gap-3">
+        <button (click)="close()"
+          class="px-6 py-2.5 rounded-xl text-gray-600 font-semibold hover:bg-gray-100 transition-colors">
+          Cancel
+        </button>
+        <button (click)="confirm()" [disabled]="!selectedLat"
+          class="px-6 py-2.5 rounded-xl bg-[#3949AB] text-white font-semibold hover:bg-[#1A237E] transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+          Confirm Location
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

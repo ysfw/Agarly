@@ -11,7 +11,7 @@ public class ItemController {
     private ItemService itemService;
 
     @PostMapping
-    public void createItem() {
+    public void createItem(@RequestBody com.agarly.backend.models.Item item) {
         itemService.createItem();
     }
 

@@ -1,0 +1,4 @@
+/* Leaflet CSS fix for map container */
+#map {
+    z-index: 1;
+}
