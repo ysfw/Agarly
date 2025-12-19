@@ -16,7 +16,7 @@ public class Booking {
     private User borrower;
 
     @ManyToOne
-    private Item item;
+    private Item item; // borrowed item
 
     private LocalDate startDate;
     private LocalDate endDate;
