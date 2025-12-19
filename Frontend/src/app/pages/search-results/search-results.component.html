@@ -2,7 +2,8 @@
   <div class="max-w-7xl mx-auto px-6 py-8">
     <div class="flex items-center justify-between mb-8">
       <div class="flex items-center gap-4">
-        <button (click)="router.navigate(['/home'])" class="w-10 h-10 flex items-center justify-center hover:bg-gray-100 rounded-full">
+        <button (click)="router.navigate(['/home'])"
+          class="w-10 h-10 flex items-center justify-center hover:bg-gray-100 rounded-full">
           <lucide-icon [img]="ArrowLeftIcon" class="w-5 h-5 text-[#1A237E]"></lucide-icon>
         </button>
         <div>
@@ -10,50 +11,97 @@
           <p class="text-gray-600">{{sampleItems.length}} items found</p>
         </div>
       </div>
-      <button (click)="showFilters = !showFilters" class="flex items-center gap-2 px-6 py-3 bg-white rounded-xl font-semibold text-[#1A237E] hover:bg-gray-50 shadow-sm">
+      <button (click)="showFilters = !showFilters"
+        class="flex items-center gap-2 px-6 py-3 bg-white rounded-xl font-semibold text-[#1A237E] hover:bg-gray-50 shadow-sm">
         <lucide-icon [img]="SlidersHorizontalIcon" class="w-5 h-5"></lucide-icon>
         Filters
       </button>
     </div>
 
     @if (showFilters) {
-      <div class="bg-white rounded-2xl p-6 shadow-sm mb-8">
-        <h2 class="text-xl font-semibold text-[#1A237E] mb-4">Filter Results</h2>
-        <div class="grid md:grid-cols-3 gap-6">
-          <div>
-            <label class="block text-sm font-semibold text-[#1A237E] mb-2">Category</label>
-            <select [(ngModel)]="filters.category" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E]">
-              <option value="">All Categories</option>
-              <option value="tools">Tools</option>
-              <option value="kitchen">Kitchen</option>
-              <option value="cleaning">Cleaning</option>
-              <option value="electronics">Electronics</option>
-            </select>
+    <div class="bg-white rounded-2xl p-6 shadow-sm mb-8">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-xl font-semibold text-[#1A237E]">Filter Results</h2>
+        <button (click)="applyFilters()"
+          class="px-6 py-2 bg-[#3949AB] text-white rounded-xl font-semibold hover:bg-[#1A237E] transition-colors shadow-md flex items-center gap-2">
+          <lucide-icon [img]="SearchIcon" class="w-4 h-4"></lucide-icon>
+          Apply Filters
+        </button>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-6">
+        <div>
+          <label class="block text-sm font-semibold text-[#1A237E] mb-2">Category</label>
+          <select [(ngModel)]="filters.category"
+            class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E]">
+            <option value="">All Categories</option>
+            <option value="tools">Tools</option>
+            <option value="kitchen">Kitchen</option>
+            <option value="cleaning">Cleaning</option>
+            <option value="electronics">Electronics</option>
+          </select>
+        </div>
+
+        <!-- Location Filter -->
+        <div class="space-y-3">
+          <label class="block text-sm font-semibold text-[#1A237E]">Location</label>
+          <div class="flex gap-2">
+            <button (click)="useCurrentLocation()"
+              class="flex-1 px-3 py-2 bg-[#E8EAF6] text-[#3949AB] rounded-lg text-sm font-medium hover:bg-[#C5CAE9] transition-colors">
+              Near Me
+            </button>
+            <button (click)="openMap()"
+              class="flex-1 px-3 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors">
+              Pick Map
+            </button>
+          </div>
+          <div *ngIf="filters.latitude" class="text-xs text-green-600 font-medium flex items-center gap-1">
+            <lucide-icon [img]="MapPinIcon" class="w-3 h-3"></lucide-icon>
+            Location selected
           </div>
           <div>
-            <label class="block text-sm font-semibold text-[#1A237E] mb-2">Max Distance</label>
-            <select [(ngModel)]="filters.distance" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E]">
-              <option value="1">Within 1 mile</option>
-              <option value="3">Within 3 miles</option>
-              <option value="5">Within 5 miles</option>
-              <option value="10">Within 10 miles</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-sm font-semibold text-[#1A237E] mb-2">Availability</label>
-            <select [(ngModel)]="filters.availability" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E]">
-              <option value="all">All Items</option>
-              <option value="available">Available Only</option>
-            </select>
+            <label class="text-xs text-gray-500 mb-1 block">Radius: {{filters.distance}} km</label>
+            <input type="range" min="1" max="50" [(ngModel)]="filters.distance" class="w-full accent-[#3949AB]">
           </div>
         </div>
+
+        <!-- Price Filter -->
+        <div>
+          <label class="block text-sm font-semibold text-[#1A237E] mb-2">Price Range</label>
+          <div class="flex gap-2 mb-2">
+            <input type="number" [(ngModel)]="filters.minPrice" placeholder="Min"
+              class="w-full px-3 py-2 rounded-lg border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-sm">
+            <input type="number" [(ngModel)]="filters.maxPrice" placeholder="Max"
+              class="w-full px-3 py-2 rounded-lg border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-sm">
+          </div>
+          <select [(ngModel)]="filters.priceUnit"
+            class="w-full px-3 py-2 rounded-lg border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-sm">
+            <option value="day">Per Day</option>
+            <option value="hour">Per Hour</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-[#1A237E] mb-2">Availability</label>
+          <select [(ngModel)]="filters.availability"
+            class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E]">
+            <option value="all">All Items</option>
+            <option value="available">Available Only</option>
+          </select>
+        </div>
       </div>
+    </div>
     }
 
     <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
       @for (item of sampleItems; track item.id) {
-        <app-item-card [item]="item"></app-item-card>
+      <app-item-card [item]="item"></app-item-card>
       }
     </div>
   </div>
+
+  <app-location-picker [isOpen]="isMapOpen" [initialLat]="filters.latitude || undefined"
+    [initialLng]="filters.longitude || undefined" (closePicker)="closeMap()"
+    (locationPicked)="onLocationPicked($event)">
+  </app-location-picker>
 </div>

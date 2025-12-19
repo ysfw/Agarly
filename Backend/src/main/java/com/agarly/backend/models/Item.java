@@ -15,8 +15,11 @@ public class Item {
     private String title;
     private String description;
     private BigDecimal pricePerDay;
+    private String priceUnit; // "day" or "hour"
     private String category;
-    private String location;
+    private String location; // Human readable address
+    private Double latitude;
+    private Double longitude;
     
     @ElementCollection
     private List<String> imageUrls;

@@ -6,13 +6,14 @@ import lombok.Getter;
 import lombok.Setter;
 import org.jspecify.annotations.Nullable;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
 @Entity
 @Table(name = "\"user\"")
 public class User {
     @Id
-
     //db handles id generation
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,13 +27,24 @@ public class User {
     private String address;
     private Boolean activated;
     private Boolean blocked;
+    private String profileImageUrl;
     private String otp;
     private Boolean verified;
     @Enumerated(EnumType.STRING)
     private AuthProvider provider;
 
-    public User() {
+    @OneToOne
+    private UserProfile profile;
 
+    private BigDecimal walletBalance = BigDecimal.ZERO;
+
+    public User() {
+        this.profile = new UserProfile();
+        this.profile.setUser(this);
+        this.profile.setBio("");
+        this.profile.setCity("");
+        this.profile.setState("");
+        this.profile.setZipCode("");
     }
 
 

@@ -1,7 +1,8 @@
 <div class="min-h-screen w-full bg-[#F5F7FA]">
   <div class="max-w-3xl mx-auto px-6 py-8">
     <div class="flex items-center gap-4 mb-8">
-      <button (click)="router.navigate(['/home'])" class="w-10 h-10 flex items-center justify-center hover:bg-gray-100 rounded-full">
+      <button (click)="router.navigate(['/home'])"
+        class="w-10 h-10 flex items-center justify-center hover:bg-gray-100 rounded-full transition-colors">
         <lucide-icon [img]="ArrowLeftIcon" class="w-5 h-5 text-[#1A237E]"></lucide-icon>
       </button>
       <h1 class="text-3xl font-bold text-[#1A237E]">Add New Item</h1>
@@ -11,16 +12,19 @@
         <h2 class="text-xl font-semibold text-[#1A237E] mb-4">Item Photos</h2>
         <div class="grid grid-cols-3 gap-4 mb-4">
           @for (image of images; track image; let i = $index) {
-            <div class="relative">
-              <img [src]="image" [alt]="'Upload ' + (i + 1)" class="w-full h-32 object-cover rounded-xl" />
-              <button type="button" (click)="removeImage(i)" class="absolute top-2 right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600">
-                <lucide-icon [img]="XIcon" class="w-4 h-4"></lucide-icon>
-              </button>
-            </div>
+          <div class="relative group">
+            <img [src]="image" [alt]="'Upload ' + (i + 1)" class="w-full h-32 object-cover rounded-xl shadow-sm" />
+            <button type="button" (click)="removeImage(i)"
+              class="absolute top-2 right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 opacity-0 group-hover:opacity-100 transition-opacity">
+              <lucide-icon [img]="XIcon" class="w-4 h-4"></lucide-icon>
+            </button>
+          </div>
           }
-          <label class="w-full h-32 border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:border-[#3949AB] transition-colors">
-            <lucide-icon [img]="ImageIcon" class="w-8 h-8 text-gray-400 mb-2"></lucide-icon>
-            <span class="text-sm text-gray-500">Add Photo</span>
+          <label
+            class="w-full h-32 border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:border-[#3949AB] hover:bg-gray-50 transition-all group">
+            <lucide-icon [img]="ImageIcon"
+              class="w-8 h-8 text-gray-400 mb-2 group-hover:text-[#3949AB] transition-colors"></lucide-icon>
+            <span class="text-sm text-gray-500 group-hover:text-[#3949AB] transition-colors">Add Photo</span>
             <input type="file" accept="image/*" multiple (change)="handleImageUpload($event)" class="hidden" />
           </label>
         </div>
@@ -30,35 +34,112 @@
         <div class="space-y-4">
           <div>
             <label class="block text-sm font-semibold text-[#1A237E] mb-2">Item Name</label>
-            <input type="text" [(ngModel)]="formData.name" name="name" placeholder="e.g., Power Drill" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E]" required />
+            <input type="text" [(ngModel)]="formData.name" name="name" placeholder="e.g., Power Drill"
+              class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E] placeholder-gray-400 transition-colors"
+              required />
           </div>
           <div>
             <label class="block text-sm font-semibold text-[#1A237E] mb-2">Category</label>
-            <select [(ngModel)]="formData.category" name="category" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E]" required>
-              <option value="">Select a category</option>
-              @for (category of categories; track category) {
+            <div class="relative">
+              <select [(ngModel)]="formData.category" name="category"
+                class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E] appearance-none bg-white transition-colors"
+                required>
+                <option value="" disabled selected>Select a category</option>
+                @for (category of categories; track category) {
                 <option [value]="category">{{category}}</option>
-              }
-            </select>
+                }
+              </select>
+              <div class="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none">
+                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+              </div>
+            </div>
           </div>
+
+          <!-- Price Section -->
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-semibold text-[#1A237E] mb-2">Price (EGP)</label>
+              <input type="number" [(ngModel)]="formData.price" name="price" placeholder="0.00" min="0"
+                class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E] placeholder-gray-400 transition-colors"
+                required />
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-[#1A237E] mb-2">Per</label>
+              <div class="relative">
+                <select [(ngModel)]="formData.priceUnit" name="priceUnit"
+                  class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E] appearance-none bg-white transition-colors"
+                  required>
+                  <option value="day">Day</option>
+                  <option value="hour">Hour</option>
+                </select>
+                <div class="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none">
+                  <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Location Section -->
+          <div>
+            <label class="block text-sm font-semibold text-[#1A237E] mb-2">Location</label>
+            <div (click)="openMap()"
+              class="group w-full px-4 py-3 rounded-xl border-2 border-gray-200 hover:border-[#3949AB] hover:bg-gray-50 transition-all cursor-pointer flex items-center gap-3 bg-white">
+              <div class="p-2 bg-gray-100 rounded-lg group-hover:bg-[#E8EAF6] transition-colors">
+                <lucide-icon [img]="MapPinIcon"
+                  class="w-5 h-5 text-gray-500 group-hover:text-[#3949AB] transition-colors"></lucide-icon>
+              </div>
+              <div class="flex-1 min-w-0">
+                <input type="text" [value]="formData.location" readonly placeholder="Pick a location on map"
+                  class="w-full bg-transparent border-none p-0 text-[#1A237E] placeholder-gray-400 focus:ring-0 focus:outline-none cursor-pointer font-medium truncate" />
+              </div>
+              <span
+                class="text-sm font-semibold text-[#3949AB] bg-[#E8EAF6] px-3 py-1.5 rounded-lg group-hover:bg-[#C5CAE9] transition-colors whitespace-nowrap">
+                Select
+              </span>
+            </div>
+          </div>
+
           <div>
             <label class="block text-sm font-semibold text-[#1A237E] mb-2">Condition</label>
-            <select [(ngModel)]="formData.condition" name="condition" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E]" required>
-              <option value="excellent">Excellent</option>
-              <option value="good">Good</option>
-              <option value="fair">Fair</option>
-            </select>
+            <div class="relative">
+              <select [(ngModel)]="formData.condition" name="condition"
+                class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E] appearance-none bg-white transition-colors"
+                required>
+                <option value="excellent">Excellent</option>
+                <option value="good">Good</option>
+                <option value="fair">Fair</option>
+              </select>
+              <div class="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none">
+                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+              </div>
+            </div>
           </div>
           <div>
             <label class="block text-sm font-semibold text-[#1A237E] mb-2">Description</label>
-            <textarea [(ngModel)]="formData.description" name="description" placeholder="Describe your item, its features, and any special instructions..." rows="4" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E] resize-none" required></textarea>
+            <textarea [(ngModel)]="formData.description" name="description"
+              placeholder="Describe your item, its features, and any special instructions..." rows="4"
+              class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E] placeholder-gray-400 resize-none transition-colors"
+              required></textarea>
           </div>
         </div>
       </div>
-      <div class="flex gap-4">
-        <button type="button" (click)="router.navigate(['/home'])" class="flex-1 px-6 py-4 bg-gray-200 text-[#1A237E] rounded-xl font-semibold hover:bg-gray-300 transition-colors">Cancel</button>
-        <button type="submit" class="flex-1 px-6 py-4 bg-[#3949AB] text-white rounded-xl font-semibold hover:bg-[#1A237E] transition-colors shadow-md">List Item</button>
+      <div class="flex gap-4 pt-2">
+        <button type="button" (click)="router.navigate(['/home'])"
+          class="flex-1 px-6 py-4 bg-white border-2 border-gray-200 text-gray-600 rounded-xl font-bold hover:bg-gray-50 hover:border-gray-300 transition-all">Cancel</button>
+        <button type="submit"
+          class="flex-1 px-6 py-4 bg-[#3949AB] text-white rounded-xl font-bold hover:bg-[#1A237E] hover:shadow-lg hover:-translate-y-0.5 transition-all shadow-md">List
+          Item</button>
       </div>
     </form>
   </div>
 </div>
+
+<app-location-picker [isOpen]="isMapOpen" [initialLat]="formData.latitude || undefined"
+  [initialLng]="formData.longitude || undefined" (closePicker)="closeMap()" (locationPicked)="onLocationPicked($event)">
+</app-location-picker>

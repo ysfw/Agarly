@@ -10,7 +10,7 @@ public class BookingService {
     private BookingRepository bookingRepository;
 
     public void createBooking() {
-        // Validates availability
+        // Validates availability and creates booking
     }
 
     public void updateStatus() {
