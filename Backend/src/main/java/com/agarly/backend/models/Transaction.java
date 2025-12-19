@@ -1,5 +1,7 @@
 package com.agarly.backend.models;
 
+import com.agarly.backend.models.Enums.TransactionStatus;
+import com.agarly.backend.models.Enums.TransactionType;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.math.BigDecimal;
@@ -14,10 +16,37 @@ public class Transaction {
     private Long id;
 
     private BigDecimal amount;
-    private String type; // e.g., CREDIT, DEBIT
-    private String status; // e.g., PENDING, COMPLETED, FAILED
-    private LocalDateTime timestamp = LocalDateTime.now(ZoneId.of("Africa/Cairo"));
+
+    @Enumerated(EnumType.STRING)
+    private TransactionType type;
+
+    @Enumerated(EnumType.STRING)
+    private TransactionStatus status;
+
+    private LocalDateTime createdAt = LocalDateTime.now(ZoneId.of("Africa/Cairo"));
+    private LocalDateTime updatedAt;
 
     @ManyToOne
     private User user;
+
+    @ManyToOne
+    private Booking booking;
+
+    @ManyToOne
+    private PaymentMethod paymentMethod;
+
+    // Human-readable description
+    private String description;
+
+    // External reference from payment provider
+    private String referenceNumber;
+
+    // Platform fee
+    private BigDecimal fee;
+
+    // if the borrower ruins the item or smth
+    private BigDecimal insuranceFee;
+
+    // Net amount after fee + insuranceFee
+    private BigDecimal netAmount;
 }
