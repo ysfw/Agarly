@@ -1,5 +1,6 @@
 package com.agarly.backend.models;
 
+import com.agarly.backend.models.Enums.TicketStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
@@ -14,9 +15,11 @@ public class SupportTicket {
 
     private String subject;
     private String message;
-    private String status; // OPEN, CLOSED, IN_PROGRESS
+
+    @Enumerated(EnumType.STRING)
+    private TicketStatus status; // OPEN, CLOSED, IN_PROGRESS
     private LocalDateTime createdAt = LocalDateTime.now(ZoneId.of("Africa/Cairo"));
 
     @ManyToOne
-    private User user;
+    private User createdBy;
 }

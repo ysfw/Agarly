@@ -15,7 +15,6 @@ import java.math.BigDecimal;
 @Table(name = "\"user\"")
 public class User {
     @Id
-    //db handles id generation
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String username;

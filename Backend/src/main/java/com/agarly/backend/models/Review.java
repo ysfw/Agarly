@@ -1,5 +1,6 @@
 package com.agarly.backend.models;
 
+import com.agarly.backend.models.Enums.ReviewTargetType;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -11,11 +12,16 @@ public class Review {
     private Long id;
 
     private int rating;
-    private String comment;
+//    private String comment;
 
     @ManyToOne
     private User reviewer;
 
     @ManyToOne
-    private Item item; // Or User targetUser, depending on requirements
+    private Item targetItem; // Or User targetUser, depending on requirements
+    @ManyToOne
+    private User targetUser;
+
+    @Enumerated(EnumType.STRING)
+    private ReviewTargetType reviewTarget;
 }
