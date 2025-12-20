@@ -1,119 +1,383 @@
-<div class="min-h-screen w-full bg-[#F5F7FA]">
+<div class="min-h-screen w-full bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
   @if (auth()) {
   <app-navbar-logged-in></app-navbar-logged-in>
   } @else {
   <app-navbar></app-navbar>
   }
-  <div class="max-w-5xl mx-auto px-6 py-8">
-    <h1 class="text-3xl font-bold text-[#1A237E] mb-8">My Items</h1>
-    <div class="flex gap-4 mb-8">
-      <button (click)="activeTab = 'borrowed'"
-        class="flex-1 px-6 py-4 rounded-xl font-semibold text-lg transition-colors" [ngClass]="
-          activeTab === 'borrowed'
-            ? 'bg-[#3949AB] text-white shadow-md'
-            : 'bg-white text-[#1A237E] hover:bg-gray-50'
-        ">
-        Borrowed Items
-      </button>
-      <button (click)="activeTab = 'lent'" class="flex-1 px-6 py-4 rounded-xl font-semibold text-lg transition-colors"
-        [ngClass]="
-          activeTab === 'lent'
-            ? 'bg-[#3949AB] text-white shadow-md'
-            : 'bg-white text-[#1A237E] hover:bg-gray-50'
-        ">
-        Lent Items
+  <div class="max-w-6xl mx-auto px-6 py-8">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-8">
+      <h1 class="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">My
+        Dashboard</h1>
+      <button (click)="navigateToAddItem()"
+        class="flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-semibold shadow-lg shadow-indigo-200 hover:shadow-xl hover:-translate-y-0.5 transition-all">
+        <lucide-icon [img]="PlusIcon" class="w-5 h-5"></lucide-icon>
+        Add Item
       </button>
     </div>
-    <div class="space-y-4">
-      @if (activeTab === 'borrowed') { @for (item of borrowedItems; track
-      item.id) {
-      <div class="bg-white rounded-2xl p-6 shadow-sm flex items-center gap-6">
-        <img [src]="item.imageUrls[0]" [alt]="item.title" class="w-24 h-24 rounded-xl object-cover" />
-        <div class="flex-1">
-          <h3 class="text-xl font-semibold text-[#1A237E] mb-2">
-            {{ item.title }}
-          </h3>
-          <div class="flex items-center gap-4 text-gray-600">
-            <div class="flex items-center gap-2">
-              <lucide-icon [img]="CalendarIcon" class="w-4 h-4"></lucide-icon>
-              <span>Due: {{ item.dueDate }}</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <lucide-icon [img]="UserIcon" class="w-4 h-4"></lucide-icon>
-              <span>Owner: {{ item.owner }}</span>
-            </div>
-          </div>
-        </div>
-        <button
-          class="px-6 py-3 bg-[#90CAF9] text-[#1A237E] rounded-xl font-semibold hover:bg-[#3949AB] hover:text-white transition-colors">
-          Contact
+
+    <!-- Tabs -->
+    <div class="flex gap-2 mb-8 overflow-x-auto pb-2 scrollbar-hide">
+      <button (click)="activeTab = 'myitems'"
+        class="flex-none px-5 py-3 rounded-xl font-semibold text-sm transition-all duration-300"
+        [ngClass]="activeTab === 'myitems' ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-200' : 'bg-white text-gray-600 hover:bg-gray-50 shadow-sm'">
+        📦 My Items
+      </button>
+      <button (click)="activeTab = 'pending'"
+        class="flex-none px-5 py-3 rounded-xl font-semibold text-sm transition-all duration-300 relative"
+        [ngClass]="activeTab === 'pending' ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-200' : 'bg-white text-gray-600 hover:bg-gray-50 shadow-sm'">
+        ⏳ Pending
+        @if (pendingItems().length > 0) {
+        <span
+          class="absolute -top-1 -right-1 w-5 h-5 bg-amber-500 text-white text-xs rounded-full flex items-center justify-center">{{
+          pendingItems().length }}</span>
+        }
+      </button>
+      <button (click)="activeTab = 'borrowed'"
+        class="flex-none px-5 py-3 rounded-xl font-semibold text-sm transition-all duration-300"
+        [ngClass]="activeTab === 'borrowed' ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-200' : 'bg-white text-gray-600 hover:bg-gray-50 shadow-sm'">
+        🛒 Borrowed
+      </button>
+      <button (click)="activeTab = 'lent'"
+        class="flex-none px-5 py-3 rounded-xl font-semibold text-sm transition-all duration-300"
+        [ngClass]="activeTab === 'lent' ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-200' : 'bg-white text-gray-600 hover:bg-gray-50 shadow-sm'">
+        📤 Lent Out
+      </button>
+      <button (click)="activeTab = 'wallet'"
+        class="flex-none px-5 py-3 rounded-xl font-semibold text-sm transition-all duration-300"
+        [ngClass]="activeTab === 'wallet' ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-200' : 'bg-white text-gray-600 hover:bg-gray-50 shadow-sm'">
+        💰 Wallet
+      </button>
+    </div>
+
+    <!-- Loading State -->
+    @if (loading()) {
+    <div class="flex items-center justify-center py-12">
+      <div class="w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+    </div>
+    }
+
+    <!-- Content -->
+    <div class="space-y-5">
+      <!-- MY ITEMS TAB - Items I Own -->
+      @if (activeTab === 'myitems' && !loading()) {
+      @if (myItems().length === 0) {
+      <div class="bg-white rounded-2xl p-12 shadow-sm text-center">
+        <div class="text-6xl mb-4">📦</div>
+        <h3 class="text-xl font-bold text-gray-800 mb-2">No items listed yet</h3>
+        <p class="text-gray-500 mb-6">Start sharing items with your neighbors!</p>
+        <button (click)="navigateToAddItem()"
+          class="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all">
+          Add Your First Item
         </button>
       </div>
-      } } @if (activeTab === 'lent') { @for (item of lentItems; track item.id) {
-      <div class="bg-white rounded-2xl p-6 shadow-sm flex items-center gap-6">
-        <img [src]="item.imageUrls[0]" [alt]="item.title" class="w-24 h-24 rounded-xl object-cover" />
-        <div class="flex-1">
-          <h3 class="text-xl font-semibold text-[#1A237E] mb-2">
-            {{ item.title }}
-          </h3>
-          <div class="flex items-center gap-4 text-gray-600">
-            <div class="flex items-center gap-2">
+      } @else {
+      <div class="grid gap-4">
+        @for (item of myItems(); track item.id) {
+        <div
+          class="bg-white rounded-2xl p-5 shadow-sm hover:shadow-lg transition-all duration-300 flex items-center gap-5 group">
+          <img [src]="item.imageUrls[0] || 'https://via.placeholder.com/100'" [alt]="item.title"
+            class="w-24 h-24 rounded-xl object-cover shadow-md group-hover:scale-105 transition-transform" />
+
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-3 mb-1">
+              <h3 class="text-lg font-bold text-gray-800 truncate">{{ item.title }}</h3>
+              <span class="px-2.5 py-1 rounded-full text-xs font-semibold"
+                [ngClass]="getItemStatusBadge(item.status).class">
+                {{ getItemStatusBadge(item.status).text }}
+              </span>
+            </div>
+            <p class="text-gray-500 text-sm mb-2 line-clamp-1">{{ item.description }}</p>
+            <div class="flex items-center gap-4 text-sm text-gray-500">
+              <span class="font-semibold text-indigo-600">${{ item.pricePerDay }}/{{ item.priceUnit.toLowerCase()
+                }}</span>
+              <span>{{ item.location }}</span>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="flex items-center gap-2">
+            <button (click)="viewItem(item)"
+              class="p-3 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all" title="View">
+              <lucide-icon [img]="EyeIcon" class="w-5 h-5"></lucide-icon>
+            </button>
+            <button (click)="editItem(item)"
+              class="p-3 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all" title="Edit">
+              <lucide-icon [img]="EditIcon" class="w-5 h-5"></lucide-icon>
+            </button>
+            <button (click)="confirmDeleteItem(item)"
+              class="p-3 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all" title="Delete">
+              <lucide-icon [img]="TrashIcon" class="w-5 h-5"></lucide-icon>
+            </button>
+          </div>
+        </div>
+        }
+      </div>
+      }
+      }
+
+      <!-- PENDING TAB - My items awaiting approval -->
+      @if (activeTab === 'pending' && !loading()) {
+      @if (pendingItems().length === 0) {
+      <div class="bg-white rounded-2xl p-12 shadow-sm text-center">
+        <div class="text-6xl mb-4">✨</div>
+        <h3 class="text-xl font-bold text-gray-800 mb-2">All caught up!</h3>
+        <p class="text-gray-500">No items pending review</p>
+      </div>
+      } @else {
+      <div class="grid gap-4">
+        @for (item of pendingItems(); track item.id) {
+        <div class="bg-white rounded-2xl p-5 shadow-sm border-l-4 transition-all duration-300"
+          [ngClass]="item.status === 'REJECTED' ? 'border-l-red-500' : 'border-l-amber-500'">
+          <div class="flex items-center gap-5">
+            <img [src]="item.imageUrls[0] || 'https://via.placeholder.com/80'" [alt]="item.title"
+              class="w-20 h-20 rounded-xl object-cover shadow-md" />
+
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-3 mb-1">
+                <h3 class="text-lg font-bold text-gray-800 truncate">{{ item.title }}</h3>
+                <span class="px-2.5 py-1 rounded-full text-xs font-semibold"
+                  [ngClass]="getItemStatusBadge(item.status).class">
+                  {{ getItemStatusBadge(item.status).text }}
+                </span>
+              </div>
+              <p class="text-gray-500 text-sm mb-1">{{ item.category }} • ${{ item.pricePerDay }}/{{
+                item.priceUnit.toLowerCase() }}</p>
+            </div>
+
+            @if (item.status === 'PENDING') {
+            <div class="flex items-center gap-3 px-4 py-2 bg-amber-50 rounded-xl">
+              <lucide-icon [img]="ClockIcon" class="w-5 h-5 text-amber-600"></lucide-icon>
+              <span class="text-amber-700 font-medium text-sm">Under Review</span>
+            </div>
+            }
+
+            @if (item.status === 'REJECTED') {
+            <button (click)="editItem(item)"
+              class="px-4 py-2 bg-indigo-100 text-indigo-700 rounded-xl font-semibold text-sm hover:bg-indigo-200 transition-colors">
+              Edit & Resubmit
+            </button>
+            }
+          </div>
+        </div>
+        }
+      </div>
+      }
+      }
+
+      <!-- BORROWED TAB - Items I borrowed FROM others -->
+      @if (activeTab === 'borrowed' && !loading()) {
+      @if (borrowedItems().length === 0) {
+      <div class="bg-white rounded-2xl p-12 shadow-sm text-center">
+        <div class="text-5xl mb-4">📭</div>
+        <h3 class="text-xl font-bold text-gray-800 mb-2">No borrowed items</h3>
+        <p class="text-gray-500">Items you borrow from others will appear here</p>
+      </div>
+      } @else {
+      @for (item of borrowedItems(); track item.id) {
+      <div
+        class="bg-white rounded-2xl p-5 shadow-sm hover:shadow-lg transition-all duration-300 flex items-center gap-5 group">
+        <img [src]="item.imageUrls[0] || 'https://via.placeholder.com/80'" [alt]="item.title"
+          class="w-20 h-20 rounded-xl object-cover shadow-md group-hover:scale-105 transition-transform" />
+        <div class="flex-1 min-w-0">
+          <h3 class="text-lg font-bold text-gray-800 mb-1 truncate">{{ item.title }}</h3>
+          <div class="flex items-center gap-4 text-sm text-gray-500">
+            @if (item.dueDate) {
+            <span class="flex items-center gap-1.5">
               <lucide-icon [img]="CalendarIcon" class="w-4 h-4"></lucide-icon>
-              <span>Due: {{ item.dueDate }}</span>
-            </div>
-            <div class="flex items-center gap-2">
+              Due: {{ item.dueDate }}
+            </span>
+            }
+            <span class="flex items-center gap-1.5">
               <lucide-icon [img]="UserIcon" class="w-4 h-4"></lucide-icon>
-              <span>Borrower: {{ item.borrower }}</span>
-            </div>
+              Owner: {{ item.owner?.firstName || item.owner?.name || 'Unknown' }}
+            </span>
           </div>
         </div>
         <button
-          class="px-6 py-3 bg-[#90CAF9] text-[#1A237E] rounded-xl font-semibold hover:bg-[#3949AB] hover:text-white transition-colors">
+          class="px-5 py-2.5 bg-indigo-100 text-indigo-700 rounded-xl font-semibold hover:bg-indigo-600 hover:text-white transition-all duration-300">
+          Contact Owner
+        </button>
+      </div>
+      }
+      }
+      }
+
+      <!-- LENT OUT TAB - My items currently lent to others -->
+      @if (activeTab === 'lent' && !loading()) {
+      @if (lentItems().length === 0) {
+      <div class="bg-white rounded-2xl p-12 shadow-sm text-center">
+        <div class="text-5xl mb-4">📦</div>
+        <h3 class="text-xl font-bold text-gray-800 mb-2">No items currently lent</h3>
+        <p class="text-gray-500">Items you lend to others will appear here</p>
+      </div>
+      } @else {
+      @for (item of lentItems(); track item.id) {
+      <div
+        class="bg-white rounded-2xl p-5 shadow-sm hover:shadow-lg transition-all duration-300 flex items-center gap-5 group">
+        <img [src]="item.imageUrls[0] || 'https://via.placeholder.com/80'" [alt]="item.title"
+          class="w-20 h-20 rounded-xl object-cover shadow-md group-hover:scale-105 transition-transform" />
+        <div class="flex-1 min-w-0">
+          <h3 class="text-lg font-bold text-gray-800 mb-1 truncate">{{ item.title }}</h3>
+          <div class="flex items-center gap-4 text-sm text-gray-500">
+            @if (item.dueDate) {
+            <span class="flex items-center gap-1.5">
+              <lucide-icon [img]="CalendarIcon" class="w-4 h-4"></lucide-icon>
+              Due: {{ item.dueDate }}
+            </span>
+            }
+            <span class="flex items-center gap-1.5">
+              <lucide-icon [img]="UserIcon" class="w-4 h-4"></lucide-icon>
+              Borrower: {{ item.borrower?.firstName || item.borrower?.name || 'Unknown' }}
+            </span>
+          </div>
+        </div>
+        <button
+          class="px-5 py-2.5 bg-indigo-100 text-indigo-700 rounded-xl font-semibold hover:bg-indigo-600 hover:text-white transition-all duration-300">
           Contact
         </button>
         <button
-          class="px-6 py-3 bg-[#A5D6A7] text-[#1A237E] rounded-xl font-semibold hover:bg-[#388E3C] hover:text-white transition-colors ml-2"
+          class="px-5 py-2.5 bg-emerald-100 text-emerald-700 rounded-xl font-semibold hover:bg-emerald-600 hover:text-white transition-all duration-300"
           (click)="openReviewModal(item)">
-          Returned
+          Mark Returned
         </button>
       </div>
-      } }
+      }
+      }
+      }
+
+      <!-- WALLET TAB -->
+      @if (activeTab === 'wallet' && !loading()) {
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
+        <div
+          class="bg-gradient-to-br from-indigo-600 to-purple-700 rounded-2xl p-6 text-white shadow-lg shadow-indigo-200">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+              <lucide-icon [img]="WalletIcon" class="w-5 h-5"></lucide-icon>
+            </div>
+            <span class="text-white/80 font-medium">Current Balance</span>
+          </div>
+          <p class="text-3xl font-bold">${{ walletBalance().toFixed(2) }}</p>
+        </div>
+        <div class="bg-white rounded-2xl p-6 shadow-sm">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-10 h-10 bg-emerald-100 rounded-xl flex items-center justify-center">
+              <lucide-icon [img]="TrendingUpIcon" class="w-5 h-5 text-emerald-600"></lucide-icon>
+            </div>
+            <span class="text-gray-500 font-medium">Total Earnings</span>
+          </div>
+          <p class="text-3xl font-bold text-gray-800">${{ totalEarnings().toFixed(2) }}</p>
+        </div>
+        <div class="bg-white rounded-2xl p-6 shadow-sm">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center">
+              <lucide-icon [img]="TrendingDownIcon" class="w-5 h-5 text-red-500"></lucide-icon>
+            </div>
+            <span class="text-gray-500 font-medium">Total Spent</span>
+          </div>
+          <p class="text-3xl font-bold text-gray-800">${{ totalSpent().toFixed(2) }}</p>
+        </div>
+      </div>
+
+      <div class="flex gap-4 mb-6">
+        <button (click)="navigateToPayment()"
+          class="flex items-center gap-2 px-5 py-3 bg-white rounded-xl shadow-sm hover:shadow-md transition-all font-semibold text-gray-700 hover:text-indigo-600">
+          <lucide-icon [img]="CreditCardIcon" class="w-5 h-5"></lucide-icon>
+          Payment Methods
+          <lucide-icon [img]="ChevronRightIcon" class="w-4 h-4"></lucide-icon>
+        </button>
+      </div>
+
+      <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+        <div class="p-5 border-b border-gray-100">
+          <h2 class="text-xl font-bold text-gray-800">Transaction History</h2>
+        </div>
+        <div class="divide-y divide-gray-50">
+          @for (tx of transactions(); track tx.id) {
+          <div class="p-5 flex items-center gap-4 hover:bg-gray-50 transition-colors">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center" [ngClass]="getTransactionColor(tx.type)">
+              <lucide-icon [img]="getTransactionIcon(tx.type)" class="w-5 h-5"></lucide-icon>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="font-semibold text-gray-800 truncate">{{ tx.description }}</p>
+              <p class="text-sm text-gray-500">{{ formatDate(tx.createdAt) }} • {{ tx.referenceNumber }}</p>
+            </div>
+            <div class="text-right">
+              <p class="font-bold text-lg"
+                [ngClass]="tx.type === 'PAYMENT' ? 'text-red-600' : tx.type === 'EARNING' || tx.type === 'REFUND' ? 'text-emerald-600' : 'text-gray-800'">
+                {{ getAmountPrefix(tx.type) }}${{ tx.amount.toFixed(2) }}
+              </p>
+              <span class="inline-block px-2 py-0.5 rounded-full text-xs font-medium"
+                [ngClass]="getStatusBadgeClass(tx.status)">{{ tx.status }}</span>
+            </div>
+          </div>
+          }
+        </div>
+        @if (transactions().length === 0) {
+        <div class="p-12 text-center">
+          <div class="text-5xl mb-4">💸</div>
+          <h3 class="text-xl font-bold text-gray-800 mb-2">No transactions yet</h3>
+          <p class="text-gray-500">Your payment history will appear here</p>
+        </div>
+        }
+      </div>
+      }
     </div>
   </div>
 </div>
 
+<!-- Delete Confirmation Modal -->
+@if (showDeleteModal) {
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+  <div class="bg-white rounded-3xl p-8 shadow-2xl w-full max-w-md animate-fadeIn">
+    <div class="text-center">
+      <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+        <lucide-icon [img]="TrashIcon" class="w-8 h-8 text-red-500"></lucide-icon>
+      </div>
+      <h2 class="text-2xl font-bold text-gray-800 mb-2">Delete Item?</h2>
+      <p class="text-gray-500 mb-6">Are you sure you want to delete "{{ itemToDelete?.title }}"? This action cannot be
+        undone.</p>
+      <div class="flex gap-4">
+        <button (click)="cancelDelete()"
+          class="flex-1 px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200 transition-colors">Cancel</button>
+        <button (click)="deleteItem()"
+          class="flex-1 px-6 py-3 bg-red-500 text-white rounded-xl font-semibold hover:bg-red-600 transition-colors">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+}
+
 <!-- Review Modal -->
-<div *ngIf="showReviewModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-  <div class="bg-white rounded-2xl p-8 shadow-lg w-full max-w-md relative">
-    <button class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl" (click)="closeReviewModal()"
-      aria-label="Close">
-      &times;
-    </button>
-    <h2 class="text-2xl font-bold text-[#1A237E] mb-4">
-      Review {{ reviewBorrowerName }}
-    </h2>
-    <div class="flex items-center justify-center mb-6 gap-1">
+@if (showReviewModal) {
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+  <div class="bg-white rounded-3xl p-8 shadow-2xl w-full max-w-md relative animate-fadeIn">
+    <button
+      class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+      (click)="closeReviewModal()">✕</button>
+    <h2 class="text-2xl font-bold text-gray-800 mb-2">Rate {{ reviewBorrowerName }}</h2>
+    <p class="text-gray-500 mb-6">How was your experience?</p>
+    <div class="flex items-center justify-center mb-8 gap-2">
       @for (i of [1, 2, 3, 4, 5]; track i) {
-      <div class="relative w-10 h-10 cursor-pointer star-container" (mousemove)="rateByHover($event, i)">
-        <!-- Background Star (Outline) -->
-        <svg viewBox="0 0 24 24" class="w-full h-full fill-none stroke-[#FACC15] stroke-2">
+      <div class="relative w-12 h-12 cursor-pointer star-container transition-transform hover:scale-110"
+        (mousemove)="rateByHover($event, i)">
+        <svg viewBox="0 0 24 24" class="w-full h-full fill-none stroke-amber-400 stroke-2">
           <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
         </svg>
-        <!-- Foreground Star (Filled) -->
         <div class="absolute top-0 left-0 h-full overflow-hidden pointer-events-none"
           [style.width.%]="getStarFillPercent(i)">
-          <svg viewBox="0 0 24 24" class="w-10 h-10 fill-[#FACC15]">
+          <svg viewBox="0 0 24 24" class="w-12 h-12 fill-amber-400">
             <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
           </svg>
         </div>
       </div>
       }
     </div>
-    <div class="flex justify-center">
-      <button class="px-6 py-3 bg-[#3949AB] text-white rounded-xl font-semibold hover:bg-[#1A237E] transition-colors"
-        (click)="submitReview()" [disabled]="reviewStars === 0">
-        Submit Review
-      </button>
-    </div>
+    <button
+      class="w-full px-6 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-bold text-lg shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+      (click)="submitReview()" [disabled]="reviewStars === 0">
+      Submit Review
+    </button>
   </div>
 </div>
+}

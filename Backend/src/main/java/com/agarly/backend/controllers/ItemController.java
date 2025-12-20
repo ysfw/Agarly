@@ -24,8 +24,9 @@ public class ItemController {
 
     private User getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = authentication.getName();
-        return userService.findByEmail(email); // Assuming email is the principal
+        assert authentication != null;
+        String username = authentication.getName();
+        return userService.findByUsername(username); // Assuming email is the principal
     }
 
     @PostMapping
@@ -66,6 +67,16 @@ public class ItemController {
         return ResponseEntity.ok(itemService.getAllItems());
     }
 
+    @GetMapping("/pending")
+    public ResponseEntity<List<Item>> getMyPendingItems() {
+        return ResponseEntity.ok(itemService.getPendingItemsByOwner(getCurrentUser()));
+    }
+
+    @GetMapping("/approved")
+    public ResponseEntity<List<Item>> getApprovedItems() {
+        return ResponseEntity.ok(itemService.getApprovedItems());
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Item> getItemById(@PathVariable Long id) {
         Item item = itemService.getItem(id);
@@ -76,7 +87,8 @@ public class ItemController {
     }
 
     @PostMapping("/{id}/lend")
-    public ResponseEntity<Void> lendItem(@PathVariable Long id, @RequestParam String borrowerEmail, @RequestParam(required = false) java.time.LocalDate dueDate) {
+    public ResponseEntity<Void> lendItem(@PathVariable Long id, @RequestParam String borrowerEmail,
+            @RequestParam(required = false) java.time.LocalDate dueDate) {
         User borrower = userService.findByEmail(borrowerEmail);
         if (borrower == null) {
             return ResponseEntity.badRequest().build();

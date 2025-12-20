@@ -43,7 +43,8 @@ public class SecurityConfig {
                                 "/register/verify", "/register/resend-otp", "/uploads/**", "/api/images/upload")
                         .permitAll()
                         .anyRequest().authenticated())
-                .httpBasic(Customizer.withDefaults())
+                // REMOVED: .httpBasic(Customizer.withDefaults()) - this was conflicting with
+                // JWT authentication!
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();

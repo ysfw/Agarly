@@ -1,6 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { CommonModule } from '@angular/common';
+import { Location, CommonModule } from '@angular/common';
 import { LucideAngularModule, ArrowLeft, MapPin, CheckCircle, MessageCircle } from 'lucide-angular';
 import { ItemService } from '../../services/item.service';
 import { Item } from '../../models/item.model';
@@ -20,10 +20,15 @@ export class ItemDetailsComponent implements OnInit {
 
   router = inject(Router);
   route = inject(ActivatedRoute);
+  location = inject(Location);
   itemService = inject(ItemService);
 
   item: Item | undefined;
   id: string | null = null;
+
+  goBack() {
+    this.location.back();
+  }
 
   ngOnInit() {
     this.id = this.route.snapshot.paramMap.get('id');

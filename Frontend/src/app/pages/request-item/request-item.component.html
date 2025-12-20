@@ -1,7 +1,8 @@
 <div class="min-h-screen w-full bg-[#F5F7FA]">
   <div class="max-w-3xl mx-auto px-6 py-8">
     <div class="flex items-center gap-4 mb-8">
-      <button (click)="router.navigate(['/home'])" class="w-10 h-10 flex items-center justify-center hover:bg-gray-100 rounded-full">
+      <button (click)="goBack()" class="w-10 h-10 flex items-center justify-center hover:bg-gray-100 rounded-full"
+        aria-label="Go back">
         <lucide-icon [img]="ArrowLeftIcon" class="w-5 h-5 text-[#1A237E]"></lucide-icon>
       </button>
       <h1 class="text-3xl font-bold text-[#1A237E]">Request an Item</h1>
@@ -12,20 +13,27 @@
         <div class="space-y-4">
           <div>
             <label class="block text-sm font-semibold text-[#1A237E] mb-2">Item Name</label>
-            <input type="text" [(ngModel)]="formData.title" name="title" placeholder="e.g., Pressure Washer" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E]" required />
+            <input type="text" [(ngModel)]="formData.title" name="title" placeholder="e.g., Pressure Washer"
+              class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E]"
+              required />
           </div>
           <div>
             <label class="block text-sm font-semibold text-[#1A237E] mb-2">Category</label>
-            <select [(ngModel)]="formData.category" name="category" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E]" required>
+            <select [(ngModel)]="formData.category" name="category"
+              class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E]"
+              required>
               <option value="">Select a category</option>
               @for (category of categories; track category) {
-                <option [value]="category">{{category}}</option>
+              <option [value]="category">{{category}}</option>
               }
             </select>
           </div>
           <div>
             <label class="block text-sm font-semibold text-[#1A237E] mb-2">Description</label>
-            <textarea [(ngModel)]="formData.description" name="description" placeholder="Describe what you need and how you plan to use it..." rows="4" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E] resize-none" required></textarea>
+            <textarea [(ngModel)]="formData.description" name="description"
+              placeholder="Describe what you need and how you plan to use it..." rows="4"
+              class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E] resize-none"
+              required></textarea>
           </div>
         </div>
       </div>
@@ -35,16 +43,21 @@
           <div class="grid md:grid-cols-2 gap-4">
             <div>
               <label class="block text-sm font-semibold text-[#1A237E] mb-2">Start Date</label>
-              <input type="date" [(ngModel)]="formData.startDate" name="startDate" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E]" required />
+              <input type="date" [(ngModel)]="formData.startDate" name="startDate"
+                class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E]"
+                required />
             </div>
             <div>
               <label class="block text-sm font-semibold text-[#1A237E] mb-2">End Date</label>
-              <input type="date" [(ngModel)]="formData.endDate" name="endDate" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E]" required />
+              <input type="date" [(ngModel)]="formData.endDate" name="endDate"
+                class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E]"
+                required />
             </div>
           </div>
           <div>
             <label class="block text-sm font-semibold text-[#1A237E] mb-2">Urgency</label>
-            <select [(ngModel)]="formData.urgency" name="urgency" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E]">
+            <select [(ngModel)]="formData.urgency" name="urgency"
+              class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E]">
               <option value="flexible">Flexible - No rush</option>
               <option value="soon">Soon - Within a week</option>
               <option value="urgent">Urgent - ASAP</option>
@@ -53,8 +66,11 @@
         </div>
       </div>
       <div class="flex gap-4">
-        <button type="button" (click)="router.navigate(['/home'])" class="flex-1 px-6 py-4 bg-gray-200 text-[#1A237E] rounded-xl font-semibold hover:bg-gray-300 transition-colors">Cancel</button>
-        <button type="submit" class="flex-1 px-6 py-4 bg-[#3949AB] text-white rounded-xl font-semibold hover:bg-[#1A237E] transition-colors shadow-md">Post Request</button>
+        <button type="button" (click)="goBack()"
+          class="flex-1 px-6 py-4 bg-gray-200 text-[#1A237E] rounded-xl font-semibold hover:bg-gray-300 transition-colors">Cancel</button>
+        <button type="submit"
+          class="flex-1 px-6 py-4 bg-[#3949AB] text-white rounded-xl font-semibold hover:bg-[#1A237E] transition-colors shadow-md">Post
+          Request</button>
       </div>
     </form>
   </div>

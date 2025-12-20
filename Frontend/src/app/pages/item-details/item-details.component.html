@@ -2,8 +2,9 @@
 <div class="min-h-screen w-full bg-[#F5F7FA]">
   <div class="max-w-4xl mx-auto">
     <div class="bg-white relative">
-      <button (click)="router.navigate(['/home'])"
-        class="absolute top-6 left-6 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-50 z-10">
+      <button (click)="goBack()"
+        class="absolute top-6 left-6 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-50 z-10"
+        aria-label="Go back">
         <lucide-icon [img]="ArrowLeftIcon" class="w-5 h-5 text-[#1A237E]"></lucide-icon>
       </button>
       <img [src]="item.imageUrls && item.imageUrls.length > 0 ? item.imageUrls[0] : 'assets/placeholder-image.jpg'"

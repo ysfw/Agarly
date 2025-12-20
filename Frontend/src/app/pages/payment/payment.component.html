@@ -1,70 +1,190 @@
-<div class="min-h-screen w-full bg-[#F5F7FA]">
-  <div class="max-w-2xl mx-auto px-6 py-8">
+<div class="min-h-screen w-full bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <!-- Header -->
     <div class="flex items-center gap-4 mb-8">
-      <button (click)="location.back()" class="w-10 h-10 flex items-center justify-center hover:bg-gray-100 rounded-full">
-        <lucide-icon [img]="ArrowLeftIcon" class="w-5 h-5 text-[#1A237E]"></lucide-icon>
+      <button (click)="location.back()"
+        class="w-12 h-12 flex items-center justify-center bg-white hover:bg-indigo-50 rounded-2xl shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-x-1">
+        <lucide-icon [img]="ArrowLeftIcon" class="w-5 h-5 text-indigo-600"></lucide-icon>
       </button>
-      <h1 class="text-3xl font-bold text-[#1A237E]">Payment</h1>
+      <div>
+        <h1 class="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+          Checkout</h1>
+        <p class="text-gray-500 text-sm">Secure payment processing</p>
+      </div>
     </div>
-    <div class="bg-white rounded-2xl p-6 shadow-sm mb-6">
-      <h2 class="text-xl font-semibold text-[#1A237E] mb-4">Rental Summary</h2>
-      <div class="flex items-center gap-4 mb-6">
-        <img src="https://images.unsplash.com/photo-1504148455328-c376907d081c?w=100" alt="Power Drill" class="w-20 h-20 rounded-xl object-cover" />
-        <div>
-          <h3 class="font-semibold text-[#1A237E] mb-1">Power Drill</h3>
-          <p class="text-sm text-gray-600">3 day rental</p>
+
+    <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+      <!-- Left Column: Payment Methods -->
+      <div class="lg:col-span-3 space-y-6">
+        <!-- Saved Payment Methods -->
+        <div class="bg-white rounded-3xl p-6 shadow-lg shadow-indigo-100/50">
+          <div class="flex items-center gap-3 mb-6">
+            <div
+              class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center">
+              <lucide-icon [img]="WalletIcon" class="w-5 h-5 text-white"></lucide-icon>
+            </div>
+            <h2 class="text-xl font-bold text-gray-800">Payment Method</h2>
+          </div>
+
+          <!-- Saved Cards -->
+          @if (savedCards().length > 0) {
+          <div class="space-y-3 mb-4">
+            @for (card of savedCards(); track card.id) {
+            <div (click)="selectCard(card.id)"
+              class="relative flex items-center gap-4 p-4 rounded-2xl border-2 cursor-pointer transition-all duration-300"
+              [ngClass]="selectedCardId() === card.id ? 'border-indigo-500 bg-indigo-50 shadow-lg shadow-indigo-100' : 'border-gray-100 hover:border-indigo-200 hover:bg-gray-50'">
+              <div
+                class="w-14 h-10 bg-gradient-to-br from-slate-700 to-slate-900 rounded-lg flex items-center justify-center text-white text-xs font-bold">
+                {{ card.cardType }}
+              </div>
+              <div class="flex-1">
+                <p class="font-semibold text-gray-800">{{ card.displayName }}</p>
+                <p class="text-sm text-gray-500">Expires {{ card.expiryMonth }}/{{ card.expiryYear }}</p>
+              </div>
+              @if (card.isDefault) {
+              <span class="px-3 py-1 bg-emerald-100 text-emerald-700 text-xs font-semibold rounded-full">Default</span>
+              }
+              @if (selectedCardId() === card.id) {
+              <div class="w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center">
+                <lucide-icon [img]="CheckIcon" class="w-4 h-4 text-white"></lucide-icon>
+              </div>
+              }
+              <button (click)="removeCard(card.id, $event)"
+                class="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors">
+                <lucide-icon [img]="TrashIcon" class="w-4 h-4"></lucide-icon>
+              </button>
+            </div>
+            }
+          </div>
+          }
+
+          <!-- Add New Card Button -->
+          <button (click)="toggleAddCard()"
+            class="w-full flex items-center justify-center gap-2 p-4 rounded-2xl border-2 border-dashed transition-all duration-300"
+            [ngClass]="showAddCard() ? 'border-indigo-400 bg-indigo-50 text-indigo-600' : 'border-gray-200 text-gray-500 hover:border-indigo-300 hover:text-indigo-600 hover:bg-indigo-50'">
+            <lucide-icon [img]="PlusIcon" class="w-5 h-5"></lucide-icon>
+            <span class="font-semibold">{{ showAddCard() ? 'Cancel' : 'Add New Card' }}</span>
+          </button>
+        </div>
+
+        <!-- New Card Form -->
+        @if (showAddCard()) {
+        <div class="bg-white rounded-3xl p-6 shadow-lg shadow-indigo-100/50 animate-fadeIn">
+          <div class="flex items-center gap-3 mb-6">
+            <div
+              class="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center">
+              <lucide-icon [img]="CreditCardIcon" class="w-5 h-5 text-white"></lucide-icon>
+            </div>
+            <h2 class="text-xl font-bold text-gray-800">Card Details</h2>
+          </div>
+
+          <div class="space-y-5">
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Card Number</label>
+              <div class="relative">
+                <lucide-icon [img]="CreditCardIcon"
+                  class="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"></lucide-icon>
+                <input type="text" [value]="newCard.cardNumber" (input)="onCardNumberInput($event)"
+                  placeholder="1234 5678 9012 3456" maxlength="19"
+                  class="w-full pl-12 pr-4 py-4 rounded-xl border-2 border-gray-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 outline-none transition-all text-gray-800 font-mono text-lg" />
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Cardholder Name</label>
+              <input type="text" [(ngModel)]="newCard.cardName" placeholder="JOHN DOE"
+                class="w-full px-4 py-4 rounded-xl border-2 border-gray-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 outline-none transition-all text-gray-800 uppercase tracking-wider" />
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Expiry Date</label>
+                <input type="text" [value]="newCard.expiryDate" (input)="onExpiryInput($event)" placeholder="MM/YY"
+                  maxlength="5"
+                  class="w-full px-4 py-4 rounded-xl border-2 border-gray-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 outline-none transition-all text-gray-800 font-mono text-center text-lg" />
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">CVV</label>
+                <input type="password" [(ngModel)]="newCard.cvv" placeholder="•••" maxlength="4"
+                  class="w-full px-4 py-4 rounded-xl border-2 border-gray-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 outline-none transition-all text-gray-800 font-mono text-center text-lg tracking-widest" />
+              </div>
+            </div>
+
+            <label class="flex items-center gap-3 cursor-pointer group">
+              <input type="checkbox" [(ngModel)]="newCard.saveCard"
+                class="w-5 h-5 rounded border-2 border-gray-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer" />
+              <span class="text-gray-600 group-hover:text-gray-800 transition-colors">Save card for future
+                payments</span>
+            </label>
+          </div>
+        </div>
+        }
+      </div>
+
+      <!-- Right Column: Summary -->
+      <div class="lg:col-span-2 space-y-6">
+        <div class="bg-white rounded-3xl p-6 shadow-lg shadow-indigo-100/50 sticky top-8">
+          <h2 class="text-lg font-bold text-gray-800 mb-5">Order Summary</h2>
+
+          <div class="flex items-center gap-4 p-4 bg-gray-50 rounded-2xl mb-6">
+            <img [src]="rentalSummary.itemImage" [alt]="rentalSummary.itemName"
+              class="w-16 h-16 rounded-xl object-cover shadow-md" />
+            <div>
+              <h3 class="font-bold text-gray-800">{{ rentalSummary.itemName }}</h3>
+              <p class="text-sm text-gray-500">{{ rentalSummary.duration }} rental</p>
+            </div>
+          </div>
+
+          <div class="space-y-3 mb-6">
+            <div class="flex justify-between text-gray-600"><span>Rental Fee</span><span class="font-medium">${{
+                rentalSummary.rentalFee.toFixed(2) }}</span></div>
+            <div class="flex justify-between text-gray-600"><span>Service Fee</span><span class="font-medium">${{
+                rentalSummary.serviceFee.toFixed(2) }}</span></div>
+            <div class="flex justify-between text-gray-600"><span>Security Deposit</span><span class="font-medium">${{
+                rentalSummary.securityDeposit.toFixed(2) }}</span></div>
+            <div class="h-px bg-gray-200 my-2"></div>
+            <div class="flex justify-between text-xl font-bold text-gray-800">
+              <span>Total</span>
+              <span class="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">${{
+                totalAmount().toFixed(2) }}</span>
+            </div>
+          </div>
+
+          <p class="text-xs text-gray-500 mb-6 flex items-center gap-2">
+            <span class="w-2 h-2 bg-emerald-400 rounded-full"></span>
+            Security deposit refunded upon item return
+          </p>
+
+          @if (errorMessage()) {
+          <div class="mb-4 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm font-medium">{{
+            errorMessage() }}</div>
+          }
+
+          @if (successMessage()) {
+          <div
+            class="mb-4 p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-700 text-sm font-medium flex items-center gap-2">
+            <lucide-icon [img]="CheckIcon" class="w-5 h-5"></lucide-icon>
+            {{ successMessage() }}
+          </div>
+          }
+
+          <button (click)="handleSubmit()" [disabled]="isProcessing() || (!selectedCardId() && !showAddCard())"
+            class="w-full py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-2xl font-bold text-lg shadow-lg shadow-indigo-300/50 hover:shadow-xl hover:shadow-indigo-400/50 hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-lg flex items-center justify-center gap-2">
+            @if (isProcessing()) {
+            <div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+            <span>Processing...</span>
+            } @else {
+            <lucide-icon [img]="LockIcon" class="w-5 h-5"></lucide-icon>
+            <span>Pay ${{ totalAmount().toFixed(2) }}</span>
+            }
+          </button>
+
+          <p class="text-xs text-gray-400 text-center mt-4 flex items-center justify-center gap-1">
+            <lucide-icon [img]="LockIcon" class="w-3 h-3"></lucide-icon>
+            Secured by 256-bit SSL encryption
+          </p>
         </div>
       </div>
-      <div class="space-y-2 border-t border-gray-200 pt-4">
-        <div class="flex justify-between text-gray-700">
-          <span>Rental Fee</span>
-          <span>$15.00</span>
-        </div>
-        <div class="flex justify-between text-gray-700">
-          <span>Service Fee</span>
-          <span>$2.00</span>
-        </div>
-        <div class="flex justify-between text-gray-700">
-          <span>Security Deposit</span>
-          <span>$25.00</span>
-        </div>
-        <div class="flex justify-between font-bold text-[#1A237E] text-lg pt-2 border-t border-gray-200">
-          <span>Total</span>
-          <span>$42.00</span>
-        </div>
-      </div>
-      <p class="text-sm text-gray-600 mt-4">Security deposit will be refunded upon item return</p>
     </div>
-    <form (ngSubmit)="handleSubmit()" class="bg-white rounded-2xl p-6 shadow-sm">
-      <div class="flex items-center gap-2 mb-6">
-        <lucide-icon [img]="LockIcon" class="w-5 h-5 text-[#3949AB]"></lucide-icon>
-        <h2 class="text-xl font-semibold text-[#1A237E]">Payment Information</h2>
-      </div>
-      <div class="space-y-4">
-        <div>
-          <label class="block text-sm font-semibold text-[#1A237E] mb-2">Card Number</label>
-          <div class="relative">
-            <lucide-icon [img]="CreditCardIcon" class="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"></lucide-icon>
-            <input type="text" [(ngModel)]="formData.cardNumber" name="cardNumber" placeholder="1234 5678 9012 3456" class="w-full pl-14 pr-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E]" required />
-          </div>
-        </div>
-        <div>
-          <label class="block text-sm font-semibold text-[#1A237E] mb-2">Cardholder Name</label>
-          <input type="text" [(ngModel)]="formData.cardName" name="cardName" placeholder="John Doe" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E]" required />
-        </div>
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="block text-sm font-semibold text-[#1A237E] mb-2">Expiry Date</label>
-            <input type="text" [(ngModel)]="formData.expiryDate" name="expiryDate" placeholder="MM/YY" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E]" required />
-          </div>
-          <div>
-            <label class="block text-sm font-semibold text-[#1A237E] mb-2">CVV</label>
-            <input type="text" [(ngModel)]="formData.cvv" name="cvv" placeholder="123" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E]" required />
-          </div>
-        </div>
-      </div>
-      <button type="submit" class="w-full mt-6 px-6 py-4 bg-[#3949AB] text-white rounded-xl font-semibold hover:bg-[#1A237E] transition-colors shadow-md">Complete Payment</button>
-      <p class="text-xs text-gray-500 text-center mt-4">Your payment information is encrypted and secure</p>
-    </form>
   </div>
 </div>

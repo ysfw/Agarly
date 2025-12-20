@@ -1,5 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, ArrowLeft, Image as ImageIcon, X, MapPin } from 'lucide-angular';
 import { LocationPickerComponent } from '../../components/location-picker/location-picker.component';
@@ -20,7 +21,12 @@ export class AddItemComponent {
   readonly MapPinIcon = MapPin;
 
   router = inject(Router);
+  location = inject(Location);
   itemService = inject(ItemService);
+
+  goBack() {
+    this.location.back();
+  }
   categories = ['TOOLS', 'KITCHEN', 'CLEANING', 'ELECTRONICS', 'SPORTS', 'GARDEN', 'OTHER'];
 
   formData = {
@@ -61,7 +67,7 @@ export class AddItemComponent {
     this.itemService.create(newItem).subscribe({
       next: (id) => {
         console.log('Item created with ID:', id);
-        this.router.navigate(['/home']);
+        this.router.navigate(['/dashboard']);
       },
       error: (err) => {
         console.error('Error creating item:', err);

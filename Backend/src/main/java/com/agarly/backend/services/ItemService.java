@@ -58,7 +58,7 @@ public class ItemService {
     public List<Item> getAllItems() {
         return itemRepository.findAll();
     }
-    
+
     @Valid
     public List<Item> getItemsByCategory(ItemCategory category) {
         return itemRepository.findByCategory(category);
@@ -70,6 +70,14 @@ public class ItemService {
 
     public List<Item> getBorrowedItems(User borrower) {
         return itemRepository.findByBorrower(borrower);
+    }
+
+    public List<Item> getPendingItemsByOwner(User owner) {
+        return itemRepository.findByOwnerAndStatus(owner, com.agarly.backend.models.Enums.ItemStatus.PENDING);
+    }
+
+    public List<Item> getApprovedItems() {
+        return itemRepository.findByStatus(com.agarly.backend.models.Enums.ItemStatus.APPROVED);
     }
 
     public void lendItem(Long id, User borrower, java.time.LocalDate dueDate) {

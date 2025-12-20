@@ -42,6 +42,14 @@ export class ItemService {
         return this.http.get<Item[]>(`${this.baseUrl}/category/${category}`);
     }
 
+    getPendingItems(): Observable<Item[]> {
+        return this.http.get<Item[]>(`${this.baseUrl}/pending`);
+    }
+
+    getApprovedItems(): Observable<Item[]> {
+        return this.http.get<Item[]>(`${this.baseUrl}/approved`);
+    }
+
     uploadImage(file: File): Observable<string> {
         const formData = new FormData();
         formData.append('file', file);

@@ -2,8 +2,8 @@
   <div class="max-w-7xl mx-auto px-6 py-8">
     <div class="flex items-center justify-between mb-8">
       <div class="flex items-center gap-4">
-        <button (click)="router.navigate(['/home'])"
-          class="w-10 h-10 flex items-center justify-center hover:bg-gray-100 rounded-full">
+        <button (click)="goBack()" class="w-10 h-10 flex items-center justify-center hover:bg-gray-100 rounded-full"
+          aria-label="Go back">
           <lucide-icon [img]="ArrowLeftIcon" class="w-5 h-5 text-[#1A237E]"></lucide-icon>
         </button>
         <div>

@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { LucideAngularModule, ArrowLeft, Bell, Shield, HelpCircle, LogOut, ChevronRight, Mail, MessageSquare, User } from 'lucide-angular';
+import { LucideAngularModule, ArrowLeft, Bell, Shield, HelpCircle, LogOut, ChevronRight, Mail, MessageSquare, User, CreditCard } from 'lucide-angular';
 
 @Component({
   selector: 'app-settings',
@@ -19,6 +19,7 @@ export class SettingsComponent {
   readonly MailIcon = Mail;
   readonly MessageSquareIcon = MessageSquare;
   readonly UserIcon = User;
+  readonly CreditCardIcon = CreditCard;
 
   private router = inject(Router);
 

@@ -1,7 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { LucideAngularModule, ArrowLeft, SlidersHorizontal, Search, MapPin } from 'lucide-angular';
 import { ItemCardComponent } from '../../components/item-card/item-card.component';
 import { LocationPickerComponent } from '../../components/location-picker/location-picker.component';
@@ -23,7 +23,12 @@ export class SearchResultsComponent implements OnInit {
 
   router = inject(Router);
   route = inject(ActivatedRoute);
+  location = inject(Location);
   itemService = inject(ItemService);
+
+  goBack() {
+    this.location.back();
+  }
 
   showFilters = false;
   isMapOpen = false;

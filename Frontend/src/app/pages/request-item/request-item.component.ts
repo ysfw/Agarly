@@ -1,5 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, ArrowLeft, Calendar } from 'lucide-angular';
 
@@ -13,9 +14,14 @@ import { LucideAngularModule, ArrowLeft, Calendar } from 'lucide-angular';
 export class RequestItemComponent {
   readonly ArrowLeftIcon = ArrowLeft;
   readonly CalendarIcon = Calendar;
-  
+
   router = inject(Router);
+  location = inject(Location);
   categories = ['Tools', 'Kitchen', 'Cleaning', 'Electronics', 'Sports', 'Garden', 'Other'];
+
+  goBack() {
+    this.location.back();
+  }
 
   formData = {
     title: '',
