@@ -1,187 +1,264 @@
 <div class="min-h-screen bg-slate-50 p-6">
-    <!-- Main Container Card -->
-    <div class="max-w-6xl mx-auto bg-white rounded-lg shadow-lg p-6">
-
-        <!-- Header -->
-        <div class="flex items-center justify-between mb-8">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-blue-800 rounded-lg flex items-center justify-center">
-                    <lucide-icon [img]="ShieldIcon" class="w-5 h-5 text-white"></lucide-icon>
-                </div>
-                <h1 class="text-xl font-bold text-slate-800">Admin Dashboard</h1>
-            </div>
-            <button (click)="logout()"
-                class="flex items-center gap-2 text-red-500 hover:text-red-600 transition-colors font-medium">
-                <lucide-icon [img]="LogOutIcon" class="w-5 h-5"></lucide-icon>
-                <span>Log Out</span>
-            </button>
+  <!-- Main Container Card -->
+  <div class="max-w-6xl mx-auto bg-white rounded-lg shadow-lg p-6">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-8">
+      <div class="flex items-center gap-3">
+        <div
+          class="w-10 h-10 bg-blue-800 rounded-lg flex items-center justify-center"
+        >
+          <lucide-icon
+            [img]="ShieldIcon"
+            class="w-5 h-5 text-white"
+          ></lucide-icon>
         </div>
-
-        <!-- Loading State -->
-        @if (loading()) {
-        <div class="flex items-center justify-center py-20">
-            <lucide-icon [img]="LoaderIcon" class="w-8 h-8 text-blue-800 animate-spin"></lucide-icon>
-            <span class="ml-3 text-gray-600">Loading dashboard data...</span>
-        </div>
-        } @else {
-
-        <!-- Statistics Cards -->
-        <div class="grid grid-cols-4 gap-4 mb-8">
-            <!-- Pending Posts -->
-            <div class="bg-slate-50 rounded-lg p-4 border border-gray-200">
-                <p class="text-sm text-gray-500 font-medium mb-1">Pending Posts</p>
-                <p class="text-3xl font-bold text-blue-800">{{ pendingPosts() }}</p>
-            </div>
-            <!-- Pending Requests -->
-            <div class="bg-slate-50 rounded-lg p-4 border border-gray-200">
-                <p class="text-sm text-gray-500 font-medium mb-1">Pending Requests</p>
-                <p class="text-3xl font-bold text-blue-800">{{ pendingRequests() }}</p>
-            </div>
-            <!-- Total Posts -->
-            <div class="bg-slate-50 rounded-lg p-4 border border-gray-200">
-                <p class="text-sm text-gray-500 font-medium mb-1">Total Posts</p>
-                <p class="text-3xl font-bold text-blue-800">{{ totalPosts() }}</p>
-            </div>
-            <!-- Total Requests -->
-            <div class="bg-slate-50 rounded-lg p-4 border border-gray-200">
-                <p class="text-sm text-gray-500 font-medium mb-1">Total Requests</p>
-                <p class="text-3xl font-bold text-blue-800">{{ totalRequests() }}</p>
-            </div>
-        </div>
-
-        <!-- Navigation Tabs and Search -->
-        <div class="flex items-center justify-between mb-6">
-            <!-- Tabs -->
-            <div class="flex gap-2">
-                <button (click)="setActiveTab('posts')" [class]="activeTab() === 'posts' 
-            ? 'px-4 py-2 rounded-full font-medium bg-blue-800 text-white transition-all' 
-            : 'px-4 py-2 rounded-full font-medium bg-gray-100 text-blue-800 hover:bg-gray-200 transition-all'">
-                    Posts ({{ totalPosts() }})
-                </button>
-                <button (click)="setActiveTab('requests')" [class]="activeTab() === 'requests' 
-            ? 'px-4 py-2 rounded-full font-medium bg-blue-800 text-white transition-all' 
-            : 'px-4 py-2 rounded-full font-medium bg-gray-100 text-blue-800 hover:bg-gray-200 transition-all'">
-                    Requests ({{ totalRequests() }})
-                </button>
-            </div>
-
-            <!-- Search Bar -->
-            <div class="relative">
-                <lucide-icon [img]="SearchIcon" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400">
-                </lucide-icon>
-                <input type="text" [placeholder]="activeTab() === 'posts' ? 'Search Posts' : 'Search Requests'"
-                    [value]="searchQuery()" (input)="onSearchChange($event)"
-                    class="pl-10 pr-4 py-2 w-64 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-            </div>
-        </div>
-
-        <!-- Content List -->
-        <div class="space-y-4">
-            <!-- Posts Tab -->
-            @if (activeTab() === 'posts') {
-            @for (post of filteredPosts(); track post.id) {
-            <div
-                class="flex items-center gap-4 p-4 bg-white border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
-                <!-- Thumbnail -->
-                <img [src]="getItemThumbnail(post)" [alt]="post.title"
-                    class="w-16 h-16 rounded-lg object-cover flex-shrink-0" />
-
-                <!-- Info -->
-                <div class="flex-1 min-w-0">
-                    <h3 class="font-semibold text-slate-800 truncate">{{ post.title }}</h3>
-                    <p class="text-sm text-gray-500">
-                        by {{ getOwnerName(post.owner) }} • {{ post.category }}
-                    </p>
-                    <p class="text-xs text-gray-400">${{ post.pricePerDay }}/{{ post.priceUnit?.toLowerCase() }}</p>
-                </div>
-
-                <!-- Status Badge -->
-                <span [class]="'px-3 py-1 rounded-full text-xs font-medium ' + getStatusBadgeClass(post.status)">
-                    {{ getStatusLabel(post.status) }}
-                </span>
-
-                <!-- Action Buttons -->
-                <div class="flex items-center gap-2">
-                    <button (click)="deletePost(post)"
-                        class="flex items-center gap-1 px-3 py-1.5 border border-red-500 text-red-500 rounded-lg text-sm font-medium hover:bg-red-50 transition-colors">
-                        <lucide-icon [img]="TrashIcon" class="w-4 h-4"></lucide-icon>
-                        Delete
-                    </button>
-                    @if (post.status === 'PENDING') {
-                    <button (click)="approvePost(post)"
-                        class="flex items-center gap-1 px-3 py-1.5 bg-emerald-500 text-white rounded-lg text-sm font-medium hover:bg-emerald-600 transition-colors">
-                        <lucide-icon [img]="CheckIcon" class="w-4 h-4"></lucide-icon>
-                        Approve
-                    </button>
-                    <button (click)="rejectPost(post)"
-                        class="flex items-center gap-1 px-3 py-1.5 border border-gray-300 text-gray-600 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors">
-                        <lucide-icon [img]="XIcon" class="w-4 h-4"></lucide-icon>
-                        Reject
-                    </button>
-                    }
-                </div>
-            </div>
-            } @empty {
-            <div class="text-center py-12 text-gray-500">
-                <lucide-icon [img]="PackageIcon" class="w-12 h-12 mx-auto mb-4 text-gray-300"></lucide-icon>
-                <p>No posts found</p>
-            </div>
-            }
-            }
-
-            <!-- Requests Tab -->
-            @if (activeTab() === 'requests') {
-            @for (request of filteredRequests(); track request.id) {
-            <div
-                class="flex items-center gap-4 p-4 bg-white border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
-                <!-- Icon placeholder for requests (no image) -->
-                <div class="w-16 h-16 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
-                    <lucide-icon [img]="UserIcon" class="w-8 h-8 text-blue-800"></lucide-icon>
-                </div>
-
-                <!-- Info -->
-                <div class="flex-1 min-w-0">
-                    <h3 class="font-semibold text-slate-800 truncate">{{ request.title }}</h3>
-                    <p class="text-sm text-gray-500">
-                        by {{ getRequesterName(request.requester) }} • {{ request.category || 'General' }}
-                    </p>
-                    <p class="text-xs text-gray-400">{{ request.description }}</p>
-                </div>
-
-                <!-- Status Badge -->
-                <span [class]="'px-3 py-1 rounded-full text-xs font-medium ' + getStatusBadgeClass(request.status)">
-                    {{ getStatusLabel(request.status) }}
-                </span>
-
-                <!-- Action Buttons -->
-                <div class="flex items-center gap-2">
-                    <button (click)="deleteRequest(request)"
-                        class="flex items-center gap-1 px-3 py-1.5 border border-red-500 text-red-500 rounded-lg text-sm font-medium hover:bg-red-50 transition-colors">
-                        <lucide-icon [img]="TrashIcon" class="w-4 h-4"></lucide-icon>
-                        Delete
-                    </button>
-                    @if (request.status === 'PENDING') {
-                    <button (click)="approveRequest(request)"
-                        class="flex items-center gap-1 px-3 py-1.5 bg-emerald-500 text-white rounded-lg text-sm font-medium hover:bg-emerald-600 transition-colors">
-                        <lucide-icon [img]="CheckIcon" class="w-4 h-4"></lucide-icon>
-                        Approve
-                    </button>
-                    <button (click)="rejectRequest(request)"
-                        class="flex items-center gap-1 px-3 py-1.5 border border-gray-300 text-gray-600 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors">
-                        <lucide-icon [img]="XIcon" class="w-4 h-4"></lucide-icon>
-                        Reject
-                    </button>
-                    }
-                </div>
-            </div>
-            } @empty {
-            <div class="text-center py-12 text-gray-500">
-                <lucide-icon [img]="UserIcon" class="w-12 h-12 mx-auto mb-4 text-gray-300"></lucide-icon>
-                <p>No requests found</p>
-            </div>
-            }
-            }
-        </div>
-        }
+        <h1 class="text-xl font-bold text-slate-800">Admin Dashboard</h1>
+      </div>
+      <button
+        (click)="logout()"
+        class="flex items-center gap-2 text-red-500 hover:text-red-600 transition-colors font-medium"
+      >
+        <lucide-icon [img]="LogOutIcon" class="w-5 h-5"></lucide-icon>
+        <span>Log Out</span>
+      </button>
     </div>
+
+    <!-- Loading State -->
+    @if (loading()) {
+    <div class="flex items-center justify-center py-20">
+      <lucide-icon
+        [img]="LoaderIcon"
+        class="w-8 h-8 text-blue-800 animate-spin"
+      ></lucide-icon>
+      <span class="ml-3 text-gray-600">Loading dashboard data...</span>
+    </div>
+    } @else {
+
+    <!-- Statistics Cards -->
+    <div class="grid grid-cols-4 gap-4 mb-8">
+      <!-- Pending Posts -->
+      <div class="bg-slate-50 rounded-lg p-4 border border-gray-200">
+        <p class="text-sm text-gray-500 font-medium mb-1">Pending Posts</p>
+        <p class="text-3xl font-bold text-blue-800">{{ pendingPosts() }}</p>
+      </div>
+      <!-- Pending Requests -->
+      <div class="bg-slate-50 rounded-lg p-4 border border-gray-200">
+        <p class="text-sm text-gray-500 font-medium mb-1">Pending Requests</p>
+        <p class="text-3xl font-bold text-blue-800">{{ pendingRequests() }}</p>
+      </div>
+      <!-- Total Posts -->
+      <div class="bg-slate-50 rounded-lg p-4 border border-gray-200">
+        <p class="text-sm text-gray-500 font-medium mb-1">Total Posts</p>
+        <p class="text-3xl font-bold text-blue-800">{{ totalPosts() }}</p>
+      </div>
+      <!-- Total Requests -->
+      <div class="bg-slate-50 rounded-lg p-4 border border-gray-200">
+        <p class="text-sm text-gray-500 font-medium mb-1">Total Requests</p>
+        <p class="text-3xl font-bold text-blue-800">{{ totalRequests() }}</p>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs and Search -->
+    <div class="flex items-center justify-between mb-6">
+      <!-- Tabs -->
+      <div class="flex gap-2">
+        <button
+          (click)="setActiveTab('posts')"
+          [class]="
+            activeTab() === 'posts'
+              ? 'px-4 py-2 rounded-full font-medium bg-blue-800 text-white transition-all'
+              : 'px-4 py-2 rounded-full font-medium bg-gray-100 text-blue-800 hover:bg-gray-200 transition-all'
+          "
+        >
+          Posts ({{ totalPosts() }})
+        </button>
+        <button
+          (click)="setActiveTab('requests')"
+          [class]="
+            activeTab() === 'requests'
+              ? 'px-4 py-2 rounded-full font-medium bg-blue-800 text-white transition-all'
+              : 'px-4 py-2 rounded-full font-medium bg-gray-100 text-blue-800 hover:bg-gray-200 transition-all'
+          "
+        >
+          Requests ({{ totalRequests() }})
+        </button>
+        <button
+          (click)="goToSupportTickets()"
+          class="px-4 py-2 rounded-full font-medium bg-gray-100 text-blue-800 hover:bg-gray-200 transition-all"
+        >
+          Support Tickets
+        </button>
+      </div>
+
+      <!-- Search Bar -->
+      <div class="relative">
+        <lucide-icon
+          [img]="SearchIcon"
+          class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"
+        >
+        </lucide-icon>
+        <input
+          type="text"
+          [placeholder]="
+            activeTab() === 'posts' ? 'Search Posts' : 'Search Requests'
+          "
+          [value]="searchQuery()"
+          (input)="onSearchChange($event)"
+          class="pl-10 pr-4 py-2 w-64 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        />
+      </div>
+    </div>
+
+    <!-- Content List -->
+    <div class="space-y-4">
+      <!-- Posts Tab -->
+      @if (activeTab() === 'posts') { @for (post of filteredPosts(); track
+      post.id) {
+      <div
+        class="flex items-center gap-4 p-4 bg-white border border-gray-200 rounded-lg hover:shadow-md transition-shadow"
+      >
+        <!-- Thumbnail -->
+        <img
+          [src]="getItemThumbnail(post)"
+          [alt]="post.title"
+          class="w-16 h-16 rounded-lg object-cover flex-shrink-0"
+        />
+
+        <!-- Info -->
+        <div class="flex-1 min-w-0">
+          <h3 class="font-semibold text-slate-800 truncate">
+            {{ post.title }}
+          </h3>
+          <p class="text-sm text-gray-500">
+            by {{ getOwnerName(post.owner) }} • {{ post.category }}
+          </p>
+          <p class="text-xs text-gray-400">
+            ${{ post.pricePerDay }}/{{ post.priceUnit.toLowerCase() }}
+          </p>
+        </div>
+
+        <!-- Status Badge -->
+        <span
+          [class]="
+            'px-3 py-1 rounded-full text-xs font-medium ' +
+            getStatusBadgeClass(post.status)
+          "
+        >
+          {{ getStatusLabel(post.status) }}
+        </span>
+
+        <!-- Action Buttons -->
+        <div class="flex items-center gap-2">
+          <button
+            (click)="deletePost(post)"
+            class="flex items-center gap-1 px-3 py-1.5 border border-red-500 text-red-500 rounded-lg text-sm font-medium hover:bg-red-50 transition-colors"
+          >
+            <lucide-icon [img]="TrashIcon" class="w-4 h-4"></lucide-icon>
+            Delete
+          </button>
+          @if (post.status === 'PENDING') {
+          <button
+            (click)="approvePost(post)"
+            class="flex items-center gap-1 px-3 py-1.5 bg-emerald-500 text-white rounded-lg text-sm font-medium hover:bg-emerald-600 transition-colors"
+          >
+            <lucide-icon [img]="CheckIcon" class="w-4 h-4"></lucide-icon>
+            Approve
+          </button>
+          <button
+            (click)="rejectPost(post)"
+            class="flex items-center gap-1 px-3 py-1.5 border border-gray-300 text-gray-600 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors"
+          >
+            <lucide-icon [img]="XIcon" class="w-4 h-4"></lucide-icon>
+            Reject
+          </button>
+          }
+        </div>
+      </div>
+      } @empty {
+      <div class="text-center py-12 text-gray-500">
+        <lucide-icon
+          [img]="PackageIcon"
+          class="w-12 h-12 mx-auto mb-4 text-gray-300"
+        ></lucide-icon>
+        <p>No posts found</p>
+      </div>
+      } }
+
+      <!-- Requests Tab -->
+      @if (activeTab() === 'requests') { @for (request of filteredRequests();
+      track request.id) {
+      <div
+        class="flex items-center gap-4 p-4 bg-white border border-gray-200 rounded-lg hover:shadow-md transition-shadow"
+      >
+        <!-- Icon placeholder for requests (no image) -->
+        <div
+          class="w-16 h-16 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0"
+        >
+          <lucide-icon
+            [img]="UserIcon"
+            class="w-8 h-8 text-blue-800"
+          ></lucide-icon>
+        </div>
+
+        <!-- Info -->
+        <div class="flex-1 min-w-0">
+          <h3 class="font-semibold text-slate-800 truncate">
+            {{ request.title }}
+          </h3>
+          <p class="text-sm text-gray-500">
+            by {{ getRequesterName(request.requester) }} •
+            {{ request.category || "General" }}
+          </p>
+          <p class="text-xs text-gray-400">{{ request.description }}</p>
+        </div>
+
+        <!-- Status Badge -->
+        <span
+          [class]="
+            'px-3 py-1 rounded-full text-xs font-medium ' +
+            getStatusBadgeClass(request.status)
+          "
+        >
+          {{ getStatusLabel(request.status) }}
+        </span>
+
+        <!-- Action Buttons -->
+        <div class="flex items-center gap-2">
+          <button
+            (click)="deleteRequest(request)"
+            class="flex items-center gap-1 px-3 py-1.5 border border-red-500 text-red-500 rounded-lg text-sm font-medium hover:bg-red-50 transition-colors"
+          >
+            <lucide-icon [img]="TrashIcon" class="w-4 h-4"></lucide-icon>
+            Delete
+          </button>
+          @if (request.status === 'PENDING') {
+          <button
+            (click)="approveRequest(request)"
+            class="flex items-center gap-1 px-3 py-1.5 bg-emerald-500 text-white rounded-lg text-sm font-medium hover:bg-emerald-600 transition-colors"
+          >
+            <lucide-icon [img]="CheckIcon" class="w-4 h-4"></lucide-icon>
+            Approve
+          </button>
+          <button
+            (click)="rejectRequest(request)"
+            class="flex items-center gap-1 px-3 py-1.5 border border-gray-300 text-gray-600 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors"
+          >
+            <lucide-icon [img]="XIcon" class="w-4 h-4"></lucide-icon>
+            Reject
+          </button>
+          }
+        </div>
+      </div>
+      } @empty {
+      <div class="text-center py-12 text-gray-500">
+        <lucide-icon
+          [img]="UserIcon"
+          class="w-12 h-12 mx-auto mb-4 text-gray-300"
+        ></lucide-icon>
+        <p>No requests found</p>
+      </div>
+      } }
+    </div>
+    }
+  </div>
 </div>

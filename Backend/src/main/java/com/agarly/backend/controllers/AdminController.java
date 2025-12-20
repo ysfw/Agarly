@@ -2,7 +2,9 @@ package com.agarly.backend.controllers;
 
 import com.agarly.backend.models.Item;
 import com.agarly.backend.models.ItemRequest;
+import com.agarly.backend.models.SupportTicket;
 import com.agarly.backend.services.AdminService;
+import com.agarly.backend.services.SupportTicketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +18,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 public class AdminController {
     @Autowired
     private AdminService adminService;
+    @Autowired
+    private SupportTicketService ticketService;
 
     // ==================== Dashboard Stats ====================
 
@@ -138,5 +142,46 @@ public class AdminController {
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    // ==================== Support Tickets ====================
+
+    @GetMapping("/tickets/{id}")
+    public ResponseEntity<SupportTicket> getTicket(@PathVariable Long id) {
+        return ResponseEntity.ok(ticketService.getTicket(id));
+    }
+
+    @PutMapping("/tickets/{id}/close")
+    public ResponseEntity<SupportTicket> closeTicket(
+            @PathVariable Long id) {
+
+        return ResponseEntity.ok(
+                ticketService.closeTicket(id)
+        );
+    }
+
+    @GetMapping("/tickets")
+    public ResponseEntity<List<SupportTicket>> getAllTickets() {
+        return ResponseEntity.ok(ticketService.getAllTickets());
+    }
+
+    @GetMapping("/tickets/open")
+    public ResponseEntity<List<SupportTicket>> getOpenTickets() {
+        return ResponseEntity.ok(ticketService.getOpenTickets());
+    }
+
+    @GetMapping("/tickets/closed")
+    public ResponseEntity<List<SupportTicket>> getClosedTickets() {
+        return ResponseEntity.ok(ticketService.getClosedTickets());
+    }
+
+    @GetMapping("/tickets/pending")
+    public ResponseEntity<List<SupportTicket>> getPendingTickets() {
+        return ResponseEntity.ok(ticketService.getPendingTickets());
+    }
+
+    @PutMapping("/tickets/{id}/reopen")
+    public ResponseEntity<SupportTicket> reopenTicket(@PathVariable Long id) {
+        return ResponseEntity.ok(ticketService.reopenTicket(id));
     }
 }

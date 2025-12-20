@@ -5,18 +5,20 @@ import com.agarly.backend.models.UserPrincipal;
 import com.agarly.backend.services.SupportTicketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 
 @RestController
-@RequestMapping("/support")
+@RequestMapping("/support/tickets")
 public class SupportTicketController {
     @Autowired
     private SupportTicketService ticketService;
 
-    @PostMapping("/tickets")
+    @PostMapping
     public ResponseEntity<SupportTicket> createTicket(
             @AuthenticationPrincipal UserPrincipal principal,
             @RequestBody SupportTicket ticket) {
@@ -27,7 +29,7 @@ public class SupportTicketController {
     }
 
 
-    @GetMapping("/tickets")
+    @GetMapping
     public ResponseEntity<List<SupportTicket>> getTickets(
             @AuthenticationPrincipal UserPrincipal principal) {
 
@@ -36,12 +38,4 @@ public class SupportTicketController {
         );
     }
 
-    @PutMapping("/admin/tickets/{id}/close")
-    public ResponseEntity<SupportTicket> closeTicket(
-            @PathVariable Long id) {
-
-        return ResponseEntity.ok(
-                ticketService.closeTicket(id)
-        );
-    }
 }

@@ -73,6 +73,10 @@ export class AdminDashboardComponent implements OnInit {
         );
     });
 
+    goToSupportTickets(): void {
+        this.router.navigate(['/admin-tickets']);
+    }
+
     ngOnInit(): void {
         // Check if admin is authenticated
         if (!this.adminService.isAuthenticated()) {

@@ -23,7 +23,7 @@ public class SupportTicketService {
         SupportTicket ticket = new SupportTicket();
         ticket.setSubject(subject);
         ticket.setMessage(message);
-        ticket.setStatus(TicketStatus.PENDING);
+        ticket.setStatus(TicketStatus.OPEN);
         ticket.setCreatedBy(user);
         // Logic to save the support ticket to the database
         return supportTicketRepository.save(ticket);
@@ -34,12 +34,53 @@ public class SupportTicketService {
         return supportTicketRepository.findByCreatedBy(user);
     }
 
+    //for admin
+    public SupportTicket getTicket(Long ticketId) {
+        SupportTicket ticket = supportTicketRepository.findById(ticketId).orElseThrow(()->new RuntimeException("Ticket not found"));
+        if(ticket.getStatus() == TicketStatus.CLOSED) {
+            return ticket;
+        }
+        ticket.setStatus(TicketStatus.PENDING);
+        supportTicketRepository.save(ticket);
+        return ticket;
+    }
+
+
     public SupportTicket closeTicket(Long ticketId) {
         SupportTicket ticket = supportTicketRepository.findById(ticketId).orElseThrow(() -> new RuntimeException("Ticket not found"));
         if (ticket.getStatus() == TicketStatus.CLOSED) {
             throw new RuntimeException("Ticket already closed");
         }
         ticket.setStatus(TicketStatus.CLOSED);
+        return supportTicketRepository.save(ticket);
+    }
+
+    public List<SupportTicket> getAllTickets() {
+        return supportTicketRepository.findAll();
+    }
+
+    public List<SupportTicket> getOpenTickets() {
+        return supportTicketRepository.findByStatus(TicketStatus.OPEN);
+    }
+
+    public List<SupportTicket> getClosedTickets() {
+        return supportTicketRepository.findByStatus(TicketStatus.CLOSED);
+    }
+
+    public List<SupportTicket> getPendingTickets() {
+        return supportTicketRepository.findByStatus(TicketStatus.PENDING);
+    }
+
+    public SupportTicket reopenTicket(Long ticketId) {
+        SupportTicket ticket = supportTicketRepository
+                .findById(ticketId)
+                .orElseThrow(() -> new RuntimeException("Ticket not found"));
+
+        if (ticket.getStatus() != TicketStatus.CLOSED) {
+            throw new RuntimeException("Only closed tickets can be reopened");
+        }
+
+        ticket.setStatus(TicketStatus.OPEN);
         return supportTicketRepository.save(ticket);
     }
 }
