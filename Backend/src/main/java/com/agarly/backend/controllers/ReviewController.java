@@ -1,8 +1,10 @@
 package com.agarly.backend.controllers;
 
+import com.agarly.backend.models.UserPrincipal;
 import com.agarly.backend.services.ReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -13,17 +15,17 @@ public class ReviewController {
 
     @PostMapping("item/{itemId}")
     public ResponseEntity<?> addItemReview(@PathVariable Long itemId,
-                                           @RequestParam Long reviewerId,
+                                           @AuthenticationPrincipal UserPrincipal principal,
                                            @RequestParam int rating) {
-        reviewService.addItemReview(reviewerId, itemId, rating);
+        reviewService.addItemReview(principal.getId(), itemId, rating);
         return ResponseEntity.ok("Item review added successfully");
     }
 
     @PostMapping("user/{targetUserId}")
     public ResponseEntity<?> addUserReview(@PathVariable Long targetUserId,
-                                           @RequestParam Long reviewerId,
+                                           @AuthenticationPrincipal UserPrincipal principal,
                                            @RequestParam int rating) {
-        reviewService.addUserReview(reviewerId, targetUserId, rating);
+        reviewService.addUserReview(principal.getId(), targetUserId, rating);
         return ResponseEntity.ok("User review added successfully");
     }
 

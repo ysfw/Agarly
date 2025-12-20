@@ -23,7 +23,7 @@ public class SupportTicketService {
         SupportTicket ticket = new SupportTicket();
         ticket.setSubject(subject);
         ticket.setMessage(message);
-        ticket.setStatus(TicketStatus.OPEN);
+        ticket.setStatus(TicketStatus.PENDING);
         ticket.setCreatedBy(user);
         // Logic to save the support ticket to the database
         return supportTicketRepository.save(ticket);
