@@ -27,6 +27,7 @@ public class User {
     private String address;
     private Boolean activated;
     private Boolean blocked;
+    private double rating;
     @Column(columnDefinition = "TEXT")
     private String profileImageUrl;
     private String otp;
