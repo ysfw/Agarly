@@ -68,7 +68,7 @@ public class UserProfileService {
         if (PasswordEncoder.matches(oldPassword, hashedPassword)) {
             User user = userService.findByUsername(username);
             // Hash the new password before saving
-            user.setPassword(PasswordEncoder.encode(newPassword));
+            user.setPassword(newPassword);
             userService.save(user);
         } else {
             throw new WrongPasswordException("The old password entered is wrong");

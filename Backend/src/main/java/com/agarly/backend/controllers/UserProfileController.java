@@ -39,13 +39,13 @@ public class UserProfileController {
     @PutMapping("/profile")
     public ResponseEntity<?> updateProfile(@CurrentUser UserPrincipal principal, @RequestBody UserProfileDTO request) {
         userProfileService.updateProfile(principal.getUsername(), request);
-        return ResponseEntity.ok("User Profile Updated Successfully :D");
+        return ResponseEntity.ok(java.util.Map.of("message", "User Profile Updated Successfully :D"));
     }
 
     @PatchMapping("/password")
     public ResponseEntity<?> changePassword(@CurrentUser UserPrincipal principal,
             @RequestBody PasswordChangeRequest request) {
         userProfileService.changePassword(principal, request);
-        return ResponseEntity.ok("Password Changed Successfully :D");
+        return ResponseEntity.ok(java.util.Map.of("message", "Password Changed Successfully :D"));
     }
 }
