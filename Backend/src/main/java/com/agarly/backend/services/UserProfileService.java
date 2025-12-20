@@ -37,8 +37,6 @@ public class UserProfileService {
                 .bio(user.getProfile().getBio())
                 .address(user.getAddress())
                 .city(user.getProfile().getCity())
-                .state(user.getProfile().getState())
-                .zipCode(user.getProfile().getZipCode())
                 .build();
     }
 
@@ -51,11 +49,10 @@ public class UserProfileService {
         user.setProfileImageUrl(request.getProfileImageUrl());
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
-        user.setEmail(request.getEmail());
+        user.setPhoneNumber(request.getPhoneNumber());
+        user.setAddress(request.getAddress());
         user.getProfile().setBio(request.getBio());
         user.getProfile().setCity(request.getCity());
-        user.getProfile().setState(request.getState());
-        user.getProfile().setZipCode(request.getZipCode());
 
         userRepository.save(user);
     }
@@ -67,12 +64,11 @@ public class UserProfileService {
         String username = principal.getUsername();
         String hashedPassword = principal.getPassword();
 
-        String hashedOldPassword = PasswordEncoder.encode(oldPassword);
-
-        assert hashedOldPassword != null;
-        if (hashedOldPassword.equals(hashedPassword)) {
+        // Use matches() to compare plain password with hashed password
+        if (PasswordEncoder.matches(oldPassword, hashedPassword)) {
             User user = userService.findByUsername(username);
-            user.setPassword(newPassword);
+            // Hash the new password before saving
+            user.setPassword(PasswordEncoder.encode(newPassword));
             userService.save(user);
         } else {
             throw new WrongPasswordException("The old password entered is wrong");

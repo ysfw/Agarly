@@ -1,174 +1,191 @@
 <div class="min-h-screen w-full bg-[#F5F7FA]">
     <app-navbar></app-navbar>
 
-    <div class="max-w-4xl mx-auto px-6 py-8">
-        <div class="bg-white rounded-2xl p-8 shadow-sm mb-6">
-            <div class="flex flex-col md:flex-row items-center md:items-start gap-6">
-                <div class="relative">
-                    <div
-                        class="w-32 h-32 rounded-full bg-[#3949AB] flex items-center justify-center text-white text-4xl font-bold">
-                        JD
-                    </div>
-                    <div
-                        class="absolute bottom-0 right-0 w-10 h-10 bg-[#4CAF50] rounded-full border-4 border-white flex items-center justify-center">
-                        <lucide-icon [img]="ShieldCheckIcon" class="w-5 h-5 text-white"></lucide-icon>
-                    </div>
-                </div>
-
-                <div class="flex-1 text-center md:text-left">
-                    <div class="flex items-center justify-center md:justify-start gap-3 mb-2">
-                        <h1 class="text-3xl font-bold text-[#1A237E]">John Doe</h1>
-                        <span class="px-3 py-1 bg-[#4CAF50] text-white text-sm rounded-full font-semibold">
-                            Verified
-                        </span>
-                    </div>
-                    <p class="text-gray-600 mb-4">Member since October 2024</p>
-
-                    <div class="flex items-center justify-center md:justify-start gap-2 mb-4">
-                        <div class="flex items-center gap-1">
-                            @for (star of [1, 2, 3, 4, 5]; track star) {
-                            <lucide-icon [img]="StarIcon" class="w-5 h-5 fill-[#FFB300] text-[#FFB300]"></lucide-icon>
-                            }
+    <!-- Loading State -->
+    @if (loading()) {
+        <div class="flex items-center justify-center min-h-[60vh]">
+            <div class="text-center">
+                <lucide-icon [img]="LoaderIcon" class="w-12 h-12 text-[#3949AB] animate-spin mx-auto mb-4"></lucide-icon>
+                <p class="text-[#1A237E] font-medium">Loading profile...</p>
+            </div>
+        </div>
+    } @else {
+        <div class="max-w-4xl mx-auto px-6 py-8">
+            <div class="bg-white rounded-2xl p-8 shadow-sm mb-6">
+                <div class="flex flex-col md:flex-row items-center md:items-start gap-6">
+                    <div class="relative">
+                        <!-- Profile Image -->
+                        @if (profile().profileImageUrl) {
+                            <img [src]="profile().profileImageUrl" alt="Profile" 
+                                class="w-32 h-32 rounded-full object-cover ring-4 ring-[#3949AB]/20">
+                        } @else {
+                            <div class="w-32 h-32 rounded-full bg-gradient-to-br from-[#3949AB] to-[#5C6BC0] flex items-center justify-center text-white text-4xl font-bold ring-4 ring-[#3949AB]/20">
+                                {{ getInitials() }}
+                            </div>
+                        }
+                        <div class="absolute bottom-0 right-0 w-10 h-10 bg-[#4CAF50] rounded-full border-4 border-white flex items-center justify-center">
+                            <lucide-icon [img]="ShieldCheckIcon" class="w-5 h-5 text-white"></lucide-icon>
                         </div>
-                        <span class="text-[#1A237E] font-semibold text-lg">4.9</span>
-                        <span class="text-gray-600">(48 reviews)</span>
                     </div>
 
-                    <div class="flex gap-3 justify-center md:justify-start">
-                        <button (click)="router.navigate(['/edit-profile'])"
-                            class="flex items-center gap-2 px-6 py-3 bg-[#3949AB] text-white rounded-xl font-semibold hover:bg-[#1A237E] transition-colors">
-                            <lucide-icon [img]="EditIcon" class="w-4 h-4"></lucide-icon>
-                            Edit Profile
-                        </button>
-                        <button (click)="router.navigate(['/settings'])"
-                            class="flex items-center gap-2 px-6 py-3 bg-gray-200 text-[#1A237E] rounded-xl font-semibold hover:bg-gray-300 transition-colors">
-                            <lucide-icon [img]="SettingsIcon" class="w-4 h-4"></lucide-icon>
-                            Settings
-                        </button>
-                        <button (click)="logout()"
-                            class="flex items-center gap-2 px-6 py-3 bg-red-100 text-red-600 rounded-xl font-semibold hover:bg-red-200 transition-colors">
-                            <lucide-icon [img]="LogOutIcon" class="w-4 h-4"></lucide-icon>
-                            Logout
-                        </button>
+                    <div class="flex-1 text-center md:text-left">
+                        <div class="flex items-center justify-center md:justify-start gap-3 mb-2">
+                            <h1 class="text-3xl font-bold text-[#1A237E]">{{ getFullName() }}</h1>
+                            <span class="px-3 py-1 bg-[#4CAF50] text-white text-sm rounded-full font-semibold">
+                                Verified
+                            </span>
+                        </div>
+                        <p class="text-gray-600 mb-2">{{ profile().email }}</p>
+                        @if (profile().bio) {
+                            <p class="text-gray-500 mb-4 max-w-md">{{ profile().bio }}</p>
+                        }
+
+                        <div class="flex items-center justify-center md:justify-start gap-2 mb-4">
+                            <div class="flex items-center gap-1">
+                                @for (star of [1, 2, 3, 4, 5]; track star) {
+                                <lucide-icon [img]="StarIcon" class="w-5 h-5 fill-[#FFB300] text-[#FFB300]"></lucide-icon>
+                                }
+                            </div>
+                            <span class="text-[#1A237E] font-semibold text-lg">4.9</span>
+                            <span class="text-gray-600">(48 reviews)</span>
+                        </div>
+
+                        <div class="flex gap-3 justify-center md:justify-start flex-wrap">
+                            <button (click)="router.navigate(['/edit-profile'])"
+                                class="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#3949AB] to-[#5C6BC0] text-white rounded-xl font-semibold hover:from-[#1A237E] hover:to-[#3949AB] transition-all shadow-md">
+                                <lucide-icon [img]="EditIcon" class="w-4 h-4"></lucide-icon>
+                                Edit Profile
+                            </button>
+                            <button (click)="router.navigate(['/settings'])"
+                                class="flex items-center gap-2 px-6 py-3 bg-gray-200 text-[#1A237E] rounded-xl font-semibold hover:bg-gray-300 transition-colors">
+                                <lucide-icon [img]="SettingsIcon" class="w-4 h-4"></lucide-icon>
+                                Settings
+                            </button>
+                            <button (click)="logout()"
+                                class="flex items-center gap-2 px-6 py-3 bg-red-100 text-red-600 rounded-xl font-semibold hover:bg-red-200 transition-colors">
+                                <lucide-icon [img]="LogOutIcon" class="w-4 h-4"></lucide-icon>
+                                Logout
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="grid md:grid-cols-3 gap-6 mb-6">
+            <div class="grid md:grid-cols-3 gap-6 mb-6">
+                <div class="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-12 h-12 bg-[#E8EAF6] rounded-xl flex items-center justify-center">
+                            <lucide-icon [img]="PackageIcon" class="w-6 h-6 text-[#3949AB]"></lucide-icon>
+                        </div>
+                        <div>
+                            <p class="text-2xl font-bold text-[#1A237E]">24</p>
+                            <p class="text-gray-600 text-sm">Items Shared</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1 text-[#4CAF50] text-sm">
+                        <lucide-icon [img]="TrendingUpIcon" class="w-4 h-4"></lucide-icon>
+                        <span>+3 this month</span>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-12 h-12 bg-[#E8EAF6] rounded-xl flex items-center justify-center">
+                            <lucide-icon [img]="PackageIcon" class="w-6 h-6 text-[#3949AB]"></lucide-icon>
+                        </div>
+                        <div>
+                            <p class="text-2xl font-bold text-[#1A237E]">18</p>
+                            <p class="text-gray-600 text-sm">Items Borrowed</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1 text-[#4CAF50] text-sm">
+                        <lucide-icon [img]="TrendingUpIcon" class="w-4 h-4"></lucide-icon>
+                        <span>+2 this month</span>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-12 h-12 bg-[#E8EAF6] rounded-xl flex items-center justify-center">
+                            <lucide-icon [img]="StarIcon" class="w-6 h-6 text-[#3949AB]"></lucide-icon>
+                        </div>
+                        <div>
+                            <p class="text-2xl font-bold text-[#1A237E]">95%</p>
+                            <p class="text-gray-600 text-sm">Response Rate</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-500 text-sm">Usually responds in 2 hours</p>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl p-6 shadow-sm mb-6">
+                <h2 class="text-xl font-bold text-[#1A237E] mb-4">Achievements</h2>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="text-center p-4 bg-[#F5F7FA] rounded-xl flex flex-col items-center hover:bg-[#E8EAF6] transition-colors">
+                        <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-2">
+                            <lucide-icon [img]="HeartIcon" class="w-6 h-6 text-red-500"></lucide-icon>
+                        </div>
+                        <p class="font-semibold text-[#1A237E] mb-1">Good Neighbor</p>
+                        <p class="text-xs text-gray-600">10+ successful shares</p>
+                    </div>
+                    <div class="text-center p-4 bg-[#F5F7FA] rounded-xl flex flex-col items-center hover:bg-[#E8EAF6] transition-colors">
+                        <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mb-2">
+                            <lucide-icon [img]="AwardIcon" class="w-6 h-6 text-yellow-600"></lucide-icon>
+                        </div>
+                        <p class="font-semibold text-[#1A237E] mb-1">Top Rated</p>
+                        <p class="text-xs text-gray-600">4.5+ rating</p>
+                    </div>
+                    <div class="text-center p-4 bg-[#F5F7FA] rounded-xl flex flex-col items-center hover:bg-[#E8EAF6] transition-colors">
+                        <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-2">
+                            <lucide-icon [img]="LeafIcon" class="w-6 h-6 text-green-600"></lucide-icon>
+                        </div>
+                        <p class="font-semibold text-[#1A237E] mb-1">Eco Warrior</p>
+                        <p class="text-xs text-gray-600">20+ items borrowed</p>
+                    </div>
+                    <div class="text-center p-4 bg-[#F5F7FA] rounded-xl flex flex-col items-center hover:bg-[#E8EAF6] transition-colors">
+                        <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-2">
+                            <lucide-icon [img]="MessageCircleIcon" class="w-6 h-6 text-blue-600"></lucide-icon>
+                        </div>
+                        <p class="font-semibold text-[#1A237E] mb-1">Quick Responder</p>
+                        <p class="text-xs text-gray-600">Fast reply rate</p>
+                    </div>
+                </div>
+            </div>
+
             <div class="bg-white rounded-2xl p-6 shadow-sm">
-                <div class="flex items-center gap-3 mb-3">
-                    <div class="w-12 h-12 bg-[#E8EAF6] rounded-xl flex items-center justify-center">
-                        <lucide-icon [img]="PackageIcon" class="w-6 h-6 text-[#3949AB]"></lucide-icon>
+                <h2 class="text-xl font-bold text-[#1A237E] mb-4">Recent Activity</h2>
+                <div class="space-y-4">
+                    <div class="flex items-start gap-4 pb-4 border-b border-gray-200">
+                        <div class="w-10 h-10 bg-[#4CAF50] rounded-full flex items-center justify-center text-white">
+                            <lucide-icon [img]="CheckIcon" class="w-5 h-5"></lucide-icon>
+                        </div>
+                        <div class="flex-1">
+                            <p class="font-semibold text-[#1A237E]">Successfully returned Power Drill</p>
+                            <p class="text-sm text-gray-600">2 days ago</p>
+                        </div>
                     </div>
-                    <div>
-                        <p class="text-2xl font-bold text-[#1A237E]">24</p>
-                        <p class="text-gray-600 text-sm">Items Shared</p>
-                    </div>
-                </div>
-                <div class="flex items-center gap-1 text-[#4CAF50] text-sm">
-                    <lucide-icon [img]="TrendingUpIcon" class="w-4 h-4"></lucide-icon>
-                    <span>+3 this month</span>
-                </div>
-            </div>
 
-            <div class="bg-white rounded-2xl p-6 shadow-sm">
-                <div class="flex items-center gap-3 mb-3">
-                    <div class="w-12 h-12 bg-[#E8EAF6] rounded-xl flex items-center justify-center">
-                        <lucide-icon [img]="PackageIcon" class="w-6 h-6 text-[#3949AB]"></lucide-icon>
+                    <div class="flex items-start gap-4 pb-4 border-b border-gray-200">
+                        <div class="w-10 h-10 bg-[#3949AB] rounded-full flex items-center justify-center text-white">
+                            <lucide-icon [img]="PlusIcon" class="w-5 h-5"></lucide-icon>
+                        </div>
+                        <div class="flex-1">
+                            <p class="font-semibold text-[#1A237E]">Listed new item: Pressure Washer</p>
+                            <p class="text-sm text-gray-600">5 days ago</p>
+                        </div>
                     </div>
-                    <div>
-                        <p class="text-2xl font-bold text-[#1A237E]">18</p>
-                        <p class="text-gray-600 text-sm">Items Borrowed</p>
-                    </div>
-                </div>
-                <div class="flex items-center gap-1 text-[#4CAF50] text-sm">
-                    <lucide-icon [img]="TrendingUpIcon" class="w-4 h-4"></lucide-icon>
-                    <span>+2 this month</span>
-                </div>
-            </div>
 
-            <div class="bg-white rounded-2xl p-6 shadow-sm">
-                <div class="flex items-center gap-3 mb-3">
-                    <div class="w-12 h-12 bg-[#E8EAF6] rounded-xl flex items-center justify-center">
-                        <lucide-icon [img]="StarIcon" class="w-6 h-6 text-[#3949AB]"></lucide-icon>
-                    </div>
-                    <div>
-                        <p class="text-2xl font-bold text-[#1A237E]">95%</p>
-                        <p class="text-gray-600 text-sm">Response Rate</p>
-                    </div>
-                </div>
-                <p class="text-gray-500 text-sm">Usually responds in 2 hours</p>
-            </div>
-        </div>
-
-        <div class="bg-white rounded-2xl p-6 shadow-sm mb-6">
-            <h2 class="text-xl font-bold text-[#1A237E] mb-4">Achievements</h2>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div class="text-center p-4 bg-[#F5F7FA] rounded-xl flex flex-col items-center">
-                    <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-2">
-                        <lucide-icon [img]="HeartIcon" class="w-6 h-6 text-red-500"></lucide-icon>
-                    </div>
-                    <p class="font-semibold text-[#1A237E] mb-1">Good Neighbor</p>
-                    <p class="text-xs text-gray-600">10+ successful shares</p>
-                </div>
-                <div class="text-center p-4 bg-[#F5F7FA] rounded-xl flex flex-col items-center">
-                    <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mb-2">
-                        <lucide-icon [img]="AwardIcon" class="w-6 h-6 text-yellow-600"></lucide-icon>
-                    </div>
-                    <p class="font-semibold text-[#1A237E] mb-1">Top Rated</p>
-                    <p class="text-xs text-gray-600">4.5+ rating</p>
-                </div>
-                <div class="text-center p-4 bg-[#F5F7FA] rounded-xl flex flex-col items-center">
-                    <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-2">
-                        <lucide-icon [img]="LeafIcon" class="w-6 h-6 text-green-600"></lucide-icon>
-                    </div>
-                    <p class="font-semibold text-[#1A237E] mb-1">Eco Warrior</p>
-                    <p class="text-xs text-gray-600">20+ items borrowed</p>
-                </div>
-                <div class="text-center p-4 bg-[#F5F7FA] rounded-xl flex flex-col items-center">
-                    <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-2">
-                        <lucide-icon [img]="MessageCircleIcon" class="w-6 h-6 text-blue-600"></lucide-icon>
-                    </div>
-                    <p class="font-semibold text-[#1A237E] mb-1">Quick Responder</p>
-                    <p class="text-xs text-gray-600">Fast reply rate</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="bg-white rounded-2xl p-6 shadow-sm">
-            <h2 class="text-xl font-bold text-[#1A237E] mb-4">Recent Activity</h2>
-            <div class="space-y-4">
-                <div class="flex items-start gap-4 pb-4 border-b border-gray-200">
-                    <div class="w-10 h-10 bg-[#4CAF50] rounded-full flex items-center justify-center text-white">
-                        <lucide-icon [img]="CheckIcon" class="w-5 h-5"></lucide-icon>
-                    </div>
-                    <div class="flex-1">
-                        <p class="font-semibold text-[#1A237E]">Successfully returned Power Drill</p>
-                        <p class="text-sm text-gray-600">2 days ago</p>
-                    </div>
-                </div>
-
-                <div class="flex items-start gap-4 pb-4 border-b border-gray-200">
-                    <div class="w-10 h-10 bg-[#3949AB] rounded-full flex items-center justify-center text-white">
-                        <lucide-icon [img]="PlusIcon" class="w-5 h-5"></lucide-icon>
-                    </div>
-                    <div class="flex-1">
-                        <p class="font-semibold text-[#1A237E]">Listed new item: Pressure Washer</p>
-                        <p class="text-sm text-gray-600">5 days ago</p>
-                    </div>
-                </div>
-
-                <div class="flex items-start gap-4">
-                    <div class="w-10 h-10 bg-[#FFB300] rounded-full flex items-center justify-center text-white">
-                        <lucide-icon [img]="StarIcon" class="w-5 h-5 fill-current"></lucide-icon>
-                    </div>
-                    <div class="flex-1">
-                        <p class="font-semibold text-[#1A237E]">Received 5-star review from Sarah M.</p>
-                        <p class="text-sm text-gray-600">1 week ago</p>
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 bg-[#FFB300] rounded-full flex items-center justify-center text-white">
+                            <lucide-icon [img]="StarIcon" class="w-5 h-5 fill-current"></lucide-icon>
+                        </div>
+                        <div class="flex-1">
+                            <p class="font-semibold text-[#1A237E]">Received 5-star review from Sarah M.</p>
+                            <p class="text-sm text-gray-600">1 week ago</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    }
 </div>

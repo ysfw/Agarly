@@ -13,11 +13,13 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target({ElementType.PARAMETER})
+@Target({ ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
-@AuthenticationPrincipal(expression = "principal")
-@interface CurrentUser {}
-// custom annotation so I don't keep saying "if (principal != null)" for every endpoint
+@AuthenticationPrincipal
+@interface CurrentUser {
+}
+// custom annotation so I don't keep saying "if (principal != null)" for every
+// endpoint
 
 @RestController
 @RequestMapping("/users")
@@ -41,7 +43,8 @@ public class UserProfileController {
     }
 
     @PatchMapping("/password")
-    public ResponseEntity<?> changePassword(@CurrentUser UserPrincipal principal, @RequestBody PasswordChangeRequest request) {
+    public ResponseEntity<?> changePassword(@CurrentUser UserPrincipal principal,
+            @RequestBody PasswordChangeRequest request) {
         userProfileService.changePassword(principal, request);
         return ResponseEntity.ok("Password Changed Successfully :D");
     }

@@ -16,14 +16,17 @@ public class EventController {
 
 @Autowired
 private EventService eventService;
-//The SSE endpoint that subscribes to our eventService
-@GetMapping(path = "/event-stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-public Flux<ServerSentEvent<SSE>> streamUpdates(Authentication authentication) {
-    String username = authentication.getName();
-    return eventService.getEventStream()
-            .map(event -> ServerSentEvent
-                    .<SSE>builder()
-                    .data((event.getTo().contains(username+"@jaryn.com"))?event:null)
-                    .build());
-}
+
+    //The SSE endpoint that subscribes to our eventService
+    @GetMapping(path = "/event-stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<ServerSentEvent<SSE>> streamUpdates(Authentication authentication) {
+        String username = authentication.getName();
+        return eventService.getEventStream()
+                .map(event -> ServerSentEvent
+                        .<SSE>builder()
+                        .data((event.getTo().contains("*") || event.getTo().contains(username)) ? event : null)
+                        .build());
+    }
+
+
 }

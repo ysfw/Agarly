@@ -14,6 +14,7 @@ public class EventService {
     public Flux<SSE> getEventStream() {
         return eventSink.asFlux();
     }
+
     //the publisher that subscribers can publish event to
     public void publishEvent(SSE event) {
         Sinks.EmitResult result = eventSink.tryEmitNext(event);

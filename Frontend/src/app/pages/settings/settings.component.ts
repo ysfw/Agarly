@@ -27,7 +27,7 @@ export class SettingsComponent {
   }
 
   changePassword() {
-    alert('Change password');
+    this.router.navigate(['/password-change']);
   }
 
   handleLogout() {

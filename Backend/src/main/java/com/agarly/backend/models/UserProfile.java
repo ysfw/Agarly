@@ -1,5 +1,6 @@
 package com.agarly.backend.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -12,6 +13,7 @@ public class UserProfile {
     private Long id;
 
     @OneToOne
+    @JsonBackReference
     private User user;
 
     private String bio;

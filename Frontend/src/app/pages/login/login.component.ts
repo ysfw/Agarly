@@ -93,9 +93,10 @@ export class LoginComponent implements OnInit {
     this.api.sendToken(token).subscribe({
       next: (res: any) => {
         console.log('Login successful on backend', res);
-        // Store your application's session/JWT token (if returned)
+        // Store the JWT token from backend response (not the Google token)
+        const jwtToken = res.Token || res.token || token;
+        this.authService.setToken(jwtToken);
         this.ngZone.run(() => {
-          // localStorage.setItem('jwt_token', res.token); // Save YOUR app token
           this.authService.login();
           this.router.navigate(['/home']);
         });

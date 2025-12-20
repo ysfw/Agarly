@@ -20,6 +20,7 @@ import { SearchResultsComponent } from './pages/search-results/search-results.co
 import { RequestItemComponent } from './pages/request-item/request-item.component';
 import { VerifyEmailComponent } from './pages/verify-email/verify-email.component';
 import {AuthGuard} from './services/auth-gaurd';
+import { PasswordChange } from './pages/password-change/password-change';
 
 export const routes: Routes = [
   // Public routes (no AuthGuard)
@@ -30,10 +31,10 @@ export const routes: Routes = [
   { path: 'verify-email', component: VerifyEmailComponent },
   { path: 'admin-login', component: AdminLoginComponent },
   { path: 'item/:id', component: ItemDetailsComponent },
-  
   // Protected routes (require AuthGuard)
   { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
   { path: 'profile', component: ProfileComponent, canActivate: [AuthGuard] },
+  { path: 'password-change', component: PasswordChange, canActivate: [AuthGuard] },
   { path: 'book-item/:id', component: BookItemComponent, canActivate: [AuthGuard] },
   { path: 'settings', component: SettingsComponent, canActivate: [AuthGuard] },
   { path: 'support', component: SupportComponent, canActivate: [AuthGuard] },

@@ -55,11 +55,16 @@ export class EventService {
         this.worker.onmessage = ({ data }) => {
           if (data.type === 'EVENT') {
             this.ngZone.run(() => observer.next(data.payload));
-          } else if (data.type === 'ERROR') {
+          }
+          else if (data.type === 'LOGOUT') {
+            this.ngZone.run(() => this.authService.logout());
+          }
+          else if (data.type === 'ERROR') {
             if (data.error.status === 401) {
               console.warn('SSE Unauthorized (401). Logging out.');
               this.ngZone.run(() => this.authService.logout());
-            } else {
+            }
+            else {
               console.error('SSE Worker Error:', data.error);
               this.ngZone.run(() => observer.error(data.error));
             }
@@ -74,7 +79,8 @@ export class EventService {
             token: token
           }
         });
-      } else {
+      }
+      else {
         // Fallback for environments without Web Worker support (though unlikely in modern browsers)
         console.warn('Web Workers are not supported in this environment. SSE might be throttled in background.');
         // ... (Original fetch logic could go here as fallback, but for now we assume worker support)

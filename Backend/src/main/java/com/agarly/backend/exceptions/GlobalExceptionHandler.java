@@ -14,12 +14,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleGeneralError(Exception ex) {
-        // Log the error internally for devs, but send a generic message to the user
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("An unexpected error occurred.");
-    }
+//    @ExceptionHandler(Exception.class)
+//    public ResponseEntity<String> handleGeneralError(Exception ex) {
+//        // Log the error internally for devs, but send a generic message to the user
+//        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                .body("An unexpected error occurred.");
+//    }
 
     @ExceptionHandler(WrongPasswordException.class)
     public ResponseEntity<String> handleWrongPassword(WrongPasswordException ex) {

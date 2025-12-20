@@ -1,6 +1,7 @@
 package com.agarly.backend.models;
 
 import com.agarly.backend.models.Enums.AuthProvider;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -33,7 +34,8 @@ public class User {
     @Enumerated(EnumType.STRING)
     private AuthProvider provider;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
     private UserProfile profile;
 
     private BigDecimal walletBalance = BigDecimal.ZERO;
