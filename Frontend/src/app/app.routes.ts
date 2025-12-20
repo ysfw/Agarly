@@ -24,6 +24,7 @@ import { AuthGuard } from './services/auth-gaurd';
 import { AdminAuthGuard } from './services/admin-auth.guard';
 import { PasswordChange } from './pages/password-change/password-change';
 import { TicketsComponent } from './pages/tickets/tickets';
+import { AdminTickets } from './pages/admin-tickets/admin-tickets';
 import { UserProfileComponent } from './pages/user-profile/user-profile';
 
 
@@ -35,7 +36,9 @@ export const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   { path: 'verify-email', component: VerifyEmailComponent },
   { path: 'admin-login', component: AdminLoginComponent },
+  // Admin routes (should require AdminAuthGuard)
   { path: 'admin-dashboard', component: AdminDashboardComponent, canActivate: [AdminAuthGuard] },
+  { path: 'admin-tickets', component: AdminTickets, canActivate: [AdminAuthGuard] },
   { path: 'item/:id', component: ItemDetailsComponent },
   // Protected routes (require AuthGuard)
   { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },

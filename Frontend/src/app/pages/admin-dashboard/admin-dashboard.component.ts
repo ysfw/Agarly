@@ -74,6 +74,9 @@ export class AdminDashboardComponent implements OnInit {
         );
     });
 
+    goToSupportTickets(): void {
+        this.router.navigate(['/admin-tickets']);
+    }
     filteredUsers = computed(() => {
         const query = this.searchQuery().toLowerCase();
         if (!query) return this.users();

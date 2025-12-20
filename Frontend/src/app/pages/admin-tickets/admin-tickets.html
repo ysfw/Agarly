@@ -1,0 +1,292 @@
+<div class="min-h-screen bg-slate-50 p-6">
+  <div class="max-w-6xl mx-auto bg-white rounded-lg shadow-lg p-6">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-6">
+      <div class="flex items-center gap-3">
+        <div
+          class="w-10 h-10 bg-blue-800 rounded-lg flex items-center justify-center"
+        >
+          <lucide-icon
+            [img]="LifeBuoyIcon"
+            class="w-5 h-5 text-white"
+          ></lucide-icon>
+        </div>
+        <div>
+          <h1 class="text-xl font-bold text-slate-800">Support Tickets</h1>
+          <p class="text-sm text-gray-500">
+            Manage and triage all user support requests.
+          </p>
+        </div>
+      </div>
+
+      <!-- Simple stats -->
+      <div class="flex gap-4 text-sm text-gray-600">
+        <div>
+          <span class="font-semibold">Total:</span>
+          <span>{{ filteredTickets().length }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filters & Search -->
+    <div
+      class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6"
+    >
+      <!-- Filters -->
+      <div class="inline-flex rounded-full bg-slate-100 p-1">
+        <button
+          type="button"
+          (click)="setFilter('ALL')"
+          [class]="statusFilter() === 'ALL'
+						? 'px-4 py-1.5 text-xs md:text-sm rounded-full bg-blue-800 text-white font-medium'
+						: 'px-4 py-1.5 text-xs md:text-sm rounded-full text-blue-800 hover:bg-slate-200 font-medium'"
+        >
+          All
+        </button>
+        <button
+          type="button"
+          (click)="setFilter('PENDING')"
+          [class]="statusFilter() === 'PENDING'
+						? 'px-4 py-1.5 text-xs md:text-sm rounded-full bg-blue-800 text-white font-medium'
+						: 'px-4 py-1.5 text-xs md:text-sm rounded-full text-blue-800 hover:bg-slate-200 font-medium'"
+        >
+          Pending
+        </button>
+        <button
+          type="button"
+          (click)="setFilter('OPEN')"
+          [class]="statusFilter() === 'OPEN'
+						? 'px-4 py-1.5 text-xs md:text-sm rounded-full bg-blue-800 text-white font-medium'
+						: 'px-4 py-1.5 text-xs md:text-sm rounded-full text-blue-800 hover:bg-slate-200 font-medium'"
+        >
+          Open
+        </button>
+        <button
+          type="button"
+          (click)="setFilter('CLOSED')"
+          [class]="statusFilter() === 'CLOSED'
+						? 'px-4 py-1.5 text-xs md:text-sm rounded-full bg-blue-800 text-white font-medium'
+						: 'px-4 py-1.5 text-xs md:text-sm rounded-full text-blue-800 hover:bg-slate-200 font-medium'"
+        >
+          Closed
+        </button>
+      </div>
+
+      <!-- Search -->
+      <div class="relative w-full md:w-72">
+        <lucide-icon
+          [img]="SearchIcon"
+          class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"
+        ></lucide-icon>
+        <input
+          type="text"
+          placeholder="Search by user, subject or ID"
+          class="pl-10 pr-3 py-2 w-full border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          [value]="searchQuery()"
+          (input)="onSearchChange($event)"
+        />
+      </div>
+    </div>
+
+    <!-- Tickets Table -->
+    <div class="border border-gray-200 rounded-xl overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="min-w-full text-sm">
+          <thead class="bg-slate-50 text-xs uppercase text-gray-500">
+            <tr>
+              <th class="px-4 py-3 text-left font-medium">ID</th>
+              <th class="px-4 py-3 text-left font-medium">User</th>
+              <th class="px-4 py-3 text-left font-medium">Subject</th>
+              <th class="px-4 py-3 text-left font-medium">Created</th>
+              <th class="px-4 py-3 text-left font-medium">Status</th>
+              <th class="px-4 py-3 text-right font-medium">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              *ngFor="let ticket of filteredTickets()"
+              class="border-t border-gray-100 hover:bg-slate-50 transition-colors"
+            >
+              <td class="px-4 py-3 align-top text-gray-800 font-mono text-xs">
+                #{{ ticket.id }}
+              </td>
+              <td class="px-4 py-3 align-top">
+                <div class="flex items-center gap-2">
+                  <div
+                    class="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center"
+                  >
+                    <lucide-icon
+                      [img]="UserIcon"
+                      class="w-4 h-4 text-blue-700"
+                    ></lucide-icon>
+                  </div>
+                  <div>
+                    <p class="text-xs font-medium text-slate-800">
+                      {{ ticket.user.name }}
+                    </p>
+                    <p
+                      class="text-[11px] text-gray-500 flex items-center gap-1"
+                    >
+                      <lucide-icon
+                        [img]="MailIcon"
+                        class="w-3 h-3"
+                      ></lucide-icon>
+                      <span>{{ ticket.user.email }}</span>
+                    </p>
+                  </div>
+                </div>
+              </td>
+              <td class="px-4 py-3 align-top max-w-xs">
+                <p
+                  class="text-sm text-slate-800 truncate"
+                  [title]="ticket.subject"
+                >
+                  {{ ticket.subject }}
+                </p>
+              </td>
+              <td class="px-4 py-3 align-top">
+                <p class="text-xs text-gray-600 flex items-center gap-1">
+                  <lucide-icon [img]="ClockIcon" class="w-3 h-3"></lucide-icon>
+                  <span>{{ ticket.createdAt | date: 'short' }}</span>
+                </p>
+              </td>
+              <td class="px-4 py-3 align-top">
+                <span
+                  class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-medium"
+                  [class]="statusBadgeClass(ticket.status)"
+                >
+                  {{ ticket.status | titlecase }}
+                </span>
+              </td>
+              <td class="px-4 py-3 align-top text-right">
+                <div class="flex justify-end gap-2">
+                  <button
+                    type="button"
+                    (click)="viewTicket(ticket)"
+                    class="px-3 py-1.5 rounded-lg border border-gray-300 text-xs font-medium text-slate-700 hover:bg-gray-50"
+                  >
+                    View
+                  </button>
+                  <button
+                    type="button"
+                    (click)="closeTicket(ticket)"
+                    class="px-3 py-1.5 rounded-lg text-xs font-medium text-emerald-700 border border-emerald-500 hover:bg-emerald-50"
+                    [disabled]="ticket.status === 'CLOSED'"
+                  >
+                    Close
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr *ngIf="filteredTickets().length === 0">
+              <td
+                colspan="6"
+                class="px-4 py-6 text-center text-sm text-gray-500"
+              >
+                No tickets match your filters.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ticket Details Modal -->
+  <div
+    *ngIf="selectedTicket() as ticket"
+    class="fixed inset-0 bg-black/30 flex items-center justify-center z-50"
+  >
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-lg mx-4 relative">
+      <button
+        type="button"
+        (click)="closeDetail()"
+        class="absolute right-3 top-3 w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-100"
+      >
+        <lucide-icon
+          [img]="CloseIcon"
+          class="w-4 h-4 text-slate-600"
+        ></lucide-icon>
+      </button>
+
+      <div class="p-6 space-y-4">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <p class="text-xs uppercase tracking-wide text-gray-500 mb-1">
+              Ticket #{{ ticket.id }}
+            </p>
+            <h2 class="text-lg font-semibold text-slate-900">
+              {{ ticket.subject }}
+            </h2>
+          </div>
+          <span
+            class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-medium mt-1 mr-8"
+            [class]="statusBadgeClass(ticket.status)"
+          >
+            {{ ticket.status | titlecase }}
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+          <div>
+            <p class="text-xs font-semibold text-gray-500 mb-1">User</p>
+            <p class="text-slate-800 flex items-center gap-2">
+              <lucide-icon
+                [img]="UserIcon"
+                class="w-4 h-4 text-blue-700"
+              ></lucide-icon>
+              <span>{{ ticket.user.name }}</span>
+            </p>
+            <p class="text-xs text-gray-600 flex items-center gap-1 mt-1">
+              <lucide-icon [img]="MailIcon" class="w-3 h-3"></lucide-icon>
+              <span>{{ ticket.user.email }}</span>
+            </p>
+          </div>
+          <div>
+            <p class="text-xs font-semibold text-gray-500 mb-1">Created</p>
+            <p class="text-xs text-gray-700 flex items-center gap-1">
+              <lucide-icon [img]="ClockIcon" class="w-3 h-3"></lucide-icon>
+              <span>{{ ticket.createdAt | date: 'medium' }}</span>
+            </p>
+          </div>
+        </div>
+
+        <div>
+          <p class="text-xs font-semibold text-gray-500 mb-1">Message</p>
+          <p
+            class="text-sm text-gray-800 whitespace-pre-line border border-gray-100 rounded-lg p-3 bg-slate-50"
+          >
+            {{ ticket.message }}
+          </p>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex justify-end gap-2 pt-2">
+          <button
+            type="button"
+            class="px-4 py-1.5 rounded-lg border border-gray-300 text-sm font-medium text-slate-700 hover:bg-gray-50"
+            (click)="closeDetail()"
+          >
+            Close
+          </button>
+          <button
+            type="button"
+            *ngIf="ticket.status !== 'CLOSED'"
+            class="px-4 py-1.5 rounded-lg text-sm font-medium text-emerald-700 border border-emerald-500 hover:bg-emerald-50"
+            (click)="closeTicket(ticket)"
+          >
+            Mark as Closed
+          </button>
+          <button
+            type="button"
+            *ngIf="ticket.status === 'CLOSED'"
+            class="px-4 py-1.5 rounded-lg text-sm font-medium text-blue-700 border border-blue-500 hover:bg-blue-50"
+            (click)="reopenTicket(ticket)"
+          >
+            Reopen
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

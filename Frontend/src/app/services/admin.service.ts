@@ -51,6 +51,20 @@ export interface DashboardStats {
     totalRequests: number;
 }
 
+export type AdminTicketStatus = 'PENDING' | 'OPEN' | 'CLOSED';
+
+export interface AdminSupportTicketDto {
+    id: number;
+    subject: string;
+    message: string;
+    status: AdminTicketStatus | string;
+    createdAt: string;
+    createdBy?: {
+        username?: string;
+        email?: string;
+    };
+}
+
 @Injectable({
     providedIn: 'root',
 })
@@ -219,4 +233,58 @@ export class AdminService {
             { headers: this.getAuthHeaders(), responseType: 'text' }
         );
     }
+
+    // ==================== Support Tickets ====================
+    
+    getAllSupportTickets(): Observable<AdminSupportTicketDto[]> {
+        return this.http.get<AdminSupportTicketDto[]>(
+            `${this.baseUrl}/admin/tickets`,
+            { headers: this.getAuthHeaders() }
+        );
+    }
+
+    getSupportTicket(id: number): Observable<AdminSupportTicketDto> {
+        return this.http.get<AdminSupportTicketDto>(
+            `${this.baseUrl}/admin/tickets/${id}`,
+            { headers: this.getAuthHeaders() }
+        );
+    }
+
+    closeSupportTicket(id: number): Observable<AdminSupportTicketDto> {
+        return this.http.put<AdminSupportTicketDto>(
+            `${this.baseUrl}/admin/tickets/${id}/close`,
+            {},
+            { headers: this.getAuthHeaders() }
+        );
+    }
+
+    reopenSupportTicket(id: number): Observable<AdminSupportTicketDto> {
+        return this.http.put<AdminSupportTicketDto>(
+            `${this.baseUrl}/admin/tickets/${id}/reopen`,
+            {},
+            { headers: this.getAuthHeaders() }
+        );
+    }
+
+    getPendingSupportTickets(): Observable<AdminSupportTicketDto[]> {
+        return this.http.get<AdminSupportTicketDto[]>(
+            `${this.baseUrl}/admin/tickets/pending`,
+            { headers: this.getAuthHeaders() }
+        );
+    }
+
+    getOpenSupportTickets(): Observable<AdminSupportTicketDto[]> {
+        return this.http.get<AdminSupportTicketDto[]>(
+            `${this.baseUrl}/admin/tickets/open`,
+            { headers: this.getAuthHeaders() }
+        );
+    }
+
+    getClosedSupportTickets(): Observable<AdminSupportTicketDto[]> {
+        return this.http.get<AdminSupportTicketDto[]>(
+            `${this.baseUrl}/admin/tickets/closed`,
+            { headers: this.getAuthHeaders() }
+        );
+    }
 }
+
