@@ -1,0 +1,84 @@
+import { Component, inject, OnInit, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ActivatedRoute, Router } from '@angular/router';
+import { UserService, UserProfile } from '../../services/user.service';
+import { LucideAngularModule, User, MapPin, Calendar, Package, Star, Loader2 } from 'lucide-angular';
+
+@Component({
+  selector: 'app-user-profile',
+  standalone: true,
+  imports: [CommonModule, LucideAngularModule],
+  templateUrl: './user-profile.html',
+  styleUrl: './user-profile.css'
+})
+export class UserProfileComponent implements OnInit {
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private userService = inject(UserService);
+
+  // Icons
+  readonly UserIcon = User;
+  readonly MapPinIcon = MapPin;
+  readonly CalendarIcon = Calendar;
+  readonly PackageIcon = Package;
+  readonly StarIcon = Star;
+  readonly LoaderIcon = Loader2;
+
+  // State
+  profile = signal<UserProfile | null>(null);
+  loading = signal(true);
+  error = signal<string | null>(null);
+
+  ngOnInit(): void {
+    const userId = this.route.snapshot.paramMap.get('id');
+    if (!userId) {
+      this.error.set('Invalid user ID');
+      this.loading.set(false);
+      return;
+    }
+
+    this.loadProfile(+userId);
+  }
+
+  loadProfile(userId: number): void {
+    this.loading.set(true);
+    this.error.set(null);
+
+    this.userService.getUserProfile(userId).subscribe({
+      next: (profile) => {
+        this.profile.set(profile);
+        this.loading.set(false);
+      },
+      error: (err) => {
+        console.error('Error loading profile:', err);
+        this.error.set('Failed to load user profile');
+        this.loading.set(false);
+      }
+    });
+  }
+
+  getFullName(): string {
+    const p = this.profile();
+    if (!p) return '';
+    return `${p.firstName || ''} ${p.lastName || ''}`.trim();
+  }
+
+  getLocation(): string {
+    const p = this.profile();
+    if (!p) return 'Location not specified';
+    const parts = [p.city, p.state].filter(Boolean);
+    return parts.length > 0 ? parts.join(', ') : 'Location not specified';
+  }
+
+  getInitials(): string {
+    const p = this.profile();
+    if (!p) return '?';
+    const first = p.firstName?.[0] || '';
+    const last = p.lastName?.[0] || '';
+    return (first + last).toUpperCase() || '?';
+  }
+
+  goBack(): void {
+    this.router.navigate(['/home']);
+  }
+}

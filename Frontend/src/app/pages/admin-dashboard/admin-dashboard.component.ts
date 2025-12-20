@@ -28,7 +28,7 @@ export class AdminDashboardComponent implements OnInit {
     readonly LoaderIcon = Loader2;
 
     // State
-    activeTab = signal<'posts' | 'requests'>('posts');
+    activeTab = signal<'posts' | 'requests' | 'users'>('posts');
     searchQuery = signal('');
     loading = signal(true);
     error = signal<string | null>(null);
@@ -43,6 +43,7 @@ export class AdminDashboardComponent implements OnInit {
 
     posts = signal<AdminItem[]>([]);
     requests = signal<AdminRequest[]>([]);
+    users = signal<any[]>([]);
 
     // Computed statistics from API data
     pendingPosts = computed(() => this.stats().pendingPosts);
@@ -70,6 +71,16 @@ export class AdminDashboardComponent implements OnInit {
             (r.requester?.firstName?.toLowerCase().includes(query)) ||
             (r.requester?.lastName?.toLowerCase().includes(query)) ||
             r.category?.toLowerCase().includes(query)
+        );
+    });
+
+    filteredUsers = computed(() => {
+        const query = this.searchQuery().toLowerCase();
+        if (!query) return this.users();
+        return this.users().filter(u =>
+            (u.firstName?.toLowerCase().includes(query)) ||
+            (u.lastName?.toLowerCase().includes(query)) ||
+            (u.email?.toLowerCase().includes(query))
         );
     });
 
@@ -110,9 +121,15 @@ export class AdminDashboardComponent implements OnInit {
             next: (requests) => this.requests.set(requests),
             error: (err) => console.error('Error loading requests:', err)
         });
+
+        // Load users
+        this.adminService.getUsers().subscribe({
+            next: (users) => this.users.set(users),
+            error: (err) => console.error('Error loading users:', err)
+        });
     }
 
-    setActiveTab(tab: 'posts' | 'requests'): void {
+    setActiveTab(tab: 'posts' | 'requests' | 'users'): void {
         this.activeTab.set(tab);
         this.searchQuery.set(''); // Clear search when switching tabs
     }
@@ -242,6 +259,37 @@ export class AdminDashboardComponent implements OnInit {
         }
         // Default placeholder image
         return 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=100&h=100&fit=crop';
+    }
+
+    // User actions
+    banUser(user: any): void {
+        if (confirm(`Are you sure you want to ban ${this.getOwnerName(user)}?`)) {
+            this.adminService.banUser(user.id).subscribe({
+                next: () => {
+                    // Reload users
+                    this.adminService.getUsers().subscribe({
+                        next: (users) => this.users.set(users)
+                    });
+                },
+                error: (err) => console.error('Error banning user:', err)
+            });
+        }
+    }
+
+    unbanUser(user: any): void {
+        this.adminService.unbanUser(user.id).subscribe({
+            next: () => {
+                // Reload users
+                this.adminService.getUsers().subscribe({
+                    next: (users) => this.users.set(users)
+                });
+            },
+            error: (err) => console.error('Error unbanning user:', err)
+        });
+    }
+
+    viewUserProfile(userId: number): void {
+        this.router.navigate(['/user', userId]);
     }
 
     logout(): void {

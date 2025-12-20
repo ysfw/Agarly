@@ -1,15 +1,61 @@
 @if (item) {
 <div class="min-h-screen w-full bg-[#F5F7FA]">
   <div class="max-w-4xl mx-auto">
+    <!-- Image Gallery -->
     <div class="bg-white relative">
       <button (click)="goBack()"
         class="absolute top-6 left-6 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-50 z-10"
         aria-label="Go back">
         <lucide-icon [img]="ArrowLeftIcon" class="w-5 h-5 text-[#1A237E]"></lucide-icon>
       </button>
-      <img [src]="item.imageUrls && item.imageUrls.length > 0 ? item.imageUrls[0] : 'assets/placeholder-image.jpg'"
-        [alt]="item.title" class="w-full h-96 object-cover" />
+
+      <!-- Main Image -->
+      <img [src]="currentImage" [alt]="item.title" class="w-full h-96 object-contain bg-slate-800" />
+
+      <!-- Navigation Arrows (only if multiple images) -->
+      @if (hasMultipleImages) {
+      <button (click)="previousImage()"
+        class="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 hover:bg-white rounded-full flex items-center justify-center shadow-md transition-all"
+        aria-label="Previous image">
+        <lucide-icon [img]="ChevronLeftIcon" class="w-6 h-6 text-[#1A237E]"></lucide-icon>
+      </button>
+      <button (click)="nextImage()"
+        class="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 hover:bg-white rounded-full flex items-center justify-center shadow-md transition-all"
+        aria-label="Next image">
+        <lucide-icon [img]="ChevronRightIcon" class="w-6 h-6 text-[#1A237E]"></lucide-icon>
+      </button>
+
+      <!-- Image Counter -->
+      <div class="absolute bottom-4 right-4 bg-black/50 text-white px-3 py-1 rounded-full text-sm font-medium">
+        {{ currentImageIndex() + 1 }} / {{ totalImages }}
+      </div>
+
+      <!-- Dot Indicators -->
+      <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+        @for (img of item.imageUrls; track img; let i = $index) {
+        <button (click)="goToImage(i)" [class]="
+              'w-2.5 h-2.5 rounded-full transition-all ' +
+              (currentImageIndex() === i ? 'bg-white scale-125' : 'bg-white/50 hover:bg-white/80')
+            " [attr.aria-label]="'Go to image ' + (i + 1)">
+        </button>
+        }
+      </div>
+      }
     </div>
+
+    <!-- Thumbnail Strip (if multiple images) -->
+    @if (hasMultipleImages) {
+    <div class="bg-white px-4 py-3 flex gap-2 overflow-x-auto">
+      @for (img of item.imageUrls; track img; let i = $index) {
+      <button (click)="goToImage(i)" [class]="
+            'flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all ' +
+            (currentImageIndex() === i ? 'border-[#3949AB] shadow-md' : 'border-transparent opacity-70 hover:opacity-100')
+          ">
+        <img [src]="img" [alt]="'Image ' + (i + 1)" class="w-full h-full object-cover" />
+      </button>
+      }
+    </div>
+    }
 
     <div class="p-8">
       <div class="flex items-start justify-between mb-6">
@@ -69,18 +115,33 @@
       @if (item.owner) {
       <div class="bg-white rounded-2xl p-6 shadow-sm mb-6">
         <h2 class="text-xl font-semibold text-[#1A237E] mb-4">Owner</h2>
-        <div class="flex items-center gap-4">
+        <div (click)="viewOwnerProfile()"
+          class="flex items-center gap-4 cursor-pointer hover:bg-gray-50 -m-2 p-2 rounded-xl transition-colors">
           @if (item.owner.profileImageUrl) {
           <img [src]="item.owner.profileImageUrl" alt="Owner" class="w-16 h-16 rounded-full object-cover">
           } @else {
           <div
             class="w-16 h-16 bg-[#90CAF9] rounded-full flex items-center justify-center text-2xl font-bold text-[#3949AB]">
+            @if (item.owner.firstName) {
+            {{ item.owner.firstName.charAt(0) }}{{ item.owner.lastName?.charAt(0) || '' }}
+            } @else if (item.owner.name) {
             {{ item.owner.name.charAt(0) }}
+            } @else {
+            <lucide-icon [img]="UserIcon" class="w-8 h-8"></lucide-icon>
+            }
           </div>
           }
-          <div>
+          <div class="flex-1">
             <div class="flex items-center gap-2">
-              <p class="font-semibold text-[#1A237E]">{{ item.owner.name }}</p>
+              <p class="font-semibold text-[#1A237E]">
+                @if (item.owner.firstName) {
+                {{ item.owner.firstName }} {{ item.owner.lastName }}
+                } @else if (item.owner.name) {
+                {{ item.owner.name }}
+                } @else {
+                Unknown Owner
+                }
+              </p>
               @if (item.owner.verified) {
               <lucide-icon [img]="CheckCircleIcon" class="w-5 h-5 text-[#3949AB]"></lucide-icon>
               }
@@ -88,6 +149,7 @@
             @if (item.owner.verified) {
             <p class="text-sm text-gray-600">Address Verified</p>
             }
+            <p class="text-sm text-[#3949AB] mt-1">View Profile →</p>
           </div>
         </div>
       </div>

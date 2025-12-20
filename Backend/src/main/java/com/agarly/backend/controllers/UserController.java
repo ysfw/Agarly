@@ -1,6 +1,8 @@
 package com.agarly.backend.controllers;
 
 import com.agarly.backend.models.User;
+import com.agarly.backend.dtos.PublicUserProfileDTO;
+import com.agarly.backend.repos.ItemRepository;
 import com.agarly.backend.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,14 +15,16 @@ public class UserController {
     @Autowired
     UserService userService;
 
+    @Autowired
+    ItemRepository itemRepository;
+
     @GetMapping("username/{username}")
     public ResponseEntity<User> findByUsername(@PathVariable String username) {
         User user = userService.findByUsername(username);
 
         if (user != null) {
             return new ResponseEntity<>(user, HttpStatus.OK);
-        }
-        else {
+        } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
@@ -31,10 +35,26 @@ public class UserController {
 
         if (user != null) {
             return new ResponseEntity<>(user, HttpStatus.OK);
-        }
-        else {
+        } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+    }
+
+    // Public profile endpoint for viewing other users
+    @GetMapping("/{id}")
+    public ResponseEntity<PublicUserProfileDTO> getUserProfile(@PathVariable Long id) {
+        User user = userService.findById(id);
+
+        if (user == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        // Count total items posted by user
+        Long totalItems = itemRepository.countByOwner(user);
+
+        // Return safe DTO without sensitive data
+        PublicUserProfileDTO profile = new PublicUserProfileDTO(user, totalItems);
+        return ResponseEntity.ok(profile);
     }
 
 }

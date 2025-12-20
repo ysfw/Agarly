@@ -73,15 +73,18 @@ export class AdminService {
 
     // ==================== Authentication ====================
 
-    login(credentials: AdminLoginCredentials): Observable<{ token: string }> {
-        return this.http.post<{ token: string }>(
+    login(credentials: AdminLoginCredentials): Observable<{ Token: string }> {
+        return this.http.post<{ Token: string }>(
             `${this.baseUrl}/account/Admin-login`,
             credentials,
             { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) }
         ).pipe(
             tap(response => {
-                localStorage.setItem('adminToken', response.token);
-                this.adminToken.set(response.token);
+                // Backend returns "Token" with capital T
+                const token = response.Token;
+                console.log('Admin token received:', token ? 'yes' : 'no');
+                localStorage.setItem('adminToken', token);
+                this.adminToken.set(token);
                 this.isAdminLoggedIn.set(true);
             })
         );
@@ -186,6 +189,20 @@ export class AdminService {
     }
 
     // ==================== User Management ====================
+
+    getUsers(): Observable<any[]> {
+        return this.http.get<any[]>(
+            `${this.baseUrl}/admin/users`,
+            { headers: this.getAuthHeaders() }
+        );
+    }
+
+    searchUsers(query: string): Observable<any[]> {
+        return this.http.get<any[]>(
+            `${this.baseUrl}/admin/users/search?q=${encodeURIComponent(query)}`,
+            { headers: this.getAuthHeaders() }
+        );
+    }
 
     banUser(userId: number): Observable<string> {
         return this.http.put(

@@ -64,7 +64,7 @@ export class SearchResultsComponent implements OnInit {
           }
         });
       } else {
-        this.itemService.getAll().subscribe({
+        this.itemService.getApprovedItems().subscribe({
           next: (items) => {
             if (Array.isArray(items)) {
               this.items = items;

@@ -1,7 +1,7 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Component, inject, OnInit, signal } from '@angular/core';
+import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { Location, CommonModule } from '@angular/common';
-import { LucideAngularModule, ArrowLeft, MapPin, CheckCircle, MessageCircle } from 'lucide-angular';
+import { LucideAngularModule, ArrowLeft, MapPin, CheckCircle, MessageCircle, ChevronLeft, ChevronRight, User } from 'lucide-angular';
 import { ItemService } from '../../services/item.service';
 import { Item } from '../../models/item.model';
 import { MapDisplayComponent } from '../../components/map-display/map-display.component';
@@ -9,7 +9,7 @@ import { MapDisplayComponent } from '../../components/map-display/map-display.co
 @Component({
   selector: 'app-item-details',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule, MapDisplayComponent],
+  imports: [CommonModule, LucideAngularModule, MapDisplayComponent, RouterLink],
   templateUrl: 'item-details.component.html'
 })
 export class ItemDetailsComponent implements OnInit {
@@ -17,6 +17,9 @@ export class ItemDetailsComponent implements OnInit {
   readonly MapPinIcon = MapPin;
   readonly CheckCircleIcon = CheckCircle;
   readonly MessageCircleIcon = MessageCircle;
+  readonly ChevronLeftIcon = ChevronLeft;
+  readonly ChevronRightIcon = ChevronRight;
+  readonly UserIcon = User;
 
   router = inject(Router);
   route = inject(ActivatedRoute);
@@ -25,6 +28,9 @@ export class ItemDetailsComponent implements OnInit {
 
   item: Item | undefined;
   id: string | null = null;
+
+  // Image gallery state
+  currentImageIndex = signal(0);
 
   goBack() {
     this.location.back();
@@ -49,6 +55,46 @@ export class ItemDetailsComponent implements OnInit {
     if (this.item?.latitude && this.item?.longitude) {
       const url = `https://www.google.com/maps/search/?api=1&query=${this.item.latitude},${this.item.longitude}`;
       window.open(url, '_blank');
+    }
+  }
+
+  // Image gallery methods
+  get currentImage(): string {
+    if (this.item?.imageUrls && this.item.imageUrls.length > 0) {
+      return this.item.imageUrls[this.currentImageIndex()];
+    }
+    return 'assets/placeholder-image.jpg';
+  }
+
+  get hasMultipleImages(): boolean {
+    return (this.item?.imageUrls?.length ?? 0) > 1;
+  }
+
+  get totalImages(): number {
+    return this.item?.imageUrls?.length ?? 0;
+  }
+
+  previousImage(): void {
+    if (this.item?.imageUrls) {
+      const newIndex = this.currentImageIndex() - 1;
+      this.currentImageIndex.set(newIndex < 0 ? this.item.imageUrls.length - 1 : newIndex);
+    }
+  }
+
+  nextImage(): void {
+    if (this.item?.imageUrls) {
+      const newIndex = this.currentImageIndex() + 1;
+      this.currentImageIndex.set(newIndex >= this.item.imageUrls.length ? 0 : newIndex);
+    }
+  }
+
+  goToImage(index: number): void {
+    this.currentImageIndex.set(index);
+  }
+
+  viewOwnerProfile(): void {
+    if (this.item?.owner?.id) {
+      this.router.navigate(['/user', this.item.owner.id]);
     }
   }
 }

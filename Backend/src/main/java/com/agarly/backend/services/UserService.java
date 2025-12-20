@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserService {
 
-    private BCryptPasswordEncoder PasswordEncoder= new BCryptPasswordEncoder(12);
+    private BCryptPasswordEncoder PasswordEncoder = new BCryptPasswordEncoder(12);
 
     @Autowired
     private UserRepository userRepository;
@@ -26,6 +26,10 @@ public class UserService {
 
     public User findByUsername(String username) {
         return userRepository.findByUsername(username);
+    }
+
+    public User findById(Long id) {
+        return userRepository.findById(id).orElse(null);
     }
 
     public User findByEmail(String email) {
@@ -47,28 +51,28 @@ public class UserService {
 
     public String verify(LoginCredentials userCredentials) {
         User user = findByEmail(userCredentials.getEmail());
-            Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), userCredentials.getPassword()));
+        Authentication authentication = authManager.authenticate(
+                new UsernamePasswordAuthenticationToken(user.getUsername(), userCredentials.getPassword()));
         if (authentication.isAuthenticated()) {
             return jwtService.generateToken(user.getUsername());
         } else {
             return "fail";
         }
     }
-//    public void deleteById(Long id) {
-//        userRepository.deleteById(id);
-//    }
+    // public void deleteById(Long id) {
+    // userRepository.deleteById(id);
+    // }
 
     @org.springframework.beans.factory.annotation.Value("${spring.security.oauth2.client.registration.google.client-id}")
     private String googleClientId;
 
     public User loginWithGoogle(String idTokenString) {
         try {
-            com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier verifier =
-                    new com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier.Builder(
-                            new com.google.api.client.http.javanet.NetHttpTransport(),
-                            new com.google.api.client.json.gson.GsonFactory())
-                            .setAudience(java.util.Collections.singletonList(googleClientId))
-                            .build();
+            com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier verifier = new com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier.Builder(
+                    new com.google.api.client.http.javanet.NetHttpTransport(),
+                    new com.google.api.client.json.gson.GsonFactory())
+                    .setAudience(java.util.Collections.singletonList(googleClientId))
+                    .build();
 
             com.google.api.client.googleapis.auth.oauth2.GoogleIdToken idToken = verifier.verify(idTokenString);
             if (idToken != null) {
@@ -81,7 +85,7 @@ public class UserService {
                 if (user == null) {
                     user = new User();
                     user.setEmail(email);
-                    user.setUsername(email.substring(0,email.indexOf("@")));
+                    user.setUsername(email.substring(0, email.indexOf("@")));
                     user.setFirstName(firstName);
                     user.setLastName(lastName);
                     user.setActivated(true);

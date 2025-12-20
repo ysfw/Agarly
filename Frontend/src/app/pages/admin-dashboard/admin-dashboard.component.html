@@ -63,6 +63,11 @@
             : 'px-4 py-2 rounded-full font-medium bg-gray-100 text-blue-800 hover:bg-gray-200 transition-all'">
                     Requests ({{ totalRequests() }})
                 </button>
+                <button (click)="setActiveTab('users')" [class]="activeTab() === 'users' 
+            ? 'px-4 py-2 rounded-full font-medium bg-blue-800 text-white transition-all' 
+            : 'px-4 py-2 rounded-full font-medium bg-gray-100 text-blue-800 hover:bg-gray-200 transition-all'">
+                    Users ({{ users().length }})
+                </button>
             </div>
 
             <!-- Search Bar -->
@@ -92,7 +97,7 @@
                     <p class="text-sm text-gray-500">
                         by {{ getOwnerName(post.owner) }} • {{ post.category }}
                     </p>
-                    <p class="text-xs text-gray-400">${{ post.pricePerDay }}/{{ post.priceUnit?.toLowerCase() }}</p>
+                    <p class="text-xs text-gray-400">${{ post.pricePerDay }}/{{ post.priceUnit.toLowerCase() }}</p>
                 </div>
 
                 <!-- Status Badge -->
@@ -178,6 +183,87 @@
             <div class="text-center py-12 text-gray-500">
                 <lucide-icon [img]="UserIcon" class="w-12 h-12 mx-auto mb-4 text-gray-300"></lucide-icon>
                 <p>No requests found</p>
+            </div>
+            }
+            }
+        </div>
+        }
+
+        <!-- Users Content -->
+        @if (activeTab() === 'users') {
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-xl font-bold text-slate-800 mb-4">Manage Users</h2>
+
+            @if (loading()) {
+            <div class="flex items-center justify-center py-12">
+                <lucide-icon [img]="LoaderIcon" class="w-6 h-6 text-blue-800 animate-spin"></lucide-icon>
+                <span class="ml-2 text-gray-600">Loading users...</span>
+            </div>
+            } @else {
+            <!-- Users Grid -->
+            @for (user of filteredUsers(); track user.id) {
+            <div class="border border-gray-200 rounded-lg p-4 mb-3 hover:shadow-md transition-shadow">
+                <div class="flex items-center justify-between">
+                    <!-- User Info -->
+                    <div class="flex items-center gap-4">
+                        <!-- Avatar -->
+                        @if (user.profileImageUrl) {
+                        <img [src]="user.profileImageUrl" [alt]="getOwnerName(user)"
+                            class="w-12 h-12 rounded-full object-cover">
+                        } @else {
+                        <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
+                            <span class="text-lg font-bold text-blue-800">{{ user.firstName?.[0] || '?'}}{{
+                                user.lastName?.[0] || '' }}</span>
+                        </div>
+                        }
+
+                        <!-- Name and Details -->
+                        <div>
+                            <h3 class="font-semibold text-gray-800">{{ getOwnerName(user) }}</h3>
+                            <p class="text-sm text-gray-500">{{ user.email }}</p>
+                            <div class="flex items-center gap-4 mt-1 text-xs text-gray-600">
+                                <span>⭐ {{ user.rating?.toFixed(1) || '0.0' }} rating</span>
+                                <span>📦 {{ user.totalItemsPosted || 0 }} items posted</span>
+                                @if (user.city || user.state) {
+                                <span>📍 {{ user.city }}{{ user.city && user.state ? ', ' : '' }}{{ user.state
+                                    }}</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="flex items-center gap-2">
+                        <!-- Ban Status Badge -->
+                        @if (user.blocked) {
+                        <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm font-medium">Banned</span>
+                        }
+
+                        <!-- View Profile Button -->
+                        <button (click)="viewUserProfile(user.id)"
+                            class="px-3 py-1.5 border border-blue-800 text-blue-800 rounded-lg text-sm font-medium hover:bg-blue-50 transition-colors">
+                            View Profile
+                        </button>
+
+                        <!-- Ban/Unban Button -->
+                        @if (user.blocked) {
+                        <button (click)="unbanUser(user)"
+                            class="px-3 py-1.5 bg-emerald-500 text-white rounded-lg text-sm font-medium hover:bg-emerald-600 transition-colors">
+                            Unban
+                        </button>
+                        } @else {
+                        <button (click)="banUser(user)"
+                            class="px-3 py-1.5 bg-red-500 text-white rounded-lg text-sm font-medium hover:bg-red-600 transition-colors">
+                            Ban User
+                        </button>
+                        }
+                    </div>
+                </div>
+            </div>
+            } @empty {
+            <div class="text-center py-12 text-gray-500">
+                <lucide-icon [img]="UserIcon" class="w-12 h-12 mx-auto mb-4 text-gray-300"></lucide-icon>
+                <p>No users found</p>
             </div>
             }
             }
