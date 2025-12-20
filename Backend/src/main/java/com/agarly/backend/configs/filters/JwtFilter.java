@@ -2,6 +2,9 @@ package com.agarly.backend.configs.filters;
 
 import com.agarly.backend.services.JWTService;
 import com.agarly.backend.services._UserDetailsService;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,17 +19,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.List;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
-
-    // Public routes that should skip JWT validation
-    private static final List<String> PUBLIC_ROUTES = List.of(
-            "/account/login",
-            "/account/register",
-            "/account/gAuth",
-            "/register/verify");
 
     @Autowired
     JWTService jwtService;
@@ -36,49 +31,53 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        String requestPath = request.getRequestURI();
-
-        // Skip JWT validation for public routes
-        if (isPublicRoute(requestPath)) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
         String authHeader = request.getHeader("Authorization");
         String jwtToken = null;
         String username = null;
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             jwtToken = authHeader.substring(7);
+
             try {
+                // Try to extract username from token
                 username = jwtService.extractUsername(jwtToken);
+            } catch (SignatureException e) {
+                // Token was signed with a different key (e.g., server restarted)
+                // Don't set authentication - let SecurityConfig handle authorization
+                // For public routes: request proceeds (permitAll)
+                // For protected routes: request is blocked (authenticated required)
+                System.err.println("JWT SignatureException: Invalid signature - " + e.getMessage());
+                filterChain.doFilter(request, response);
+                return;
+            } catch (ExpiredJwtException e) {
+                // Token has expired
+                System.err.println("JWT ExpiredJwtException: Token expired - " + e.getMessage());
+                filterChain.doFilter(request, response);
+                return;
+            } catch (MalformedJwtException e) {
+                // Token is not properly formatted
+                System.err.println("JWT MalformedJwtException: Malformed token - " + e.getMessage());
+                filterChain.doFilter(request, response);
+                return;
             } catch (Exception e) {
-                // Invalid or expired token - just continue without authentication
-                // The security config will handle authorization
-                System.err.println("JWT parsing failed: " + e.getMessage());
+                // Any other JWT-related exception
+                System.err.println("JWT Exception: " + e.getMessage());
                 filterChain.doFilter(request, response);
                 return;
             }
         }
 
+        // If we successfully extracted a username, try to authenticate
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            try {
-                UserDetails user = context.getBean(_UserDetailsService.class).loadUserByUsername(username);
-                if (jwtService.validateToken(jwtToken, user)) {
-                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                            user, null, user.getAuthorities());
-                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    SecurityContextHolder.getContext().setAuthentication(authToken);
-                }
-            } catch (Exception e) {
-                // User not found or validation failed - continue without auth
-                System.err.println("User validation failed: " + e.getMessage());
+            UserDetails user = context.getBean(_UserDetailsService.class).loadUserByUsername(username);
+            if (jwtService.validateToken(jwtToken, user)) {
+                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                        user, null, user.getAuthorities());
+                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         }
-        filterChain.doFilter(request, response);
-    }
 
-    private boolean isPublicRoute(String requestPath) {
-        return PUBLIC_ROUTES.stream().anyMatch(requestPath::startsWith);
+        filterChain.doFilter(request, response);
     }
 }
