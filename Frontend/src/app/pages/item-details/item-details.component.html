@@ -1,100 +1,114 @@
 @if (item) {
-  <div class="min-h-screen w-full bg-[#F5F7FA]">
-    <div class="max-w-4xl mx-auto">
-      <div class="bg-white relative">
-        <button (click)="router.navigate(['/home'])"
-          class="absolute top-6 left-6 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-50 z-10">
-          <lucide-icon [img]="ArrowLeftIcon" class="w-5 h-5 text-[#1A237E]"></lucide-icon>
-        </button>
-        <img [src]="item.image" [alt]="item.name"
-          class="w-full h-96 object-cover" />
+<div class="min-h-screen w-full bg-[#F5F7FA]">
+  <div class="max-w-4xl mx-auto">
+    <div class="bg-white relative">
+      <button (click)="goBack()"
+        class="absolute top-6 left-6 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-50 z-10"
+        aria-label="Go back">
+        <lucide-icon [img]="ArrowLeftIcon" class="w-5 h-5 text-[#1A237E]"></lucide-icon>
+      </button>
+      <img [src]="item.imageUrls && item.imageUrls.length > 0 ? item.imageUrls[0] : 'assets/placeholder-image.jpg'"
+        [alt]="item.title" class="w-full h-96 object-cover" />
+    </div>
+
+    <div class="p-8">
+      <div class="flex items-start justify-between mb-6">
+        <div>
+          <h1 class="text-3xl font-bold text-[#1A237E] mb-2">{{ item.title }}</h1>
+          <div class="flex items-center gap-2 text-gray-600">
+            <lucide-icon [img]="MapPinIcon" class="w-4 h-4"></lucide-icon>
+            <span>{{ item.location }}</span>
+          </div>
+          <div class="mt-2 text-xl font-bold text-[#3949AB]">
+            {{ item.pricePerDay | currency:'EGP' }} / {{ item.priceUnit }}
+          </div>
+        </div>
+        <span class="px-4 py-2 bg-[#C6FF00] text-[#1A237E] rounded-full font-semibold">
+          {{ item.condition }}
+        </span>
       </div>
 
-      <div class="p-8">
-        <div class="flex items-start justify-between mb-6">
+      @if (item.description) {
+      <div class="bg-white rounded-2xl p-6 shadow-sm mb-6">
+        <h2 class="text-xl font-semibold text-[#1A237E] mb-4">Description</h2>
+        <p class="text-gray-700 leading-relaxed">
+          {{ item.description }}
+        </p>
+      </div>
+      }
+
+      @if (item.location) {
+      <div class="bg-white rounded-2xl p-6 shadow-sm mb-6">
+        <h2 class="text-xl font-semibold text-[#1A237E] mb-4">Location</h2>
+
+        @if (item.latitude && item.longitude) {
+        <div (click)="openMap()"
+          class="w-full h-64 rounded-xl overflow-hidden mb-4 border border-slate-200 relative z-0 cursor-pointer hover:opacity-90 transition-opacity"
+          title="Open in Google Maps">
+          <app-map-display [lat]="item.latitude" [lng]="item.longitude"></app-map-display>
+        </div>
+        } @else {
+        <div class="bg-[#F5F7FA] rounded-xl h-64 flex items-center justify-center mb-4">
+          <div class="text-center">
+            <lucide-icon [img]="MapPinIcon" class="w-12 h-12 text-[#3949AB] mx-auto mb-3"></lucide-icon>
+            <p class="text-[#1A237E] font-semibold mb-1">{{ item.location }}</p>
+          </div>
+        </div>
+        }
+
+        <div class="flex items-start gap-3 text-gray-700">
+          <lucide-icon [img]="MapPinIcon" class="w-5 h-5 text-[#3949AB] flex-shrink-0 mt-0.5"></lucide-icon>
           <div>
-            <h1 class="text-3xl font-bold text-[#1A237E] mb-2">{{ item.name }}</h1>
-            <div class="flex items-center gap-2 text-gray-600">
-              <lucide-icon [img]="MapPinIcon" class="w-4 h-4"></lucide-icon>
-              <span>{{ item.distance }} away</span>
-            </div>
+            <p class="font-semibold text-[#1A237E] mb-1">General Area</p>
+            <p class="text-sm">Exact address will be shared after request is accepted</p>
           </div>
-          <span class="px-4 py-2 bg-[#C6FF00] text-[#1A237E] rounded-full font-semibold">
-            {{ item.status }}
-          </span>
         </div>
+      </div>
+      }
 
-        @if (item.description) {
-          <div class="bg-white rounded-2xl p-6 shadow-sm mb-6">
-            <h2 class="text-xl font-semibold text-[#1A237E] mb-4">Description</h2>
-            <p class="text-gray-700 leading-relaxed">
-              {{ item.description }}
-            </p>
+      @if (item.owner) {
+      <div class="bg-white rounded-2xl p-6 shadow-sm mb-6">
+        <h2 class="text-xl font-semibold text-[#1A237E] mb-4">Owner</h2>
+        <div class="flex items-center gap-4">
+          @if (item.owner.profileImageUrl) {
+          <img [src]="item.owner.profileImageUrl" alt="Owner" class="w-16 h-16 rounded-full object-cover">
+          } @else {
+          <div
+            class="w-16 h-16 bg-[#90CAF9] rounded-full flex items-center justify-center text-2xl font-bold text-[#3949AB]">
+            {{ item.owner.name.charAt(0) }}
           </div>
-        }
-
-        @if (item.location) {
-          <div class="bg-white rounded-2xl p-6 shadow-sm mb-6">
-            <h2 class="text-xl font-semibold text-[#1A237E] mb-4">Location</h2>
-            <div class="bg-[#F5F7FA] rounded-xl h-64 flex items-center justify-center mb-4">
-              <div class="text-center">
-                <lucide-icon [img]="MapPinIcon" class="w-12 h-12 text-[#3949AB] mx-auto mb-3"></lucide-icon>
-                <p class="text-[#1A237E] font-semibold mb-1">{{ item.location.area }}</p>
-                <p class="text-gray-600 text-sm">{{ item.location.description }}</p>
-              </div>
-            </div>
-            <div class="flex items-start gap-3 text-gray-700">
-              <lucide-icon [img]="MapPinIcon" class="w-5 h-5 text-[#3949AB] flex-shrink-0 mt-0.5"></lucide-icon>
-              <div>
-                <p class="font-semibold text-[#1A237E] mb-1">General Area</p>
-                <p class="text-sm">Exact address will be shared after request is accepted</p>
-              </div>
-            </div>
-          </div>
-        }
-
-        @if (item.owner) {
-          <div class="bg-white rounded-2xl p-6 shadow-sm mb-6">
-            <h2 class="text-xl font-semibold text-[#1A237E] mb-4">Owner</h2>
-            <div class="flex items-center gap-4">
-              @if (item.ownerImage) {
-                <img [src]="item.ownerImage" alt="Owner" class="w-16 h-16 rounded-full object-cover">
-              } @else {
-                <div class="w-16 h-16 bg-[#90CAF9] rounded-full flex items-center justify-center text-2xl font-bold text-[#3949AB]">
-                  {{ item.owner.name.charAt(0) }}
-                </div>
+          }
+          <div>
+            <div class="flex items-center gap-2">
+              <p class="font-semibold text-[#1A237E]">{{ item.owner.name }}</p>
+              @if (item.owner.verified) {
+              <lucide-icon [img]="CheckCircleIcon" class="w-5 h-5 text-[#3949AB]"></lucide-icon>
               }
-              <div>
-                <div class="flex items-center gap-2">
-                  <p class="font-semibold text-[#1A237E]">{{ item.owner.name }}</p>
-                  @if (item.owner.verified) {
-                    <lucide-icon [img]="CheckCircleIcon" class="w-5 h-5 text-[#3949AB]"></lucide-icon>
-                  }
-                </div>
-                @if (item.owner.verified) {
-                  <p class="text-sm text-gray-600">Address Verified</p>
-                }
-              </div>
             </div>
+            @if (item.owner.verified) {
+            <p class="text-sm text-gray-600">Address Verified</p>
+            }
           </div>
-        }
-
-        <div class="flex gap-4">
-          <button (click)="navigateToBook()"
-            class="flex-1 px-6 py-4 bg-[#3949AB] text-white rounded-xl font-semibold text-lg hover:bg-[#1A237E] transition-colors shadow-md">
-            Book Now
-          </button>
-          <button (click)="router.navigate(['/chat/1'])"
-            class="px-6 py-4 bg-gray-200 text-[#1A237E] rounded-xl font-semibold hover:bg-gray-300 transition-colors flex items-center gap-2">
-            <lucide-icon [img]="MessageCircleIcon" class="w-5 h-5"></lucide-icon>
-            Message
-          </button>
         </div>
+      </div>
+      }
+
+      <div class="flex gap-4">
+        <button (click)="navigateToBook()"
+          class="flex-1 px-6 py-4 bg-[#3949AB] text-white rounded-xl font-semibold text-lg hover:bg-[#1A237E] transition-colors shadow-md">
+          Book Now
+        </button>
+        <button (click)="router.navigate(['/chat/1'])"
+          class="px-6 py-4 bg-gray-200 text-[#1A237E] rounded-xl font-semibold hover:bg-gray-300 transition-colors flex items-center gap-2">
+          <lucide-icon [img]="MessageCircleIcon" class="w-5 h-5"></lucide-icon>
+          Message
+        </button>
       </div>
     </div>
   </div>
+</div>
 } @else {
-  <div class="min-h-screen w-full bg-[#F5F7FA] flex items-center justify-center">
-    <p class="text-gray-600 text-lg">Loading item details...</p>
-  </div>
+<div class="min-h-screen w-full bg-[#F5F7FA] flex items-center justify-center">
+  <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-[#3949AB]"></div>
+</div>
 }

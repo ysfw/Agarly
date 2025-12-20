@@ -1,10 +1,12 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { LucideAngularModule, ArrowLeft, SlidersHorizontal, Search, MapPin } from 'lucide-angular';
 import { ItemCardComponent } from '../../components/item-card/item-card.component';
 import { LocationPickerComponent } from '../../components/location-picker/location-picker.component';
+import { ItemService } from '../../services/item.service';
+import { Item } from '../../models/item.model';
 
 @Component({
   selector: 'app-search-results',
@@ -21,6 +23,12 @@ export class SearchResultsComponent implements OnInit {
 
   router = inject(Router);
   route = inject(ActivatedRoute);
+  location = inject(Location);
+  itemService = inject(ItemService);
+
+  goBack() {
+    this.location.back();
+  }
 
   showFilters = false;
   isMapOpen = false;
@@ -36,47 +44,50 @@ export class SearchResultsComponent implements OnInit {
     longitude: null as number | null
   };
 
-  sampleItems = [{
-    id: 1,
-    name: 'Power Drill',
-    category: 'Tools',
-    distance: '0.3 mi',
-    status: 'Available',
-    image: 'https://images.unsplash.com/photo-1504148455328-c376907d081c?w=400'
-  }, {
-    id: 2,
-    name: 'Stand Mixer',
-    category: 'Kitchen',
-    distance: '0.5 mi',
-    status: 'Available',
-    image: 'https://images.unsplash.com/photo-1578643463396-0997cb5328c1?w=400'
-  }, {
-    id: 4,
-    name: 'Pressure Washer',
-    category: 'Cleaning',
-    distance: '1.2 mi',
-    status: 'Available',
-    image: 'https://images.unsplash.com/photo-1628177142898-93e36e4e3a50?w=400'
-  }, {
-    id: 5,
-    name: 'Projector',
-    category: 'Electronics',
-    distance: '0.6 mi',
-    status: 'Available',
-    image: 'https://images.unsplash.com/photo-1593784991095-a205069470b6?w=400'
-  }];
+  items: Item[] = [];
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
-      if (params['q']) {
-        console.log('Search query:', params['q']);
-        // TODO: Filter items by name
+      if (params['category']) {
+        this.filters.category = params['category'];
+        this.itemService.getByCategory(this.filters.category).subscribe({
+          next: (items) => {
+            if (Array.isArray(items)) {
+              this.items = items;
+            } else {
+              this.items = [];
+            }
+          },
+          error: (err) => {
+            console.error('SearchResults: Error fetching category items:', err);
+            this.items = [];
+          }
+        });
+      } else {
+        this.itemService.getAll().subscribe({
+          next: (items) => {
+            if (Array.isArray(items)) {
+              this.items = items;
+              // Client-side filtering for now if needed, or implement backend search
+              if (params['q']) {
+                const query = params['q'].toLowerCase();
+                this.items = this.items.filter(i => i.title.toLowerCase().includes(query));
+              }
+            } else {
+              this.items = [];
+            }
+          },
+          error: (err) => {
+            console.error('SearchResults: Error fetching items:', err);
+            this.items = [];
+          }
+        });
       }
+
       if (params['lat'] && params['lng']) {
         this.filters.latitude = parseFloat(params['lat']);
         this.filters.longitude = parseFloat(params['lng']);
         this.filters.distance = 10; // Default radius
-        console.log('Search location:', this.filters.latitude, this.filters.longitude);
       }
     });
   }
@@ -111,7 +122,6 @@ export class SearchResultsComponent implements OnInit {
   applyFilters() {
     console.log('Applying filters:', this.filters);
     // In a real app, this would call the backend service with the filter parameters
-    // For now, we'll just toggle the filters closed to simulate action
     this.showFilters = false;
   }
 }

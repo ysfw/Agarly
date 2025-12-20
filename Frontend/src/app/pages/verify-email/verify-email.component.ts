@@ -1,4 +1,4 @@
-import { Component, signal, computed, effect, ViewChildren, QueryList, AfterViewInit, ElementRef, inject, NgZone } from '@angular/core';
+import { Component, signal, computed, effect, ViewChildren, QueryList, AfterViewInit, ElementRef, inject, NgZone, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -29,10 +29,11 @@ export class VerifyEmailComponent implements AfterViewInit {
 
   // Signals
   otpDigits = signal(['', '', '', '', '', '']);
-  
+
   countdown = signal(60);
   successMessage = signal('');
   errorMessage = signal('');
+  isResending = signal(false);
 
   // Computed signals
   isOtpComplete = computed(() => {
@@ -40,7 +41,7 @@ export class VerifyEmailComponent implements AfterViewInit {
   });
 
   isResendAvailable = computed(() => {
-    return this.countdown() === 0;
+    return this.countdown() === 0 && !this.isResending();
   });
 
   private countdownInterval: any = null;
@@ -50,7 +51,7 @@ export class VerifyEmailComponent implements AfterViewInit {
     effect(() => {
       if (this.countdown() > 0) {
         if (this.countdownInterval) clearInterval(this.countdownInterval);
-        
+
         this.countdownInterval = setInterval(() => {
           this.countdown.update(count => (count > 0 ? count - 1 : 0));
         }, 1000);
@@ -76,15 +77,18 @@ export class VerifyEmailComponent implements AfterViewInit {
       value = value.replace(/[^\d]/g, '');
     }
 
-    // Keep only last digit if multiple were pasted
+    // Keep only last digit if multiple were entered
     if (value.length > 1) {
       value = value.slice(-1);
     }
 
     // Update the signal
-    const digits = this.otpDigits();
+    const digits = [...this.otpDigits()];
     digits[index] = value;
-    this.otpDigits.set([...digits]);
+    this.otpDigits.set(digits);
+
+    // Update the input value (for visual sync)
+    input.value = value;
 
     // Auto-focus next input if value entered
     if (value !== '' && index < 5) {
@@ -97,23 +101,29 @@ export class VerifyEmailComponent implements AfterViewInit {
   }
 
   handleKeyDown(index: number, event: KeyboardEvent): void {
+    const input = event.target as HTMLInputElement;
+    const digits = [...this.otpDigits()];
+
     // Handle backspace
     if (event.key === 'Backspace') {
-      const digits = this.otpDigits();
-      
-      if (digits[index] === '') {
-        // Move to previous input if current is empty
-        if (index > 0) {
-          event.preventDefault();
-          if (this.otpInputs) {
-            this.otpInputs.toArray()[index - 1]?.nativeElement.focus();
-          }
-        }
-      } else {
+      event.preventDefault(); // Prevent default to have full control
+
+      if (digits[index] !== '') {
         // Clear current input
         digits[index] = '';
-        this.otpDigits.set([...digits]);
+        this.otpDigits.set(digits);
+        input.value = '';
+      } else if (index > 0) {
+        // Move to previous input and clear it
+        const prevInput = this.otpInputs.toArray()[index - 1]?.nativeElement;
+        if (prevInput) {
+          digits[index - 1] = '';
+          this.otpDigits.set(digits);
+          prevInput.value = '';
+          prevInput.focus();
+        }
       }
+      return;
     }
 
     // Handle arrow keys for navigation
@@ -123,7 +133,7 @@ export class VerifyEmailComponent implements AfterViewInit {
         this.otpInputs.toArray()[index - 1]?.nativeElement.focus();
       }
     }
-    
+
     if (event.key === 'ArrowRight' && index < 5) {
       event.preventDefault();
       if (this.otpInputs) {
@@ -132,27 +142,58 @@ export class VerifyEmailComponent implements AfterViewInit {
     }
   }
 
+  // Handle paste event for OTP
+  handlePaste(event: ClipboardEvent): void {
+    event.preventDefault();
+    const pastedData = event.clipboardData?.getData('text') || '';
+
+    // Extract only digits from pasted content
+    const digits = pastedData.replace(/\D/g, '').slice(0, 6).split('');
+
+    if (digits.length > 0) {
+      // Fill the OTP inputs with pasted digits
+      const newOtpDigits = ['', '', '', '', '', ''];
+      digits.forEach((digit, index) => {
+        if (index < 6) {
+          newOtpDigits[index] = digit;
+        }
+      });
+
+      this.otpDigits.set(newOtpDigits);
+
+      // Update all input fields visually
+      setTimeout(() => {
+        this.otpInputs.toArray().forEach((inputRef, index) => {
+          inputRef.nativeElement.value = newOtpDigits[index];
+        });
+
+        // Focus on the last filled input or the next empty one
+        const lastFilledIndex = Math.min(digits.length - 1, 5);
+        const nextIndex = digits.length < 6 ? digits.length : 5;
+        this.otpInputs.toArray()[nextIndex]?.nativeElement.focus();
+      }, 0);
+    }
+  }
+
   verifyEmail(): void {
     if (!this.isOtpComplete()) return;
-    
+
     this.successMessage.set('');
     this.errorMessage.set('');
 
     const code = this.otpDigits().join('');
     console.log('Verifying code:', code);
-    // TODO: Call API to verify the code
+
     this.apiService.sendOTP(this.email(), code).subscribe({
-      next: (response : any) => {
+      next: (response: any) => {
         console.log(response)
-        // Backend returns { status: "message" }
         const message = response?.status || response?.message || 'Email verified successfully!';
         this.successMessage.set(message);
         setTimeout(() => {
           this.router.navigate(['/login']);
         }, 2000);
       },
-      error: (err : HttpErrorResponse) => {
-        // Backend error also returns { status: "error message" }
+      error: (err: HttpErrorResponse) => {
         const errorMsg = err.error?.status || err.error?.message || err.error || 'Verification failed. Please try again.';
         this.errorMessage.set(errorMsg);
       }
@@ -160,31 +201,41 @@ export class VerifyEmailComponent implements AfterViewInit {
   }
 
   resendCode(): void {
-    this.apiService.registerUser(this.userData()).subscribe({
-      next : (response : any) => {
-        console.log("Response from backend: ", response)
-      },
-      error : (err : HttpErrorResponse) => {
-        console.error('An error occurred, Status Code:', err.status)
-        console.error('Error body:', err.error)
-      }
-    })
+    if (!this.isResendAvailable()) return;
 
-    // Reset OTP inputs
-    this.otpDigits.set(['', '', '', '', '', '']);
-    
-    // Reset countdown
-    this.countdown.set(60);
-    
-    // Focus first input
-    setTimeout(() => {
-      if (this.otpInputs && this.otpInputs.length > 0) {
-        this.otpInputs.first.nativeElement.focus();
+    this.isResending.set(true);
+    this.successMessage.set('');
+    this.errorMessage.set('');
+
+    this.apiService.resendOTP(this.email()).subscribe({
+      next: (response: any) => {
+        console.log("OTP resent successfully:", response);
+        const message = response?.status || response?.message || 'OTP sent successfully!';
+        this.successMessage.set(message);
+
+        // Reset OTP inputs
+        this.otpDigits.set(['', '', '', '', '', '']);
+
+        // Clear input fields visually
+        setTimeout(() => {
+          this.otpInputs.toArray().forEach(inputRef => {
+            inputRef.nativeElement.value = '';
+          });
+          // Focus first input
+          this.otpInputs.first?.nativeElement.focus();
+        }, 0);
+
+        // Reset countdown
+        this.countdown.set(60);
+        this.isResending.set(false);
+      },
+      error: (err: HttpErrorResponse) => {
+        console.error('Resend OTP failed:', err);
+        const errorMsg = err.error?.status || err.error?.message || err.error || 'Failed to resend OTP. Please try again.';
+        this.errorMessage.set(errorMsg);
+        this.isResending.set(false);
       }
-    }, 0);
-    
-    console.log('Resending code to:', this.authService.email());
-    // TODO: Call API to resend the code
+    });
   }
 
   goBack(): void {

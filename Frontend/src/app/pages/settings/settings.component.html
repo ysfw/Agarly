@@ -1,7 +1,8 @@
 <div class="min-h-screen w-full bg-[#F5F7FA]">
   <div class="max-w-3xl mx-auto px-6 py-8">
     <div class="flex items-center gap-4 mb-8">
-      <button (click)="navigateTo('/profile')" class="w-10 h-10 flex items-center justify-center hover:bg-gray-100 rounded-full">
+      <button (click)="navigateTo('/profile')"
+        class="w-10 h-10 flex items-center justify-center hover:bg-gray-100 rounded-full">
         <lucide-icon [img]="ArrowLeftIcon" class="w-5 h-5 text-[#1A237E]"></lucide-icon>
       </button>
       <h1 class="text-3xl font-bold text-[#1A237E]">Settings</h1>
@@ -12,17 +13,27 @@
         <div class="px-6 py-4 border-b border-gray-200">
           <h2 class="text-lg font-semibold text-[#1A237E]">Account</h2>
         </div>
-        <button (click)="navigateTo('/edit-profile')" class="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors border-b border-gray-100">
+        <button (click)="navigateTo('/edit-profile')"
+          class="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors border-b border-gray-100">
           <div class="flex items-center gap-3">
             <lucide-icon [img]="UserIcon" class="w-5 h-5 text-[#3949AB]"></lucide-icon>
             <span class="text-[#1A237E] font-medium">Edit Profile</span>
           </div>
           <lucide-icon [img]="ChevronRightIcon" class="w-5 h-5 text-gray-400"></lucide-icon>
         </button>
-        <button (click)="changePassword()" class="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
+        <button (click)="changePassword()"
+          class="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors border-b border-gray-100">
           <div class="flex items-center gap-3">
             <lucide-icon [img]="ShieldIcon" class="w-5 h-5 text-[#3949AB]"></lucide-icon>
             <span class="text-[#1A237E] font-medium">Change Password</span>
+          </div>
+          <lucide-icon [img]="ChevronRightIcon" class="w-5 h-5 text-gray-400"></lucide-icon>
+        </button>
+        <button (click)="navigateTo('/payment')"
+          class="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
+          <div class="flex items-center gap-3">
+            <lucide-icon [img]="CreditCardIcon" class="w-5 h-5 text-[#3949AB]"></lucide-icon>
+            <span class="text-[#1A237E] font-medium">Payment Methods</span>
           </div>
           <lucide-icon [img]="ChevronRightIcon" class="w-5 h-5 text-gray-400"></lucide-icon>
         </button>
@@ -32,7 +43,7 @@
         <div class="px-6 py-4 border-b border-gray-200">
           <h2 class="text-lg font-semibold text-[#1A237E]">Notifications</h2>
         </div>
-        
+
         <div class="px-6 py-4 flex items-center justify-between border-b border-gray-100">
           <div class="flex items-center gap-3">
             <lucide-icon [img]="BellIcon" class="w-5 h-5 text-[#3949AB]"></lucide-icon>
@@ -43,7 +54,9 @@
           </div>
           <label class="relative inline-flex items-center cursor-pointer">
             <input type="checkbox" class="sr-only peer" checked />
-            <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#3949AB]"></div>
+            <div
+              class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#3949AB]">
+            </div>
           </label>
         </div>
 
@@ -57,7 +70,9 @@
           </div>
           <label class="relative inline-flex items-center cursor-pointer">
             <input type="checkbox" class="sr-only peer" checked />
-            <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#3949AB]"></div>
+            <div
+              class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#3949AB]">
+            </div>
           </label>
         </div>
 
@@ -71,7 +86,9 @@
           </div>
           <label class="relative inline-flex items-center cursor-pointer">
             <input type="checkbox" class="sr-only peer" />
-            <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#3949AB]"></div>
+            <div
+              class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#3949AB]">
+            </div>
           </label>
         </div>
       </div>
@@ -80,14 +97,16 @@
         <div class="px-6 py-4 border-b border-gray-200">
           <h2 class="text-lg font-semibold text-[#1A237E]">Privacy & Support</h2>
         </div>
-        <button (click)="navigateTo('/privacy-safety')" class="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors border-b border-gray-100">
+        <button (click)="navigateTo('/privacy-safety')"
+          class="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors border-b border-gray-100">
           <div class="flex items-center gap-3">
             <lucide-icon [img]="ShieldIcon" class="w-5 h-5 text-[#3949AB]"></lucide-icon>
             <span class="text-[#1A237E] font-medium">Privacy & Safety</span>
           </div>
           <lucide-icon [img]="ChevronRightIcon" class="w-5 h-5 text-gray-400"></lucide-icon>
         </button>
-        <button (click)="navigateTo('/support')" class="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
+        <button (click)="navigateTo('/support')"
+          class="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
           <div class="flex items-center gap-3">
             <lucide-icon [img]="HelpCircleIcon" class="w-5 h-5 text-[#3949AB]"></lucide-icon>
             <span class="text-[#1A237E] font-medium">Help & Support</span>
@@ -96,7 +115,8 @@
         </button>
       </div>
 
-      <button (click)="handleLogout()" class="w-full bg-white rounded-2xl px-6 py-4 flex items-center justify-center gap-3 hover:bg-red-50 transition-colors shadow-sm border-2 border-red-200">
+      <button (click)="handleLogout()"
+        class="w-full bg-white rounded-2xl px-6 py-4 flex items-center justify-center gap-3 hover:bg-red-50 transition-colors shadow-sm border-2 border-red-200">
         <lucide-icon [img]="LogOutIcon" class="w-5 h-5 text-red-600"></lucide-icon>
         <span class="text-red-600 font-semibold">Log Out</span>
       </button>

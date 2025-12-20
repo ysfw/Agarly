@@ -31,7 +31,7 @@ import { LucideAngularModule, Home, ClipboardList, LayoutDashboard, User } from 
               <span class="hidden sm:inline">Requests</span>
             </button>
 
-            <button routerLink="/dashboard" routerLinkActive="bg-[#3949AB] text-white"
+            <button routerLink="/my-items" routerLinkActive="bg-[#3949AB] text-white"
               class="flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-colors text-[#1A237E] hover:bg-gray-100">
               <lucide-icon [img]="LayoutDashboardIcon" class="w-5 h-5"></lucide-icon>
               <span class="hidden sm:inline">My Items</span>

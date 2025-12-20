@@ -19,7 +19,7 @@ import { EditProfileComponent } from './pages/edit-profile/edit-profile.componen
 import { SearchResultsComponent } from './pages/search-results/search-results.component';
 import { RequestItemComponent } from './pages/request-item/request-item.component';
 import { VerifyEmailComponent } from './pages/verify-email/verify-email.component';
-import {AuthGuard} from './services/auth-gaurd';
+import { AuthGuard } from './services/auth-gaurd';
 import { PasswordChange } from './pages/password-change/password-change';
 import { TicketsComponent } from './pages/tickets/tickets';
 
@@ -48,6 +48,7 @@ export const routes: Routes = [
   { path: 'search', component: SearchResultsComponent, canActivate: [AuthGuard] },
   { path: 'request-item', component: RequestItemComponent, canActivate: [AuthGuard] },
   { path: 'tickets', component: TicketsComponent, canActivate: [AuthGuard] },
+  { path: 'my-items', redirectTo: 'dashboard', pathMatch: 'full' }, // Consolidated into dashboard
 
   // Fallback
   { path: '**', redirectTo: 'home' }

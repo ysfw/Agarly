@@ -1,8 +1,11 @@
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, ArrowLeft, Image as ImageIcon, X, MapPin } from 'lucide-angular';
 import { LocationPickerComponent } from '../../components/location-picker/location-picker.component';
+import { ItemService } from '../../services/item.service';
+import { Item } from '../../models/item.model';
 
 @Component({
   selector: 'app-add-item',
@@ -18,15 +21,21 @@ export class AddItemComponent {
   readonly MapPinIcon = MapPin;
 
   router = inject(Router);
-  categories = ['Tools', 'Kitchen', 'Cleaning', 'Electronics', 'Sports', 'Garden', 'Other'];
+  location = inject(Location);
+  itemService = inject(ItemService);
+
+  goBack() {
+    this.location.back();
+  }
+  categories = ['TOOLS', 'KITCHEN', 'CLEANING', 'ELECTRONICS', 'SPORTS', 'GARDEN', 'OTHER'];
 
   formData = {
-    name: '',
-    category: '',
+    title: '',
+    category: 'TOOLS',
     description: '',
-    condition: 'excellent',
-    price: null as number | null,
-    priceUnit: 'day',
+    condition: 'EXCELLENT',
+    pricePerDay: null as number | null,
+    priceUnit: 'DAY',
     location: '',
     latitude: null as number | null,
     longitude: null as number | null
@@ -36,16 +45,52 @@ export class AddItemComponent {
   isMapOpen = false;
 
   handleSubmit() {
-    // TODO: Send formData to backend
-    console.log('Submitting form:', this.formData);
-    this.router.navigate(['/home']);
+    if (!this.formData.title || !this.formData.pricePerDay || !this.formData.location) {
+      alert('Please fill in all required fields');
+      return;
+    }
+
+    const newItem: Item = {
+      title: this.formData.title,
+      category: this.formData.category as any,
+      description: this.formData.description,
+      condition: this.formData.condition as any,
+      pricePerDay: this.formData.pricePerDay,
+      priceUnit: this.formData.priceUnit as any,
+      location: this.formData.location,
+      latitude: this.formData.latitude!,
+      longitude: this.formData.longitude!,
+      imageUrls: this.images
+    };
+
+    console.log('Submitting item:', newItem);
+    this.itemService.create(newItem).subscribe({
+      next: (id) => {
+        console.log('Item created with ID:', id);
+        this.router.navigate(['/dashboard']);
+      },
+      error: (err) => {
+        console.error('Error creating item:', err);
+        alert('Failed to create item. Please try again.');
+      }
+    });
   }
 
   handleImageUpload(event: any) {
     const input = event.target as HTMLInputElement;
     if (input.files) {
-      const newImages = Array.from(input.files).map(file => URL.createObjectURL(file));
-      this.images = [...this.images, ...newImages];
+      Array.from(input.files).forEach(file => {
+        this.itemService.uploadImage(file).subscribe({
+          next: (url) => {
+            console.log('Image uploaded:', url);
+            this.images.push(url);
+          },
+          error: (err) => {
+            console.error('Error uploading image:', err);
+            alert('Failed to upload image');
+          }
+        });
+      });
     }
   }
 

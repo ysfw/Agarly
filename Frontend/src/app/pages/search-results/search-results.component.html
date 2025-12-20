@@ -2,13 +2,13 @@
   <div class="max-w-7xl mx-auto px-6 py-8">
     <div class="flex items-center justify-between mb-8">
       <div class="flex items-center gap-4">
-        <button (click)="router.navigate(['/home'])"
-          class="w-10 h-10 flex items-center justify-center hover:bg-gray-100 rounded-full">
+        <button (click)="goBack()" class="w-10 h-10 flex items-center justify-center hover:bg-gray-100 rounded-full"
+          aria-label="Go back">
           <lucide-icon [img]="ArrowLeftIcon" class="w-5 h-5 text-[#1A237E]"></lucide-icon>
         </button>
         <div>
           <h1 class="text-3xl font-bold text-[#1A237E]">Search Results</h1>
-          <p class="text-gray-600">{{sampleItems.length}} items found</p>
+          <p class="text-gray-600">{{items.length}} items found</p>
         </div>
       </div>
       <button (click)="showFilters = !showFilters"
@@ -94,7 +94,7 @@
     }
 
     <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      @for (item of sampleItems; track item.id) {
+      @for (item of items; track item.id) {
       <app-item-card [item]="item"></app-item-card>
       }
     </div>

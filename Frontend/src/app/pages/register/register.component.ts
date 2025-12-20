@@ -189,7 +189,7 @@ export class RegisterComponent {
     }
 
     this.api.registerUser(userData).subscribe({
-      next: (response : any) => {
+      next: (response: any) => {
         // a callback function called when the Observable emits a successful response
         console.log("Response from backend: ", response)
         this.loading = false;
@@ -198,7 +198,7 @@ export class RegisterComponent {
         this.authService.register(userData)
         this.router.navigate(['/verify-email']);
       },
-      error: (err : HttpErrorResponse) => {
+      error: (err: HttpErrorResponse) => {
         // a callback function called if the Observable emits an error
         console.error('An error occurred, Status Code:', err.status)
         console.error('Error body:', err.error)
