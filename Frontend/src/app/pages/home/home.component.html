@@ -85,9 +85,9 @@
     </div>
     <div class="flex gap-3 mb-8 overflow-x-auto pb-2">
       @for (category of categories; track category.name) {
-      <button (click)="toggleCategory(category.name)"
+      <button (click)="toggleCategory(category.value)"
         class="flex items-center gap-2 px-6 py-3 rounded-full font-semibold whitespace-nowrap transition-colors"
-        [ngClass]="selectedCategory === category.name ? 'bg-[#3949AB] text-white' : 'bg-white text-[#1A237E] hover:bg-gray-50'">
+        [ngClass]="selectedCategory === category.value ? 'bg-[#3949AB] text-white' : 'bg-white text-[#1A237E] hover:bg-gray-50'">
         <lucide-icon [img]="category.icon" class="w-5 h-5"></lucide-icon>
         {{ category.name }}
       </button>

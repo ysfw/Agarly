@@ -40,7 +40,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request
                         .requestMatchers("/account/login", "/account/register", "/users", "/account/gAuth",
-                                "/register/verify", "/register/resend-otp")
+                                "/register/verify", "/register/resend-otp", "/uploads/**", "/api/images/upload")
                         .permitAll()
                         .anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults())

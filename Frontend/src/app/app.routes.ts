@@ -19,8 +19,9 @@ import { EditProfileComponent } from './pages/edit-profile/edit-profile.componen
 import { SearchResultsComponent } from './pages/search-results/search-results.component';
 import { RequestItemComponent } from './pages/request-item/request-item.component';
 import { VerifyEmailComponent } from './pages/verify-email/verify-email.component';
-import {AuthGuard} from './services/auth-gaurd';
+import { AuthGuard } from './services/auth-gaurd';
 import { PasswordChange } from './pages/password-change/password-change';
+import { MyItemsComponent } from './pages/my-items/my-items.component';
 
 export const routes: Routes = [
   // Public routes (no AuthGuard)
@@ -46,6 +47,7 @@ export const routes: Routes = [
   { path: 'edit-profile', component: EditProfileComponent, canActivate: [AuthGuard] },
   { path: 'search', component: SearchResultsComponent, canActivate: [AuthGuard] },
   { path: 'request-item', component: RequestItemComponent, canActivate: [AuthGuard] },
+  { path: 'my-items', component: MyItemsComponent, canActivate: [AuthGuard] },
 
   // Fallback
   { path: '**', redirectTo: 'home' }

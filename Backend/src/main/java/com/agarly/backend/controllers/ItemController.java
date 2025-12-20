@@ -1,27 +1,93 @@
 package com.agarly.backend.controllers;
 
+import com.agarly.backend.models.Enums.ItemCategory;
+import com.agarly.backend.models.Item;
+import com.agarly.backend.models.User;
 import com.agarly.backend.services.ItemService;
+import com.agarly.backend.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("/items")
+@RequestMapping("/api/items")
 public class ItemController {
     @Autowired
     private ItemService itemService;
+    @Autowired
+    private UserService userService;
+
+    private User getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        return userService.findByEmail(email); // Assuming email is the principal
+    }
 
     @PostMapping
-    public void createItem(@RequestBody com.agarly.backend.models.Item item) {
-        itemService.createItem();
+    public ResponseEntity<Long> createItem(@RequestBody Item item) {
+        Long id = itemService.createItem(item, getCurrentUser());
+        return new ResponseEntity<>(id, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public void updateItem(@PathVariable Long id) {
-        // Update logic
+    public ResponseEntity<Void> editItem(@PathVariable Long id, @RequestBody Item item) {
+        itemService.editItem(id, item, getCurrentUser());
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
-    public void deleteItem(@PathVariable Long id) {
-        // Delete logic
+    public ResponseEntity<Void> deleteItem(@PathVariable Long id) {
+        itemService.deleteItem(id, getCurrentUser());
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/category/{category}")
+    public ResponseEntity<List<Item>> getItemsByCategory(@PathVariable ItemCategory category) {
+        return ResponseEntity.ok(itemService.getItemsByCategory(category));
+    }
+
+    @GetMapping("/lent")
+    public ResponseEntity<List<Item>> getMyLentItems() {
+        return ResponseEntity.ok(itemService.getItemsByOwner(getCurrentUser()));
+    }
+
+    @GetMapping("/borrowed")
+    public ResponseEntity<List<Item>> getMyBorrowedItems() {
+        return ResponseEntity.ok(itemService.getBorrowedItems(getCurrentUser()));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Item>> getAllItems() {
+        return ResponseEntity.ok(itemService.getAllItems());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Item> getItemById(@PathVariable Long id) {
+        Item item = itemService.getItem(id);
+        if (item != null) {
+            return ResponseEntity.ok(item);
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @PostMapping("/{id}/lend")
+    public ResponseEntity<Void> lendItem(@PathVariable Long id, @RequestParam String borrowerEmail, @RequestParam(required = false) java.time.LocalDate dueDate) {
+        User borrower = userService.findByEmail(borrowerEmail);
+        if (borrower == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        itemService.lendItem(id, borrower, dueDate);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/{id}/return")
+    public ResponseEntity<Void> returnItem(@PathVariable Long id) {
+        itemService.returnItem(id);
+        return ResponseEntity.ok().build();
     }
 }

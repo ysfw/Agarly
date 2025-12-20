@@ -2,20 +2,20 @@ import { Component, Output, EventEmitter, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { LucideAngularModule, Search, Plus, MapPin } from 'lucide-angular';
-import { ApiService } from '../../services/api.service';
+import { ItemService } from '../../services/item.service';
 import { Item } from '../../models/item.model';
 
 @Component({
   selector: 'app-home-explore',
   standalone: true,
   imports: [CommonModule, LucideAngularModule],
-  templateUrl : 'home-explore.component.html'
+  templateUrl: 'home-explore.component.html'
 })
 export class HomeExploreComponent implements OnInit {
   @Output() onItemClick = new EventEmitter<string>();
   @Output() onAddItem = new EventEmitter<void>();
 
-  private apiService = inject(ApiService);
+  private itemService = inject(ItemService);
   private router = inject(Router);
 
   readonly SearchIcon = Search;
@@ -27,8 +27,19 @@ export class HomeExploreComponent implements OnInit {
   items: Item[] = [];
 
   ngOnInit() {
-    this.apiService.getItems().subscribe(items => {
-      this.items = items;
+    this.itemService.getAll().subscribe({
+      next: (items) => {
+        if (Array.isArray(items)) {
+          this.items = items;
+        } else {
+          console.error('HomeExplore: Expected array, got:', items);
+          this.items = [];
+        }
+      },
+      error: (err) => {
+        console.error('HomeExplore: Error fetching items:', err);
+        this.items = [];
+      }
     });
   }
 

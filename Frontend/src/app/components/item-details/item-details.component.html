@@ -1,5 +1,5 @@
 @if (item) {
-  <div class="min-h-screen" style="background-color: #F5F7FA;">
+<div class="min-h-screen" style="background-color: #F5F7FA;">
     <div class="sticky top-0 z-10 bg-white border-b border-slate-200">
         <div class="px-4 lg:px-8 py-4 flex items-center gap-3">
             <button (click)="onBack.emit()" class="p-2 hover:bg-slate-100 rounded-full transition-colors">
@@ -12,24 +12,33 @@
     <div class="max-w-6xl mx-auto px-4 lg:px-8 py-6 lg:py-8">
         <div class="grid lg:grid-cols-2 gap-8">
             <div class="relative aspect-square lg:sticky lg:top-24 lg:h-fit bg-slate-100 rounded-2xl overflow-hidden">
-                <img [src]="item.image" [alt]="item.name" class="w-full h-full object-cover"
-                    (error)="handleImageError($event)" />
+                <img [src]="item.imageUrls && item.imageUrls.length > 0 ? item.imageUrls[0] : 'assets/placeholder-image.jpg'"
+                    [alt]="item.title" class="w-full h-full object-cover" (error)="handleImageError($event)" />
                 <div class="absolute top-4 right-4">
                     <span
                         class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent shadow"
-                        [style.background-color]="item.status === 'Available' ? '#C6FF00' : '#90CAF9'"
-                        [style.color]="'#1A237E'">
-                        {{ item.status }}
+                        style="background-color: #C6FF00; color: #1A237E;">
+                        {{ item.condition }}
                     </span>
                 </div>
             </div>
 
             <div class="space-y-6 bg-white rounded-2xl p-6 lg:p-8 h-fit">
                 <div>
-                    <h1 class="text-2xl font-bold text-slate-900 mb-2">{{ item.name }}</h1>
-                    <div class="flex items-center text-slate-600">
+                    <h1 class="text-2xl font-bold text-slate-900 mb-2">{{ item.title }}</h1>
+                    <div class="flex items-center text-slate-600 mb-4">
                         <lucide-icon [img]="MapPinIcon" class="w-4 h-4 mr-1"></lucide-icon>
-                        <span>{{ item.distance }} away</span>
+                        <span>{{ item.location }}</span>
+                    </div>
+
+                    @if (item.latitude && item.longitude) {
+                    <div class="w-full h-48 rounded-xl overflow-hidden mb-4 border border-slate-200 relative z-0">
+                        <app-map-display [lat]="item.latitude" [lng]="item.longitude"></app-map-display>
+                    </div>
+                    }
+
+                    <div class="mt-2 text-xl font-bold text-[#3949AB]">
+                        {{ item.pricePerDay | currency:'EGP' }} / {{ item.priceUnit }}
                     </div>
                 </div>
 
@@ -41,53 +50,40 @@
                 <div class="rounded-xl p-4 flex items-start gap-3" style="background-color: #E8EAF6;">
                     <lucide-icon [img]="CalendarIcon" class="w-5 h-5 mt-0.5" style="color: #3949AB;"></lucide-icon>
                     <div>
-                        <p class="font-medium text-slate-900">Availability</p>
-                        <p class="text-slate-600 text-sm">Available now</p>
+                        <p class="font-medium text-slate-900">Condition</p>
+                        <p class="text-slate-600 text-sm">{{ item.condition }}</p>
                     </div>
                 </div>
 
                 @if (item.owner) {
-                    <div>
-                        <h3 class="font-semibold text-slate-900 mb-3">Owner</h3>
-                        <div class="flex items-center gap-3 p-4 bg-slate-50 rounded-xl">
-                            <div class="relative flex h-12 w-12 shrink-0 overflow-hidden rounded-full">
-                                @if (item.ownerImage) {
-                                    <img [src]="item.ownerImage" class="h-full w-full object-cover" />
-                                } @else {
-                                    <div class="flex h-full w-full items-center justify-center rounded-full bg-muted text-white"
-                                        style="background-color: #3949AB;">
-                                        {{ getOwnerInitials(item.owner.name) }}
-                                    </div>
+                <div>
+                    <h3 class="font-semibold text-slate-900 mb-3">Owner</h3>
+                    <div class="flex items-center gap-3 p-4 bg-slate-50 rounded-xl">
+                        <div class="relative flex h-12 w-12 shrink-0 overflow-hidden rounded-full">
+                            @if (item.owner.profileImageUrl) {
+                            <img [src]="item.owner.profileImageUrl" class="h-full w-full object-cover" />
+                            } @else {
+                            <div class="flex h-full w-full items-center justify-center rounded-full bg-muted text-white"
+                                style="background-color: #3949AB;">
+                                {{ getOwnerInitials(item.owner.name) }}
+                            </div>
+                            }
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2">
+                                <p class="font-medium text-slate-900">{{ item.owner.name }}</p>
+                                @if (item.owner.verified) {
+                                <lucide-icon [img]="ShieldIcon" class="w-4 h-4" style="color: #3949AB;"></lucide-icon>
                                 }
                             </div>
-                            <div class="flex-1">
-                                <div class="flex items-center gap-2">
-                                    <p class="font-medium text-slate-900">{{ item.owner.name }}</p>
-                                    @if (item.owner.verified) {
-                                        <lucide-icon [img]="ShieldIcon" class="w-4 h-4" style="color: #3949AB;"></lucide-icon>
-                                    }
-                                </div>
-                                <div class="flex items-center gap-3 text-sm text-slate-600">
-                                    @if (item.rating) {
-                                        <span>⭐ {{ item.rating }}</span>
-                                    }
-                                </div>
+                            <div class="flex items-center gap-3 text-sm text-slate-600">
+                                @if (item.rating) {
+                                <span>⭐ {{ item.rating }}</span>
+                                }
                             </div>
                         </div>
                     </div>
-                }
-
-                @if (item.location) {
-                    <div>
-                        <h3 class="font-semibold text-slate-900 mb-3">Pickup Location</h3>
-                        <div class="bg-slate-100 rounded-xl h-40 flex items-center justify-center text-slate-500">
-                            <div class="text-center">
-                                <lucide-icon [img]="MapPinIcon" class="w-8 h-8 mx-auto mb-2"></lucide-icon>
-                                <p class="text-sm">{{ item.location.area }}</p>
-                                <p class="text-xs">{{ item.location.description }}</p>
-                            </div>
-                        </div>
-                    </div>
+                </div>
                 }
 
                 <div class="pt-6 border-t border-slate-200">
@@ -100,5 +96,5 @@
             </div>
         </div>
     </div>
-  </div>
+</div>
 }

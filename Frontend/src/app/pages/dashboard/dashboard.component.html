@@ -7,26 +7,20 @@
   <div class="max-w-5xl mx-auto px-6 py-8">
     <h1 class="text-3xl font-bold text-[#1A237E] mb-8">My Items</h1>
     <div class="flex gap-4 mb-8">
-      <button
-        (click)="activeTab = 'borrowed'"
-        class="flex-1 px-6 py-4 rounded-xl font-semibold text-lg transition-colors"
-        [ngClass]="
+      <button (click)="activeTab = 'borrowed'"
+        class="flex-1 px-6 py-4 rounded-xl font-semibold text-lg transition-colors" [ngClass]="
           activeTab === 'borrowed'
             ? 'bg-[#3949AB] text-white shadow-md'
             : 'bg-white text-[#1A237E] hover:bg-gray-50'
-        "
-      >
+        ">
         Borrowed Items
       </button>
-      <button
-        (click)="activeTab = 'lent'"
-        class="flex-1 px-6 py-4 rounded-xl font-semibold text-lg transition-colors"
+      <button (click)="activeTab = 'lent'" class="flex-1 px-6 py-4 rounded-xl font-semibold text-lg transition-colors"
         [ngClass]="
           activeTab === 'lent'
             ? 'bg-[#3949AB] text-white shadow-md'
             : 'bg-white text-[#1A237E] hover:bg-gray-50'
-        "
-      >
+        ">
         Lent Items
       </button>
     </div>
@@ -34,14 +28,10 @@
       @if (activeTab === 'borrowed') { @for (item of borrowedItems; track
       item.id) {
       <div class="bg-white rounded-2xl p-6 shadow-sm flex items-center gap-6">
-        <img
-          [src]="item.image"
-          [alt]="item.name"
-          class="w-24 h-24 rounded-xl object-cover"
-        />
+        <img [src]="item.imageUrls[0]" [alt]="item.title" class="w-24 h-24 rounded-xl object-cover" />
         <div class="flex-1">
           <h3 class="text-xl font-semibold text-[#1A237E] mb-2">
-            {{ item.name }}
+            {{ item.title }}
           </h3>
           <div class="flex items-center gap-4 text-gray-600">
             <div class="flex items-center gap-2">
@@ -55,21 +45,16 @@
           </div>
         </div>
         <button
-          class="px-6 py-3 bg-[#90CAF9] text-[#1A237E] rounded-xl font-semibold hover:bg-[#3949AB] hover:text-white transition-colors"
-        >
+          class="px-6 py-3 bg-[#90CAF9] text-[#1A237E] rounded-xl font-semibold hover:bg-[#3949AB] hover:text-white transition-colors">
           Contact
         </button>
       </div>
       } } @if (activeTab === 'lent') { @for (item of lentItems; track item.id) {
       <div class="bg-white rounded-2xl p-6 shadow-sm flex items-center gap-6">
-        <img
-          [src]="item.image"
-          [alt]="item.name"
-          class="w-24 h-24 rounded-xl object-cover"
-        />
+        <img [src]="item.imageUrls[0]" [alt]="item.title" class="w-24 h-24 rounded-xl object-cover" />
         <div class="flex-1">
           <h3 class="text-xl font-semibold text-[#1A237E] mb-2">
-            {{ item.name }}
+            {{ item.title }}
           </h3>
           <div class="flex items-center gap-4 text-gray-600">
             <div class="flex items-center gap-2">
@@ -83,14 +68,12 @@
           </div>
         </div>
         <button
-          class="px-6 py-3 bg-[#90CAF9] text-[#1A237E] rounded-xl font-semibold hover:bg-[#3949AB] hover:text-white transition-colors"
-        >
+          class="px-6 py-3 bg-[#90CAF9] text-[#1A237E] rounded-xl font-semibold hover:bg-[#3949AB] hover:text-white transition-colors">
           Contact
         </button>
         <button
           class="px-6 py-3 bg-[#A5D6A7] text-[#1A237E] rounded-xl font-semibold hover:bg-[#388E3C] hover:text-white transition-colors ml-2"
-          (click)="openReviewModal(item)"
-        >
+          (click)="openReviewModal(item)">
           Returned
         </button>
       </div>
@@ -100,16 +83,10 @@
 </div>
 
 <!-- Review Modal -->
-<div
-  *ngIf="showReviewModal"
-  class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40"
->
+<div *ngIf="showReviewModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
   <div class="bg-white rounded-2xl p-8 shadow-lg w-full max-w-md relative">
-    <button
-      class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl"
-      (click)="closeReviewModal()"
-      aria-label="Close"
-    >
+    <button class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl" (click)="closeReviewModal()"
+      aria-label="Close">
       &times;
     </button>
     <h2 class="text-2xl font-bold text-[#1A237E] mb-4">
@@ -117,39 +94,24 @@
     </h2>
     <div class="flex items-center justify-center mb-6 gap-1">
       @for (i of [1, 2, 3, 4, 5]; track i) {
-      <div
-        class="relative w-10 h-10 cursor-pointer star-container"
-        (mousemove)="rateByHover($event, i)"
-      >
+      <div class="relative w-10 h-10 cursor-pointer star-container" (mousemove)="rateByHover($event, i)">
         <!-- Background Star (Outline) -->
-        <svg
-          viewBox="0 0 24 24"
-          class="w-full h-full fill-none stroke-[#FACC15] stroke-2"
-        >
-          <path
-            d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
-          />
+        <svg viewBox="0 0 24 24" class="w-full h-full fill-none stroke-[#FACC15] stroke-2">
+          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
         </svg>
         <!-- Foreground Star (Filled) -->
-        <div
-          class="absolute top-0 left-0 h-full overflow-hidden pointer-events-none"
-          [style.width.%]="getStarFillPercent(i)"
-        >
+        <div class="absolute top-0 left-0 h-full overflow-hidden pointer-events-none"
+          [style.width.%]="getStarFillPercent(i)">
           <svg viewBox="0 0 24 24" class="w-10 h-10 fill-[#FACC15]">
-            <path
-              d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
-            />
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
           </svg>
         </div>
       </div>
       }
     </div>
     <div class="flex justify-center">
-      <button
-        class="px-6 py-3 bg-[#3949AB] text-white rounded-xl font-semibold hover:bg-[#1A237E] transition-colors"
-        (click)="submitReview()"
-        [disabled]="reviewStars === 0"
-      >
+      <button class="px-6 py-3 bg-[#3949AB] text-white rounded-xl font-semibold hover:bg-[#1A237E] transition-colors"
+        (click)="submitReview()" [disabled]="reviewStars === 0">
         Submit Review
       </button>
     </div>
