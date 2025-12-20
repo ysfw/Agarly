@@ -3,4 +3,4 @@ Frontend/angular.json
 Frontend/README.md
 
 # Ignore Spring Boot application properties
-Backend/src/main/resources/application.properties
+# Backend/src/main/resources/application.properties

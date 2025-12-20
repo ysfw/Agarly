@@ -1,0 +1,106 @@
+/* Admin Dashboard Component Styles */
+
+/* Custom scrollbar for content lists */
+.space-y-4 {
+    max-height: calc(100vh - 400px);
+    overflow-y: auto;
+}
+
+.space-y-4::-webkit-scrollbar {
+    width: 6px;
+}
+
+.space-y-4::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 3px;
+}
+
+.space-y-4::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+}
+
+.space-y-4::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Smooth transitions for interactive elements */
+button {
+    transition: all 0.2s ease-in-out;
+}
+
+/* Focus states for accessibility */
+button:focus-visible,
+input:focus-visible {
+    outline: 2px solid #1e40af;
+    outline-offset: 2px;
+}
+
+/* Animation for status changes */
+@keyframes statusChange {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.status-changed {
+    animation: statusChange 0.3s ease-in-out;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+    .grid-cols-4 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .grid-cols-4 {
+        grid-template-columns: repeat(1, minmax(0, 1fr));
+    }
+
+    .flex.items-center.justify-between.mb-6 {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: stretch;
+    }
+
+    .flex.gap-2 {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .relative {
+        width: 100%;
+    }
+
+    .relative input {
+        width: 100%;
+    }
+}
+
+@media (max-width: 640px) {
+    .flex.items-center.gap-4.p-4 {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    .flex.items-center.gap-2 {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .flex.items-center.gap-2 button {
+        flex: 1;
+        justify-content: center;
+    }
+}

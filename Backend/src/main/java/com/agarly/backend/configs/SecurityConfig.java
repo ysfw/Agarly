@@ -40,11 +40,10 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request
                         .requestMatchers("/account/login", "/account/register", "/users", "/account/gAuth",
-                                "/register/verify", "/register/resend-otp", "/uploads/**", "/api/images/upload")
+                                "/register/verify", "/register/resend-otp", "/uploads/**", "/api/images/upload",
+                                "/account/Admin-login", "/account/Admin-register")
                         .permitAll()
                         .anyRequest().authenticated())
-                // REMOVED: .httpBasic(Customizer.withDefaults()) - this was conflicting with
-                // JWT authentication!
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();

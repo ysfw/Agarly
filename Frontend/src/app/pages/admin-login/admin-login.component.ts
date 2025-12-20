@@ -2,10 +2,8 @@ import { Component, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, Mail, Lock, Eye, EyeOff, Shield } from 'lucide-angular';
-import { ApiService } from '../../services/api.service';
-
-import { AuthService } from '../../services/auth.service';
-import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
+import { AdminService } from '../../services/admin.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 
 @Component({
@@ -40,8 +38,7 @@ export class AdminLoginComponent {
   loading = false;
   backendError = '';
   private router = inject(Router);
-  private api = inject(ApiService);
-  private authService = inject(AuthService);
+  private adminService = inject(AdminService);
 
   ngOnChange(field: string) {
     this.validateField(field);
@@ -78,26 +75,20 @@ export class AdminLoginComponent {
     this.loading = true;
     this.backendError = '';
 
-    // Backend call 
-    this.api.loginAdmin(this.formData).subscribe({
-      next: (res: any) => {
-        console.log("Response from Backend: ", res)
+    // Use AdminService for admin authentication
+    this.adminService.login(this.formData).subscribe({
+      next: (res) => {
+        console.log("Admin login successful");
         this.loading = false;
-        this.authService.login();
-        this.router.navigate(['/home']);
+        // Navigate to admin dashboard
+        this.router.navigate(['/admin-dashboard']);
       },
       error: (err: HttpErrorResponse) => {
-        console.error('An error occurred, Status Code:', err.status)
-        console.error('Error body:', err.error)
+        console.error('Admin login failed, Status Code:', err.status);
         this.loading = false;
         this.backendError = 'Invalid email or password';
       },
     });
   }
-
-  // handleSubmit() {      // placeholder for testing front
-  //   if (!this.validateForm()) return;
-  //   this.authService.login();
-  //   this.router.navigate(['/home']);
-  // }
 }
+

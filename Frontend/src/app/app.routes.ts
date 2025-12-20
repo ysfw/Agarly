@@ -7,6 +7,7 @@ import { PlaceholderComponent } from './pages/placeholder/placeholder.component'
 import { LoginComponent } from './pages/login/login.component';
 import { RegisterComponent } from './pages/register/register.component';
 import { AdminLoginComponent } from './pages/admin-login/admin-login.component';
+import { AdminDashboardComponent } from './pages/admin-dashboard/admin-dashboard.component';
 import { BookItemComponent } from './pages/book-item/book-item.component';
 import { SettingsComponent } from './pages/settings/settings.component';
 import { SupportComponent } from './pages/support/support.component';
@@ -20,6 +21,7 @@ import { SearchResultsComponent } from './pages/search-results/search-results.co
 import { RequestItemComponent } from './pages/request-item/request-item.component';
 import { VerifyEmailComponent } from './pages/verify-email/verify-email.component';
 import { AuthGuard } from './services/auth-gaurd';
+import { AdminAuthGuard } from './services/admin-auth.guard';
 import { PasswordChange } from './pages/password-change/password-change';
 
 export const routes: Routes = [
@@ -30,6 +32,7 @@ export const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   { path: 'verify-email', component: VerifyEmailComponent },
   { path: 'admin-login', component: AdminLoginComponent },
+  { path: 'admin-dashboard', component: AdminDashboardComponent, canActivate: [AdminAuthGuard] },
   { path: 'item/:id', component: ItemDetailsComponent },
   // Protected routes (require AuthGuard)
   { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
