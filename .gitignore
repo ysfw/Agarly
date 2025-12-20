@@ -1,3 +1,7 @@
+# Ignore Angular project files
 Frontend/angular.json
+Frontend/README.md
+Frontend/src/
+
 # Ignore Spring Boot application properties
-/src/main/resources/application.properties
+Backend/src/main/resources/application.properties
