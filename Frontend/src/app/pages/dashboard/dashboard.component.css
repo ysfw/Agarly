@@ -1,0 +1,11 @@
+.star-container svg {
+  display: block;
+}
+
+.star-container {
+  transition: transform 0.1s ease-in-out;
+}
+
+.star-container:hover {
+  transform: scale(1.1);
+}

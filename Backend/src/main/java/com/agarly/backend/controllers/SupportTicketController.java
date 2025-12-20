@@ -25,8 +25,8 @@ public class SupportTicketController {
         );
     }
 
-    @GetMapping("/tickets/my")
-    public ResponseEntity<List<SupportTicket>> getMyTickets(
+    @GetMapping("/tickets")
+    public ResponseEntity<List<SupportTicket>> getTickets(
             @RequestParam Long userId) {
 
         return ResponseEntity.ok(
@@ -34,7 +34,7 @@ public class SupportTicketController {
         );
     }
 
-    @PutMapping("/tickets/{id}/close")
+    @PutMapping("/admin/tickets/{id}/close")
     public ResponseEntity<SupportTicket> closeTicket(
             @PathVariable Long id) {
 
