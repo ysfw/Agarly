@@ -17,7 +17,7 @@ public class SupportTicket {
     private String message;
 
     @Enumerated(EnumType.STRING)
-    private TicketStatus status; // OPEN, CLOSED, IN_PROGRESS
+    private TicketStatus status; // OPEN, CLOSED, PENDING
     private LocalDateTime createdAt = LocalDateTime.now(ZoneId.of("Africa/Cairo"));
 
     @ManyToOne

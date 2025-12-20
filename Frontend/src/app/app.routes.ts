@@ -23,6 +23,7 @@ import { VerifyEmailComponent } from './pages/verify-email/verify-email.componen
 import { AuthGuard } from './services/auth-gaurd';
 import { AdminAuthGuard } from './services/admin-auth.guard';
 import { PasswordChange } from './pages/password-change/password-change';
+import { TicketsComponent } from './pages/tickets/tickets';
 
 export const routes: Routes = [
   // Public routes (no AuthGuard)
@@ -49,6 +50,7 @@ export const routes: Routes = [
   { path: 'edit-profile', component: EditProfileComponent, canActivate: [AuthGuard] },
   { path: 'search', component: SearchResultsComponent, canActivate: [AuthGuard] },
   { path: 'request-item', component: RequestItemComponent, canActivate: [AuthGuard] },
+  { path: 'tickets', component: TicketsComponent, canActivate: [AuthGuard] },
   { path: 'my-items', redirectTo: 'dashboard', pathMatch: 'full' }, // Consolidated into dashboard
 
   // Fallback

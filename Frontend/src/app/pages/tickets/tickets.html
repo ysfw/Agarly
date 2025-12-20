@@ -1,0 +1,78 @@
+<div class="min-h-screen w-full bg-[#F5F7FA]">
+  <div class="max-w-3xl mx-auto px-6 py-8">
+    <div class="flex items-center gap-4 mb-8">
+      <button
+        (click)="goBack()"
+        class="w-10 h-10 flex items-center justify-center hover:bg-gray-100 rounded-full"
+      >
+        <lucide-icon
+          [img]="ArrowLeftIcon"
+          class="w-5 h-5 text-[#1A237E]"
+        ></lucide-icon>
+      </button>
+      <h1 class="text-3xl font-bold text-[#1A237E]">My Support Tickets</h1>
+    </div>
+
+    <div class="space-y-6">
+      <div *ngIf="error()" class="banner error">{{ error() }}</div>
+      <div *ngIf="isLoading()" class="banner info">Loading tickets...</div>
+
+      <div *ngIf="!isLoading() && tickets().length === 0" class="banner muted">
+        You have not created any support tickets yet.
+      </div>
+
+      <div *ngIf="tickets().length > 0" class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Subject</th>
+              <th>Status</th>
+              <th>Created</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let ticket of tickets(); trackBy: trackTicket">
+              <td>#{{ ticket.id }}</td>
+              <td>{{ ticket.subject }}</td>
+              <td>
+                <span [class]="statusClass(ticket.status)">
+                  {{ ticket.status | titlecase }}
+                </span>
+              </td>
+              <td>{{ ticket.createdAt | date: 'medium' }}</td>
+              <td>
+                <button type="button" class="view" (click)="viewTicket(ticket)">
+                  View
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div *ngIf="selectedTicket()" class="ticket-detail">
+        <h2>Ticket Details</h2>
+        <p><strong>ID:</strong> #{{ selectedTicket()?.id }}</p>
+        <p><strong>Subject:</strong> {{ selectedTicket()?.subject }}</p>
+        <p>
+          <strong>Status:</strong> {{ selectedTicket()?.status | titlecase }}
+        </p>
+        <p>
+          <strong>Created:</strong> {{ selectedTicket()?.createdAt | date:
+          'long' }}
+        </p>
+        <div class="detail-actions">
+          <button
+            type="button"
+            class="close"
+            (click)="selectedTicket.set(null)"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
