@@ -27,6 +27,7 @@ public class User {
     private String address;
     private Boolean activated;
     private Boolean blocked;
+    @Column(columnDefinition = "TEXT")
     private String profileImageUrl;
     private String otp;
     private Boolean verified;
@@ -47,7 +48,5 @@ public class User {
         this.profile.setState("");
         this.profile.setZipCode("");
     }
-
-
 
 }
