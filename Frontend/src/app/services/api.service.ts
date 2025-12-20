@@ -57,8 +57,8 @@ export class ApiService {
       rating: 4.9,
       ownerImage:
         'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400',
-      },
-      {
+    },
+    {
       id: 3,
       name: 'Ladder',
       category: 'Tools',
@@ -82,7 +82,7 @@ export class ApiService {
       price: '$30/day',
       rating: 4.7,
       ownerImage:
-      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400',
+        'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400',
     },
     {
       id: 5,
@@ -108,7 +108,7 @@ export class ApiService {
       price: '$20/day',
       rating: 4.4,
       ownerImage:
-      'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400',
+        'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400',
     },
   ];
 
@@ -131,19 +131,24 @@ export class ApiService {
     return this.http.post(`${this.baseUrl}/account/Admin-login`, data, this.httpOptions);
   }
 
-  sendToken(token : string): Observable<any> {
+  sendToken(token: string): Observable<any> {
     // return this.http.post(`${this.testUrl}`, { idToken: token }, this.httpOptions);
     const url = this.baseUrl + "/account/gAuth"
     return this.http.post(url, { idToken: token }, this.httpOptions)
   }
 
-  sendOTP(userEmail : string, enteredOTP : string): Observable<any> {
+  sendOTP(userEmail: string, enteredOTP: string): Observable<any> {
     const params = new HttpParams()
       .set('email', userEmail)
       .set('otp', enteredOTP);
     const url = this.baseUrl + "/register/verify";
     console.log(enteredOTP);
     return this.http.post(url, null, { params });
+  }
+
+  resendOTP(email: string): Observable<any> {
+    const params = new HttpParams().set('email', email);
+    return this.http.post(`${this.baseUrl}/register/resend-otp`, null, { params });
   }
 
   getItems(): Observable<Item[]> {
