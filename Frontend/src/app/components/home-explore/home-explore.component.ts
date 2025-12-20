@@ -27,7 +27,7 @@ export class HomeExploreComponent implements OnInit {
   items: Item[] = [];
 
   ngOnInit() {
-    this.itemService.getAll().subscribe({
+    this.itemService.getApprovedItems().subscribe({
       next: (items) => {
         if (Array.isArray(items)) {
           this.items = items;

@@ -2,24 +2,32 @@ package com.agarly.backend.controllers;
 
 import com.agarly.backend.models.Item;
 import com.agarly.backend.models.ItemRequest;
+import com.agarly.backend.models.User;
+import com.agarly.backend.dtos.PublicUserProfileDTO;
+import com.agarly.backend.repos.ItemRepository;
 import com.agarly.backend.models.SupportTicket;
 import com.agarly.backend.services.AdminService;
 import com.agarly.backend.services.SupportTicketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
 import java.util.Map;
-import org.springframework.security.access.prepost.PreAuthorize;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/admin")
+@PreAuthorize("hasAuthority('ADMIN')")
 public class AdminController {
     @Autowired
     private AdminService adminService;
     @Autowired
     private SupportTicketService ticketService;
+
+    @Autowired
+    private ItemRepository itemRepository;
 
     // ==================== Dashboard Stats ====================
 
@@ -29,6 +37,32 @@ public class AdminController {
     }
 
     // ==================== User Management ====================
+
+    @GetMapping("/users")
+    public ResponseEntity<List<PublicUserProfileDTO>> getAllUsers() {
+        List<User> users = adminService.getAllUsers();
+        // Convert to DTO to avoid exposing passwords/OTPs
+        List<PublicUserProfileDTO> userDTOs = users.stream()
+                .map(user -> {
+                    Long itemCount = itemRepository.countByOwner(user);
+                    return new PublicUserProfileDTO(user, itemCount);
+                })
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(userDTOs);
+    }
+
+    @GetMapping("/users/search")
+    public ResponseEntity<List<PublicUserProfileDTO>> searchUsers(@RequestParam String q) {
+        List<User> users = adminService.searchUsers(q);
+        // Convert to DTO
+        List<PublicUserProfileDTO> userDTOs = users.stream()
+                .map(user -> {
+                    Long itemCount = itemRepository.countByOwner(user);
+                    return new PublicUserProfileDTO(user, itemCount);
+                })
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(userDTOs);
+    }
 
     @PutMapping("/users/{userId}/ban")
     public ResponseEntity<String> banUser(@PathVariable Long userId) {

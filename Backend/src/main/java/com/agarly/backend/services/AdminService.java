@@ -45,6 +45,17 @@ public class AdminService {
         return userRepository.findAll();
     }
 
+    public List<User> searchUsers(String query) {
+        query = query.toLowerCase();
+        final String searchQuery = query;
+        return userRepository.findAll().stream()
+                .filter(user -> (user.getFirstName() != null && user.getFirstName().toLowerCase().contains(searchQuery))
+                        ||
+                        (user.getLastName() != null && user.getLastName().toLowerCase().contains(searchQuery)) ||
+                        (user.getEmail() != null && user.getEmail().toLowerCase().contains(searchQuery)))
+                .toList();
+    }
+
     // ==================== Dashboard Stats ====================
 
     public Map<String, Long> getDashboardStats() {

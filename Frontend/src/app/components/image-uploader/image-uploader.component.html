@@ -1,0 +1,40 @@
+<div class="image-uploader">
+    <!-- Image Grid -->
+    <div class="grid grid-cols-3 gap-4 mb-4">
+        @for (image of images; track image; let i = $index) {
+        <div class="relative group aspect-square">
+            <img [src]="image" [alt]="'Upload ' + (i + 1)"
+                class="w-full h-full object-cover rounded-xl shadow-sm border-2 border-gray-100" />
+            <button type="button" (click)="removeImage(i)"
+                class="absolute top-2 right-2 w-7 h-7 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 opacity-0 group-hover:opacity-100 transition-all shadow-md hover:scale-110">
+                <lucide-icon [img]="XIcon" class="w-4 h-4"></lucide-icon>
+            </button>
+        </div>
+        }
+
+        <!-- Drop Zone (only if can add more) -->
+        @if (canAddMore) {
+        <label (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)" (drop)="onDrop($event)" [class]="
+                'aspect-square border-2 border-dashed rounded-xl flex flex-col items-center justify-center cursor-pointer transition-all group ' +
+                (isDragOver ? 'border-[#3949AB] bg-[#E8EAF6] scale-105' : 'border-gray-300 hover:border-[#3949AB] hover:bg-gray-50')
+            ">
+            @if (isUploading) {
+            <lucide-icon [img]="LoaderIcon" class="w-8 h-8 text-[#3949AB] mb-2 animate-spin"></lucide-icon>
+            <span class="text-sm text-[#3949AB] font-medium">Uploading...</span>
+            } @else {
+            <lucide-icon [img]="UploadIcon"
+                class="w-8 h-8 text-gray-400 mb-2 group-hover:text-[#3949AB] transition-colors"></lucide-icon>
+            <span class="text-sm text-gray-500 group-hover:text-[#3949AB] transition-colors font-medium">Drop or
+                Click</span>
+            <span class="text-xs text-gray-400 mt-1">{{ images.length }}/{{ maxImages }}</span>
+            }
+            <input type="file" accept="image/*" multiple (change)="onFileSelect($event)" class="hidden" />
+        </label>
+        }
+    </div>
+
+    <!-- Helper Text -->
+    @if (images.length === 0) {
+    <p class="text-center text-gray-400 text-sm">Drag and drop images here or click to browse</p>
+    }
+</div>

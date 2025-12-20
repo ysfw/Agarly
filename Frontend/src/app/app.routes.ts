@@ -25,6 +25,8 @@ import { AdminAuthGuard } from './services/admin-auth.guard';
 import { PasswordChange } from './pages/password-change/password-change';
 import { TicketsComponent } from './pages/tickets/tickets';
 import { AdminTickets } from './pages/admin-tickets/admin-tickets';
+import { UserProfileComponent } from './pages/user-profile/user-profile';
+
 
 export const routes: Routes = [
   // Public routes (no AuthGuard)
@@ -54,6 +56,7 @@ export const routes: Routes = [
   { path: 'search', component: SearchResultsComponent, canActivate: [AuthGuard] },
   { path: 'request-item', component: RequestItemComponent, canActivate: [AuthGuard] },
   { path: 'tickets', component: TicketsComponent, canActivate: [AuthGuard] },
+  { path: 'user/:id', component: UserProfileComponent }, // Public profile view (accessible by users and admins)
   { path: 'my-items', redirectTo: 'dashboard', pathMatch: 'full' }, // Consolidated into dashboard
 
   // Fallback

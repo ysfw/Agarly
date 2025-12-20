@@ -51,7 +51,7 @@ export class HomeComponent implements OnInit {
   ];
 
   ngOnInit() {
-    this.itemService.getAll().subscribe({
+    this.itemService.getApprovedItems().subscribe({
       next: (items) => {
         console.log('Items fetched:', items);
         if (Array.isArray(items)) {
