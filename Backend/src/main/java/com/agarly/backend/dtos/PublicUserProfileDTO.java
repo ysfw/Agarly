@@ -45,7 +45,8 @@ public class PublicUserProfileDTO {
         this.city = user.getProfile() != null ? user.getProfile().getCity() : "";
         this.state = user.getProfile() != null ? user.getProfile().getState() : "";
         this.totalItemsPosted = totalItemsPosted;
-        this.joinedDate = LocalDateTime.now(); // Placeholder - adjust if User has createdAt field
+        this.joinedDate = user.getCreatedAt() != null ? user.getCreatedAt()
+                : LocalDateTime.now(java.time.ZoneId.of("Africa/Cairo"));
         this.blocked = user.getBlocked();
     }
 }

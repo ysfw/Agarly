@@ -27,4 +27,6 @@ public interface ItemRepository extends JpaRepository<Item, Long>, JpaSpecificat
     Long countByOwner(User owner);
 
     Long countByBorrower(User borrower);
+
+    Long countByOwnerId(Long ownerId);
 }

@@ -1,25 +1,47 @@
-<div class="min-h-screen w-full bg-[#F5F7FA]">
+<div class="min-h-screen w-full bg-gradient-to-br from-[#F5F7FA] via-[#E8EAF6] to-[#C5CAE9]">
   <div class="max-w-3xl mx-auto px-6 py-8">
     <div class="flex items-center gap-4 mb-8">
-      <button (click)="router.navigate(['/settings'])" class="w-10 h-10 flex items-center justify-center hover:bg-gray-100 rounded-full">
+      <button (click)="goBack()"
+        class="w-10 h-10 flex items-center justify-center hover:bg-white/50 rounded-full transition-colors">
         <lucide-icon [img]="ArrowLeftIcon" class="w-5 h-5 text-[#1A237E]"></lucide-icon>
       </button>
       <h1 class="text-3xl font-bold text-[#1A237E]">Privacy & Safety</h1>
     </div>
+
+    <!-- Success Message -->
+    @if (downloadSuccess) {
+    <div class="mb-6 p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-700 flex items-center gap-2">
+      <lucide-icon [img]="ShieldCheckIcon" class="w-5 h-5"></lucide-icon>
+      Your data has been downloaded successfully!
+    </div>
+    }
+
+    <!-- Error Message -->
+    @if (errorMessage) {
+    <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-red-600 flex items-center gap-2">
+      <lucide-icon [img]="AlertTriangleIcon" class="w-5 h-5"></lucide-icon>
+      {{ errorMessage }}
+    </div>
+    }
+
     <div class="space-y-6">
-      <div class="bg-white rounded-2xl overflow-hidden shadow-sm">
-        <div class="px-6 py-4 border-b border-gray-200">
+      <!-- Privacy Controls -->
+      <div class="bg-white/80 backdrop-blur-sm rounded-2xl overflow-hidden shadow-lg border border-white/50">
+        <div class="px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-[#3949AB]/5 to-transparent">
           <h2 class="text-lg font-semibold text-[#1A237E]">Privacy Controls</h2>
         </div>
         <div class="px-6 py-4 flex items-center justify-between border-b border-gray-100">
           <div class="flex items-center gap-3">
-            <lucide-icon [img]="EyeIcon" class="w-5 h-5 text-[#3949AB]"></lucide-icon>
+            <div class="w-10 h-10 bg-[#E8EAF6] rounded-xl flex items-center justify-center">
+              <lucide-icon [img]="EyeIcon" class="w-5 h-5 text-[#3949AB]"></lucide-icon>
+            </div>
             <div>
               <p class="text-[#1A237E] font-medium">Profile Visibility</p>
-              <p class="text-sm text-gray-600">Who can see your profile</p>
+              <p class="text-sm text-gray-500">Who can see your profile</p>
             </div>
           </div>
-          <select class="px-4 py-2 rounded-lg border-2 border-gray-200 text-[#1A237E] focus:border-[#3949AB] focus:outline-none">
+          <select
+            class="px-4 py-2 rounded-xl border-2 border-gray-200 text-[#1A237E] focus:border-[#3949AB] focus:outline-none bg-white">
             <option>Everyone</option>
             <option>Verified Members Only</option>
             <option>Private</option>
@@ -27,85 +49,171 @@
         </div>
         <div class="px-6 py-4 flex items-center justify-between border-b border-gray-100">
           <div class="flex items-center gap-3">
-            <lucide-icon [img]="LockIcon" class="w-5 h-5 text-[#3949AB]"></lucide-icon>
+            <div class="w-10 h-10 bg-[#E8EAF6] rounded-xl flex items-center justify-center">
+              <lucide-icon [img]="LockIcon" class="w-5 h-5 text-[#3949AB]"></lucide-icon>
+            </div>
             <div>
               <p class="text-[#1A237E] font-medium">Contact Information</p>
-              <p class="text-sm text-gray-600">Show email and phone number</p>
+              <p class="text-sm text-gray-500">Show email and phone number</p>
             </div>
           </div>
           <label class="relative inline-flex items-center cursor-pointer">
             <input type="checkbox" class="sr-only peer" />
-            <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#3949AB]"></div>
+            <div
+              class="w-12 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-[#3949AB] peer-checked:to-[#5C6BC0] shadow-inner">
+            </div>
           </label>
         </div>
         <div class="px-6 py-4 flex items-center justify-between">
           <div class="flex items-center gap-3">
-            <lucide-icon [img]="EyeOffIcon" class="w-5 h-5 text-[#3949AB]"></lucide-icon>
+            <div class="w-10 h-10 bg-[#E8EAF6] rounded-xl flex items-center justify-center">
+              <lucide-icon [img]="EyeOffIcon" class="w-5 h-5 text-[#3949AB]"></lucide-icon>
+            </div>
             <div>
               <p class="text-[#1A237E] font-medium">Hide Address</p>
-              <p class="text-sm text-gray-600">Only show general area</p>
+              <p class="text-sm text-gray-500">Only show general area</p>
             </div>
           </div>
           <label class="relative inline-flex items-center cursor-pointer">
             <input type="checkbox" class="sr-only peer" checked />
-            <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#3949AB]"></div>
+            <div
+              class="w-12 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-[#3949AB] peer-checked:to-[#5C6BC0] shadow-inner">
+            </div>
           </label>
         </div>
       </div>
-      <div class="bg-white rounded-2xl overflow-hidden shadow-sm">
-        <div class="px-6 py-4 border-b border-gray-200">
+
+      <!-- Safety Features -->
+      <div class="bg-white/80 backdrop-blur-sm rounded-2xl overflow-hidden shadow-lg border border-white/50">
+        <div class="px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-[#3949AB]/5 to-transparent">
           <h2 class="text-lg font-semibold text-[#1A237E]">Safety Features</h2>
         </div>
         <div class="px-6 py-4 flex items-center justify-between border-b border-gray-100">
           <div class="flex items-center gap-3">
-            <lucide-icon [img]="ShieldCheckIcon" class="w-5 h-5 text-[#3949AB]"></lucide-icon>
+            <div class="w-10 h-10 bg-[#E8EAF6] rounded-xl flex items-center justify-center">
+              <lucide-icon [img]="ShieldCheckIcon" class="w-5 h-5 text-[#3949AB]"></lucide-icon>
+            </div>
             <div>
               <p class="text-[#1A237E] font-medium">Verified Members Only</p>
-              <p class="text-sm text-gray-600">Only interact with verified users</p>
+              <p class="text-sm text-gray-500">Only interact with verified users</p>
             </div>
           </div>
           <label class="relative inline-flex items-center cursor-pointer">
             <input type="checkbox" class="sr-only peer" checked />
-            <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#3949AB]"></div>
+            <div
+              class="w-12 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-[#3949AB] peer-checked:to-[#5C6BC0] shadow-inner">
+            </div>
           </label>
         </div>
         <div class="px-6 py-4 flex items-center justify-between">
           <div class="flex items-center gap-3">
-            <lucide-icon [img]="AlertTriangleIcon" class="w-5 h-5 text-[#3949AB]"></lucide-icon>
+            <div class="w-10 h-10 bg-[#E8EAF6] rounded-xl flex items-center justify-center">
+              <lucide-icon [img]="AlertTriangleIcon" class="w-5 h-5 text-[#3949AB]"></lucide-icon>
+            </div>
             <div>
               <p class="text-[#1A237E] font-medium">Require Deposit for Items</p>
-              <p class="text-sm text-gray-600">Add security deposit requirement</p>
+              <p class="text-sm text-gray-500">Add security deposit requirement</p>
             </div>
           </div>
           <label class="relative inline-flex items-center cursor-pointer">
             <input type="checkbox" class="sr-only peer" />
-            <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#3949AB]"></div>
+            <div
+              class="w-12 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-[#3949AB] peer-checked:to-[#5C6BC0] shadow-inner">
+            </div>
           </label>
         </div>
       </div>
-      <div class="bg-white rounded-2xl overflow-hidden shadow-sm">
-        <div class="px-6 py-4 border-b border-gray-200">
+
+      <!-- Blocked Users -->
+      <div class="bg-white/80 backdrop-blur-sm rounded-2xl overflow-hidden shadow-lg border border-white/50">
+        <div class="px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-[#3949AB]/5 to-transparent">
           <h2 class="text-lg font-semibold text-[#1A237E]">Blocked Users</h2>
         </div>
         <div class="px-6 py-8 text-center">
-          <lucide-icon [img]="UserXIcon" class="w-12 h-12 text-gray-400 mx-auto mb-3"></lucide-icon>
-          <p class="text-gray-600">No blocked users</p>
+          <div class="w-16 h-16 bg-[#E8EAF6] rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <lucide-icon [img]="UserXIcon" class="w-8 h-8 text-[#3949AB]"></lucide-icon>
+          </div>
+          <p class="text-[#1A237E] font-medium">No blocked users</p>
           <p class="text-sm text-gray-500 mt-1">Users you block will not be able to contact you or see your items</p>
         </div>
       </div>
-      <div class="bg-white rounded-2xl overflow-hidden shadow-sm">
-        <div class="px-6 py-4 border-b border-gray-200">
+
+      <!-- Data & Account -->
+      <div class="bg-white/80 backdrop-blur-sm rounded-2xl overflow-hidden shadow-lg border border-white/50">
+        <div class="px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-[#3949AB]/5 to-transparent">
           <h2 class="text-lg font-semibold text-[#1A237E]">Data & Account</h2>
         </div>
-        <button (click)="alertData()" class="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors border-b border-gray-100">
-          <span class="text-[#1A237E] font-medium">Download Your Data</span>
-          <span class="text-[#3949AB] text-sm">Request</span>
+        <button (click)="downloadData()" [disabled]="downloadingData"
+          class="w-full px-6 py-4 flex items-center justify-between hover:bg-[#E8EAF6]/50 transition-colors border-b border-gray-100 group disabled:opacity-50">
+          <div class="flex items-center gap-3">
+            <div
+              class="w-10 h-10 bg-[#E8EAF6] rounded-xl flex items-center justify-center group-hover:bg-[#C5CAE9] transition-colors">
+              <lucide-icon [img]="DownloadIcon" class="w-5 h-5 text-[#3949AB]"></lucide-icon>
+            </div>
+            <span class="text-[#1A237E] font-medium">Download Your Data</span>
+          </div>
+          @if (downloadingData) {
+          <lucide-icon [img]="LoaderIcon" class="w-5 h-5 text-[#3949AB] animate-spin"></lucide-icon>
+          } @else {
+          <span class="text-[#3949AB] text-sm font-medium">Download JSON</span>
+          }
         </button>
-        <button (click)="handleDelete()" class="w-full px-6 py-4 flex items-center justify-between hover:bg-red-50 transition-colors">
-          <span class="text-red-600 font-medium">Delete Account</span>
-          <span class="text-red-600 text-sm">Permanent</span>
+        <button (click)="openDeleteModal()"
+          class="w-full px-6 py-4 flex items-center justify-between hover:bg-red-50 transition-colors group">
+          <div class="flex items-center gap-3">
+            <div
+              class="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center group-hover:bg-red-200 transition-colors">
+              <lucide-icon [img]="TrashIcon" class="w-5 h-5 text-red-600"></lucide-icon>
+            </div>
+            <span class="text-red-600 font-medium">Delete Account</span>
+          </div>
+          <span class="text-red-600 text-sm font-medium">Permanent</span>
         </button>
       </div>
     </div>
   </div>
+
+  <!-- Delete Account Modal -->
+  @if (showDeleteModal) {
+  <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 backdrop-blur-sm"
+    (click)="closeDeleteModal()">
+    <div class="bg-white rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl" (click)="$event.stopPropagation()">
+      <div class="text-center mb-6">
+        <div class="w-16 h-16 bg-red-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+          <lucide-icon [img]="AlertTriangleIcon" class="w-8 h-8 text-red-600"></lucide-icon>
+        </div>
+        <h3 class="text-xl font-bold text-[#1A237E] mb-2">Delete Account?</h3>
+        <p class="text-gray-600">This action is <strong>permanent</strong> and cannot be undone. All your data, items,
+          and history will be deleted.</p>
+      </div>
+
+      <div class="mb-6">
+        <label class="block text-sm font-medium text-gray-700 mb-2">
+          Type <span class="font-mono bg-gray-100 px-2 py-1 rounded text-red-600">DELETE</span> to confirm:
+        </label>
+        <input type="text" [(ngModel)]="deleteConfirmText"
+          class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-red-500 focus:outline-none text-[#1A237E]"
+          placeholder="Type DELETE here" />
+
+        @if (errorMessage && showDeleteModal) {
+        <p class="text-red-500 text-sm mt-2">{{ errorMessage }}</p>
+        }
+      </div>
+
+      <div class="flex gap-3">
+        <button (click)="closeDeleteModal()"
+          class="flex-1 px-4 py-3 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200 transition-colors">
+          Cancel
+        </button>
+        <button (click)="confirmDelete()" [disabled]="deletingAccount || deleteConfirmText !== 'DELETE'"
+          class="flex-1 px-4 py-3 bg-red-500 text-white rounded-xl font-semibold hover:bg-red-600 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+          @if (deletingAccount) {
+          <lucide-icon [img]="LoaderIcon" class="w-4 h-4 animate-spin"></lucide-icon>
+          }
+          Delete Account
+        </button>
+      </div>
+    </div>
+  </div>
+  }
 </div>

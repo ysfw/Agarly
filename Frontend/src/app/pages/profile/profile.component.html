@@ -93,7 +93,7 @@
                 </div>
                 <div class="flex items-center gap-1 text-[#4CAF50] text-sm">
                     <lucide-icon [img]="TrendingUpIcon" class="w-4 h-4"></lucide-icon>
-                    <span>+3 this month</span>
+                    <span>Keep sharing!</span>
                 </div>
             </div>
 
@@ -109,60 +109,89 @@
                 </div>
                 <div class="flex items-center gap-1 text-[#4CAF50] text-sm">
                     <lucide-icon [img]="TrendingUpIcon" class="w-4 h-4"></lucide-icon>
-                    <span>+2 this month</span>
+                    <span>Eco-friendly!</span>
                 </div>
             </div>
 
             <div class="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow">
                 <div class="flex items-center gap-3 mb-3">
                     <div class="w-12 h-12 bg-[#E8EAF6] rounded-xl flex items-center justify-center">
-                        <lucide-icon [img]="StarIcon" class="w-6 h-6 text-[#3949AB]"></lucide-icon>
+                        <lucide-icon [img]="TrophyIcon" class="w-6 h-6 text-[#3949AB]"></lucide-icon>
                     </div>
                     <div>
-                        <p class="text-2xl font-bold text-[#1A237E]">95%</p>
-                        <p class="text-gray-600 text-sm">Response Rate</p>
+                        <p class="text-2xl font-bold text-[#1A237E]">{{ totalPoints() }}</p>
+                        <p class="text-gray-600 text-sm">Achievement Points</p>
                     </div>
                 </div>
-                <p class="text-gray-500 text-sm">Usually responds in 2 hours</p>
+                <p class="text-gray-500 text-sm">Earn more by being active!</p>
             </div>
         </div>
 
+        <!-- Achievements Section -->
         <div class="bg-white rounded-2xl p-6 shadow-sm mb-6">
-            <h2 class="text-xl font-bold text-[#1A237E] mb-4">Achievements</h2>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div
-                    class="text-center p-4 bg-[#F5F7FA] rounded-xl flex flex-col items-center hover:bg-[#E8EAF6] transition-colors">
-                    <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-2">
-                        <lucide-icon [img]="HeartIcon" class="w-6 h-6 text-red-500"></lucide-icon>
-                    </div>
-                    <p class="font-semibold text-[#1A237E] mb-1">Good Neighbor</p>
-                    <p class="text-xs text-gray-600">10+ successful shares</p>
-                </div>
-                <div
-                    class="text-center p-4 bg-[#F5F7FA] rounded-xl flex flex-col items-center hover:bg-[#E8EAF6] transition-colors">
-                    <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mb-2">
-                        <lucide-icon [img]="AwardIcon" class="w-6 h-6 text-yellow-600"></lucide-icon>
-                    </div>
-                    <p class="font-semibold text-[#1A237E] mb-1">Top Rated</p>
-                    <p class="text-xs text-gray-600">4.5+ rating</p>
-                </div>
-                <div
-                    class="text-center p-4 bg-[#F5F7FA] rounded-xl flex flex-col items-center hover:bg-[#E8EAF6] transition-colors">
-                    <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-2">
-                        <lucide-icon [img]="LeafIcon" class="w-6 h-6 text-green-600"></lucide-icon>
-                    </div>
-                    <p class="font-semibold text-[#1A237E] mb-1">Eco Warrior</p>
-                    <p class="text-xs text-gray-600">20+ items borrowed</p>
-                </div>
-                <div
-                    class="text-center p-4 bg-[#F5F7FA] rounded-xl flex flex-col items-center hover:bg-[#E8EAF6] transition-colors">
-                    <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-2">
-                        <lucide-icon [img]="MessageCircleIcon" class="w-6 h-6 text-blue-600"></lucide-icon>
-                    </div>
-                    <p class="font-semibold text-[#1A237E] mb-1">Quick Responder</p>
-                    <p class="text-xs text-gray-600">Fast reply rate</p>
-                </div>
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-bold text-[#1A237E]">Achievements</h2>
+                @if (achievements().length > 0) {
+                <span class="text-sm text-gray-500">
+                    {{ earnedCount() }} / {{ achievements().length }} unlocked
+                </span>
+                }
             </div>
+
+            @if (achievementsLoading()) {
+            <div class="flex items-center justify-center py-8">
+                <lucide-icon [img]="LoaderIcon" class="w-8 h-8 text-[#3949AB] animate-spin"></lucide-icon>
+            </div>
+            } @else if (achievements().length === 0) {
+            <div class="text-center py-8">
+                <lucide-icon [img]="AwardIcon" class="w-12 h-12 text-gray-300 mx-auto mb-3"></lucide-icon>
+                <p class="text-gray-500">No achievements yet. Start sharing to earn!</p>
+            </div>
+            } @else {
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                @for (achievement of achievements(); track achievement.id) {
+                <div [class]="'relative text-center p-4 rounded-xl flex flex-col items-center transition-all ' +
+                            (achievement.earned 
+                                ? 'bg-gradient-to-br from-[#F5F7FA] to-[#E8EAF6] hover:shadow-md' 
+                                : 'bg-gray-50 opacity-60')">
+
+                    <!-- Lock overlay for unearned -->
+                    @if (!achievement.earned) {
+                    <div class="absolute top-2 right-2">
+                        <lucide-icon [img]="LockIcon" class="w-4 h-4 text-gray-400"></lucide-icon>
+                    </div>
+                    }
+
+                    <div [class]="'w-14 h-14 rounded-full flex items-center justify-center mb-2 ' + 
+                                getIconBgClass(achievement.iconColor)">
+                        <lucide-icon [img]="getIcon(achievement.iconName)"
+                            [class]="'w-7 h-7 ' + getIconTextClass(achievement.iconColor)">
+                        </lucide-icon>
+                    </div>
+
+                    <p class="font-semibold text-[#1A237E] mb-1 text-sm">{{ achievement.name }}</p>
+                    <p class="text-xs text-gray-600 mb-2">{{ achievement.description }}</p>
+
+                    @if (achievement.earned) {
+                    <span class="text-xs px-2 py-1 bg-[#4CAF50] text-white rounded-full font-medium">
+                        +{{ achievement.points }} pts
+                    </span>
+                    } @else {
+                    <!-- Progress bar -->
+                    <div class="w-full">
+                        <div class="w-full bg-gray-200 rounded-full h-2 mb-1">
+                            <div class="bg-[#3949AB] h-2 rounded-full transition-all"
+                                [style.width.%]="achievement.progressPercentage"></div>
+                        </div>
+                        <p class="text-xs text-gray-500">
+                            {{ achievement.currentProgress }} / {{ achievement.requiredCount }}
+                        </p>
+                    </div>
+                    }
+                </div>
+                }
+            </div>
+            }
         </div>
 
         <div class="bg-white rounded-2xl p-6 shadow-sm">
