@@ -10,6 +10,10 @@ import { ItemService } from '../../services/item.service';
 import { Item } from '../../models/item.model';
 import { NavbarLoggedInComponent } from 'src/app/components/navbar-logged-in/navbar-logged-in.component';
 import { AuthService } from 'src/app/services/auth.service';
+import { SearchService } from 'src/app/services/search.service';
+import { ItemCategory } from '../../models/enums/item.category.enum';
+import { ItemStatus } from '../../models/enums/item-status.emun';
+import {SearchCriteria} from '../../models/search.criteria.model';
 
 @Component({
   selector: 'app-home',
@@ -22,6 +26,7 @@ export class HomeComponent implements OnInit {
   private router = inject(Router);
   private itemService = inject(ItemService);
   private authService = inject(AuthService);
+  private searchService = inject(SearchService);
 
   auth = this.authService.isLoggedIn;
 
@@ -30,7 +35,7 @@ export class HomeComponent implements OnInit {
   searchLat: number | null = null;
   searchLng: number | null = null;
 
-  selectedCategory: string | null = null;
+  selectedCategory: ItemCategory | undefined  = undefined;
   items: Item[] = [];
   isMapOpen = false;
 
@@ -41,28 +46,21 @@ export class HomeComponent implements OnInit {
   readonly MapPinIcon = MapPin;
 
   categories = [
-    { name: 'Tools', value: 'TOOLS', icon: Wrench },
-    { name: 'Kitchen', value: 'KITCHEN', icon: Utensils },
-    { name: 'Cleaning', value: 'CLEANING', icon: Sparkles },
-    { name: 'Electronics', value: 'ELECTRONICS', icon: Monitor },
-    { name: 'Sports', value: 'SPORTS', icon: Dumbbell },
-    { name: 'Garden', value: 'GARDEN', icon: Sprout },
-    { name: 'Other', value: 'OTHER', icon: Package }
+    { name: 'Tools', value: ItemCategory.TOOLS, icon: Wrench },
+    { name: 'Kitchen', value: ItemCategory.KITCHEN, icon: Utensils },
+    { name: 'Cleaning', value: ItemCategory.CLEANING, icon: Sparkles },
+    { name: 'Electronics', value: ItemCategory.ELECTRONICS, icon: Monitor },
+    { name: 'Sports', value: ItemCategory.SPORTS, icon: Dumbbell },
+    { name: 'Garden', value: ItemCategory.GARDEN, icon: Sprout },
+    { name: 'Other', value: ItemCategory.OTHER, icon: Package }
   ];
 
   ngOnInit() {
-    this.itemService.getApprovedItems().subscribe({
+    this.searchService.getFeed().subscribe({
       next: (items) => {
-        console.log('Items fetched:', items);
-        if (Array.isArray(items)) {
-          this.items = items;
-        } else {
-          console.error('Expected array of items, but got:', items);
-          this.items = [];
-        }
+        this.items = items ?? [];
       },
-      error: (err) => {
-        console.error('Error fetching items:', err);
+      error : () => {
         this.items = [];
       }
     });
@@ -75,6 +73,21 @@ export class HomeComponent implements OnInit {
   }
 
   handleSearch() {
+    const criteria: SearchCriteria = {
+      keyword: this.searchQuery,
+      latitude: this.searchLat ?? undefined,
+      longitude: this.searchLng ?? undefined,
+      radius: undefined,
+      category: this.selectedCategory,
+      approvalStatus: ItemStatus.APPROVED,
+      rentalStatus: undefined,
+      minPrice: undefined,
+      maxPrice: undefined,
+      priceUnit: undefined,
+      sortBy: 'newest',
+      sortDirection: 'desc'
+    };
+
     this.router.navigate(['/search'], {
       queryParams: {
         q: this.searchQuery,
@@ -83,10 +96,29 @@ export class HomeComponent implements OnInit {
         lng: this.searchLng
       }
     });
+
+    this.searchService.search(criteria).subscribe(items => {
+      this.items = items;
+    });
   }
 
-  toggleCategory(category: string) {
-    this.selectedCategory = this.selectedCategory === category ? null : category;
+  toggleCategory(category: ItemCategory) {
+    this.selectedCategory = this.selectedCategory === category ? undefined : category;
+
+    if (!this.selectedCategory) {
+      this.ngOnInit();    // reload feed, (when double click certain category)
+      return;
+    }
+
+    const criteria: SearchCriteria = {
+      category: this.selectedCategory,
+      approvalStatus: ItemStatus.APPROVED,
+      sortBy: 'newest',
+      sortDirection: 'desc'
+    };
+    this.searchService.search(criteria).subscribe(items => {
+      this.items = items;
+    });
   }
 
   navigateToRequestItem() {

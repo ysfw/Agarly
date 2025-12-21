@@ -34,11 +34,14 @@
           <label class="block text-sm font-semibold text-[#1A237E] mb-2">Category</label>
           <select [(ngModel)]="filters.category"
             class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E]">
-            <option value="">All Categories</option>
-            <option value="tools">Tools</option>
-            <option value="kitchen">Kitchen</option>
-            <option value="cleaning">Cleaning</option>
-            <option value="electronics">Electronics</option>
+            <option [ngValue]="undefined">All Categories</option>
+            <option [value]="ItemCategory.TOOLS">Tools</option>
+            <option [value]="ItemCategory.KITCHEN">Kitchen</option>
+            <option [value]="ItemCategory.CLEANING">Cleaning</option>
+            <option [value]="ItemCategory.ELECTRONICS">Electronics</option>
+            <option [value]="ItemCategory.SPORTS">Sports</option>
+            <option [value]="ItemCategory.GARDEN">Garden</option>
+            <option [value]="ItemCategory.OTHER">Other</option>
           </select>
         </div>
 
@@ -60,8 +63,8 @@
             Location selected
           </div>
           <div>
-            <label class="text-xs text-gray-500 mb-1 block">Radius: {{filters.distance}} km</label>
-            <input type="range" min="1" max="50" [(ngModel)]="filters.distance" class="w-full accent-[#3949AB]">
+            <label class="text-xs text-gray-500 mb-1 block">Radius: {{filters.radius}} km</label>
+            <input type="range" min="1" max="50" [(ngModel)]="filters.radius" class="w-full accent-[#3949AB]">
           </div>
         </div>
 
@@ -76,21 +79,42 @@
           </div>
           <select [(ngModel)]="filters.priceUnit"
             class="w-full px-3 py-2 rounded-lg border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-sm">
-            <option value="day">Per Day</option>
-            <option value="hour">Per Hour</option>
+            <option value="DAY">Per Day</option>
+            <option value="HOUR">Per Hour</option>
           </select>
         </div>
 
         <div>
           <label class="block text-sm font-semibold text-[#1A237E] mb-2">Availability</label>
-          <select [(ngModel)]="filters.availability"
+          <select [(ngModel)]="filters.approvalStatus"
             class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E]">
-            <option value="all">All Items</option>
-            <option value="available">Available Only</option>
+            <option [ngValue]="undefined">All Items</option>
+            <option [value]="ItemStatus.APPROVED">Available Only</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-[#1A237E] mb-2">Sort By</label>
+          <select [(ngModel)]="filters.sortBy"
+                  class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E]">
+            <option [ngValue]="'newest'">Newest</option>
+            <option [ngValue]="'price'">Price</option>
+            <option [ngValue]="'rating'">Rating</option>
+            <option [ngValue]="'distance'">Distance</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-[#1A237E] mb-2">Sort Direction</label>
+          <select [(ngModel)]="filters.sortDirection"
+                  class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E]">
+            <option [ngValue]="'asc'">Ascending</option>
+            <option [ngValue]="'desc'">Descending</option>
           </select>
         </div>
       </div>
     </div>
+
     }
 
     <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">

@@ -2,6 +2,7 @@ package com.agarly.backend.models;
 
 import com.agarly.backend.models.Enums.ItemCategory;
 import com.agarly.backend.models.Enums.ItemCondition;
+import com.agarly.backend.models.Enums.ItemRentalStatus;
 import com.agarly.backend.models.Enums.PriceUnit;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -56,6 +57,10 @@ public class Item {
     private User borrower;
 
     private java.time.LocalDate dueDate;
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private ItemRentalStatus rentalStatus;
 
     @NotNull
     @Enumerated(EnumType.STRING)
