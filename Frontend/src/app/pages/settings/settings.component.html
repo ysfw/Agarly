@@ -6,10 +6,16 @@
         class="w-10 h-10 flex items-center justify-center hover:bg-white/50 rounded-full transition-colors">
         <lucide-icon [img]="ArrowLeftIcon" class="w-5 h-5 text-[#1A237E]"></lucide-icon>
       </button>
-      <div>
+      <div class="flex-1">
         <h1 class="text-3xl font-bold text-[#1A237E]">Settings</h1>
         <p class="text-gray-600 text-sm">Manage your preferences</p>
       </div>
+      @if (saving) {
+      <div class="flex items-center gap-2 text-[#3949AB]">
+        <lucide-icon [img]="LoaderIcon" class="w-5 h-5 animate-spin"></lucide-icon>
+        <span class="text-sm font-medium">Saving...</span>
+      </div>
+      }
     </div>
 
     <div class="space-y-6">
@@ -77,6 +83,12 @@
           </h2>
         </div>
 
+        @if (loading) {
+        <div class="px-6 py-8 flex items-center justify-center">
+          <lucide-icon [img]="LoaderIcon" class="w-6 h-6 text-[#3949AB] animate-spin"></lucide-icon>
+          <span class="ml-2 text-gray-600">Loading preferences...</span>
+        </div>
+        } @else {
         <div class="px-6 py-4 flex items-center justify-between border-b border-gray-100">
           <div class="flex items-center gap-3">
             <div class="w-10 h-10 bg-[#E8EAF6] rounded-xl flex items-center justify-center">
@@ -88,7 +100,8 @@
             </div>
           </div>
           <label class="relative inline-flex items-center cursor-pointer">
-            <input type="checkbox" class="sr-only peer" checked />
+            <input type="checkbox" class="sr-only peer" [checked]="pushNotifications"
+              (change)="togglePushNotifications($event)" />
             <div
               class="w-12 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-[#3949AB] peer-checked:to-[#5C6BC0] shadow-inner">
             </div>
@@ -106,7 +119,8 @@
             </div>
           </div>
           <label class="relative inline-flex items-center cursor-pointer">
-            <input type="checkbox" class="sr-only peer" checked />
+            <input type="checkbox" class="sr-only peer" [checked]="emailNotifications"
+              (change)="toggleEmailNotifications($event)" />
             <div
               class="w-12 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-[#3949AB] peer-checked:to-[#5C6BC0] shadow-inner">
             </div>
@@ -124,12 +138,14 @@
             </div>
           </div>
           <label class="relative inline-flex items-center cursor-pointer">
-            <input type="checkbox" class="sr-only peer" />
+            <input type="checkbox" class="sr-only peer" [checked]="smsNotifications"
+              (change)="toggleSmsNotifications($event)" />
             <div
               class="w-12 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-[#3949AB] peer-checked:to-[#5C6BC0] shadow-inner">
             </div>
           </label>
         </div>
+        }
       </div>
 
       <!-- Privacy & Support Section -->
@@ -173,7 +189,7 @@
       </div>
 
       <!-- Logout Button -->
-      <button (click)="handleLogout()"
+      <button (click)="openLogoutModal()"
         class="w-full bg-white/80 backdrop-blur-sm rounded-2xl px-6 py-4 flex items-center justify-center gap-3 hover:bg-red-50 transition-all shadow-lg border-2 border-red-200 hover:border-red-300 group">
         <lucide-icon [img]="LogOutIcon"
           class="w-5 h-5 text-red-500 group-hover:text-red-600 transition-colors"></lucide-icon>
@@ -181,4 +197,28 @@
       </button>
     </div>
   </div>
+
+  <!-- Logout Confirmation Modal -->
+  @if (showLogoutModal) {
+  <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 backdrop-blur-sm"
+    (click)="closeLogoutModal()">
+    <div class="bg-white rounded-2xl p-6 max-w-sm w-full mx-4 shadow-2xl" (click)="$event.stopPropagation()">
+      <h3 class="text-xl font-bold text-[#1A237E] mb-2">Log Out?</h3>
+      <p class="text-gray-600 mb-6">Are you sure you want to log out of your account?</p>
+      <div class="flex gap-3">
+        <button (click)="closeLogoutModal()"
+          class="flex-1 px-4 py-3 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200 transition-colors">
+          Cancel
+        </button>
+        <button (click)="handleLogout()" [disabled]="logoutLoading"
+          class="flex-1 px-4 py-3 bg-red-500 text-white rounded-xl font-semibold hover:bg-red-600 transition-colors flex items-center justify-center gap-2 disabled:opacity-50">
+          @if (logoutLoading) {
+          <lucide-icon [img]="LoaderIcon" class="w-4 h-4 animate-spin"></lucide-icon>
+          }
+          Log Out
+        </button>
+      </div>
+    </div>
+  </div>
+  }
 </div>

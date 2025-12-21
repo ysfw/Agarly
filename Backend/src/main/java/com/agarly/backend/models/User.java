@@ -8,6 +8,8 @@ import lombok.Setter;
 import org.jspecify.annotations.Nullable;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 @Getter
 @Setter
@@ -40,6 +42,22 @@ public class User {
     private UserProfile profile;
 
     private BigDecimal walletBalance = BigDecimal.ZERO;
+
+    // Notification preferences
+    private boolean pushNotificationsEnabled = true;
+    private boolean emailNotificationsEnabled = true;
+    private boolean smsNotificationsEnabled = false;
+
+    // Account status
+    private boolean banned = false;
+    private LocalDateTime createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now(ZoneId.of("Africa/Cairo"));
+        }
+    }
 
     public User() {
         this.profile = new UserProfile();

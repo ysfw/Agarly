@@ -1,18 +1,18 @@
 import { Component, inject, NgZone, OnInit } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 import { LucideAngularModule, Mail, Lock, Eye, EyeOff, AlertCircle, Loader2 } from 'lucide-angular';
-
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
-import { HttpResponse } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 
-declare var google: any; // Declare google object from the loaded script
+declare var google: any;
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [FormsModule, RouterLink, LucideAngularModule],
+  imports: [CommonModule, FormsModule, RouterLink, LucideAngularModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
 })
@@ -42,60 +42,82 @@ export class LoginComponent implements OnInit {
   loading = false;
   backendError = '';
 
+  // Google Auth state
+  googleAuthError = '';
+  googleAuthLoading = false;
+  googleScriptLoaded = false;
+
   private router = inject(Router);
   private api = inject(ApiService);
   private ngZone = inject(NgZone);
   private authService = inject(AuthService);
 
   ngOnInit(): void {
-    // 3. Check if the script loaded
-    if (typeof google !== 'undefined') {
-      this.initGoogleLogin();
-    } else {
-      console.error('Google script not loaded');
+    this.initGoogleLoginWithRetry();
+  }
+
+  private async initGoogleLoginWithRetry(retries = 5) {
+    for (let i = 0; i < retries; i++) {
+      if (typeof google !== 'undefined' && google.accounts) {
+        this.googleScriptLoaded = true;
+        this.initGoogleLogin();
+        return;
+      }
+      // Wait 500ms before next retry
+      await new Promise(resolve => setTimeout(resolve, 500));
     }
+    // After all retries failed
+    console.warn('Google Sign-In script failed to load after retries');
+    this.googleAuthError = 'Google Sign-In is currently unavailable. Please use email login.';
   }
 
   initGoogleLogin() {
-    // 4. Initialize the Client
-    google.accounts.id.initialize({
-      client_id: '665603013636-4q5rdlns1vsn254j42a2fqkg9p7nrc7p.apps.googleusercontent.com',
-      // Arrow function is CRITICAL here to keep 'this' context
-      callback: (resp: any) => this.handleCredentialResponse(resp)
-    });
+    try {
+      google.accounts.id.initialize({
+        client_id: environment.googleClientId,
+        callback: (resp: any) => this.handleCredentialResponse(resp),
+        auto_select: false,
+        cancel_on_tap_outside: true
+      });
 
-    // 5. Render the Button
-    const btnContainer = document.getElementById('google-button');
-    if (btnContainer) {
-      google.accounts.id.renderButton(
-        btnContainer,
-        {
-          theme: 'outline',
-          size: 'large',
-          text: 'signin_with',
-          width: btnContainer.clientWidth.toString(),
-          shape: 'rectangular'
-        }
-      );
+      const btnContainer = document.getElementById('google-button');
+      if (btnContainer) {
+        google.accounts.id.renderButton(
+          btnContainer,
+          {
+            theme: 'outline',
+            size: 'large',
+            text: 'signin_with',
+            width: btnContainer.clientWidth.toString(),
+            shape: 'rectangular'
+          }
+        );
+      }
+    } catch (error) {
+      console.error('Error initializing Google Sign-In:', error);
+      this.googleAuthError = 'Failed to initialize Google Sign-In. Please use email login.';
     }
   }
 
-  // This function is called by the Google library when a token is received
   handleCredentialResponse(response: any): void {
+    // Clear any previous errors
+    this.googleAuthError = '';
+
     if (response.credential) {
-      // Send the ID token to the Spring Boot backend
       this.sendTokenToBackend(response.credential);
+    } else {
+      this.googleAuthError = 'No credentials received from Google. Please try again.';
     }
   }
 
   private sendTokenToBackend(token: string): void {
-
-    // console.log(token)
+    this.googleAuthLoading = true;
+    this.googleAuthError = '';
 
     this.api.sendToken(token).subscribe({
       next: (res: any) => {
+        this.googleAuthLoading = false;
         console.log('Login successful on backend', res);
-        // Store the JWT token from backend response (not the Google token)
         const jwtToken = res.Token || res.token || token;
         this.authService.setToken(jwtToken);
         this.ngZone.run(() => {
@@ -104,8 +126,19 @@ export class LoginComponent implements OnInit {
         });
       },
       error: (err) => {
+        this.googleAuthLoading = false;
         console.error('Backend authentication failed', err);
-        // Handle error: show a notification to the user
+
+        // Provide user-friendly error messages
+        if (err.status === 0) {
+          this.googleAuthError = 'Cannot connect to server. Please check your internet connection.';
+        } else if (err.status === 401) {
+          this.googleAuthError = 'Authentication failed. Please try again.';
+        } else if (err.status === 403) {
+          this.googleAuthError = 'Access denied. Your account may be restricted.';
+        } else {
+          this.googleAuthError = 'Google sign-in failed. Please try again or use email login.';
+        }
       }
     });
   }
@@ -146,33 +179,22 @@ export class LoginComponent implements OnInit {
     this.loading = true;
     this.backendError = '';
 
-    // Backend call 
     this.api.loginUser(this.formData).subscribe({
       next: (res: any) => {
-        console.log("Response from backend:")
-        console.log(res)
-        const token = res.Token
-        this.authService.setToken(token)
-        // console.log("Success, Status Code:", res.status)
-        // console.log("Repsonse body: ", res.body)
+        const token = res.Token;
+        this.authService.setToken(token);
         this.loading = false;
         this.authService.login();
         this.router.navigate(['/home']);
       },
       error: (err) => {
         this.loading = false;
-        this.backendError = 'Invalid email or password';
+        if (err.status === 0) {
+          this.backendError = 'Cannot connect to server. Please try again later.';
+        } else {
+          this.backendError = 'Invalid email or password';
+        }
       },
     });
   }
-
-  // goToForgot() {
-  //   this.router.navigate(['/forgot-password']);
-  // }
-
-  // handleSubmit() {      // placeholder for testing front
-  //   if (!this.validateForm()) return;
-  //   this.authService.login();
-  //   this.router.navigate(['/home']);
-  // }
 }
