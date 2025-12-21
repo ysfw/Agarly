@@ -61,15 +61,13 @@ public class AdminService {
                 .toList();
     }
 
-    // ==================== Dashboard Stats ====================
-
     public Map<String, Long> getDashboardStats() {
         Map<String, Long> stats = new HashMap<>();
-        stats.put("pendingPosts", Long.valueOf(itemRepository.findByStatus(ItemStatus.PENDING).stream().count()));
-        stats.put("pendingRequests", Long.valueOf(itemRequestRepository.countByStatus(ItemStatus.PENDING)));
+        stats.put("pendingPosts", itemRepository.findByStatus(ItemStatus.PENDING).stream().count());
+        stats.put("pendingRequests", itemRequestRepository.countByStatus("PENDING"));
         stats.put("openTickets", Long.valueOf(supportTicketRepository.countByStatus(TicketStatus.OPEN)));
-        stats.put("totalPosts", Long.valueOf(itemRepository.count()));
-        stats.put("totalRequests", Long.valueOf(itemRequestRepository.count()));
+        stats.put("totalPosts", itemRepository.count());
+        stats.put("totalRequests", itemRequestRepository.count());
         stats.put("totalTickets", Long.valueOf(supportTicketRepository.count()));
         return stats;
     }
@@ -109,14 +107,12 @@ public class AdminService {
         itemRepository.deleteById(id);
     }
 
-    // ==================== Request Management ====================
-
     public List<ItemRequest> getAllRequests() {
         return itemRequestRepository.findAll();
     }
 
     public List<ItemRequest> getPendingRequests() {
-        return itemRequestRepository.findByStatus(ItemStatus.PENDING);
+        return itemRequestRepository.findByStatus("PENDING");
     }
 
     public ItemRequest getRequest(Long id) {
@@ -126,14 +122,14 @@ public class AdminService {
     public void approveRequest(Long id) {
         ItemRequest request = itemRequestRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Request not found"));
-        request.setStatus(ItemStatus.APPROVED);
+        request.setStatus("APPROVED");
         itemRequestRepository.save(request);
     }
 
     public void rejectRequest(Long id) {
         ItemRequest request = itemRequestRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Request not found"));
-        request.setStatus(ItemStatus.REJECTED);
+        request.setStatus("REJECTED");
         itemRequestRepository.save(request);
     }
 
@@ -145,7 +141,7 @@ public class AdminService {
     }
 
     public ItemRequest createRequest(ItemRequest request) {
-        request.setStatus(ItemStatus.PENDING);
+        request.setStatus("PENDING");
         return itemRequestRepository.save(request);
     }
 }

@@ -33,7 +33,17 @@ export class RequestItemComponent {
   };
 
   handleSubmit() {
-    alert('Request posted! Neighbors will be notified.');
-    this.router.navigate(['/requests']);
+    fetch('http://localhost:8080/requests', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(this.formData)
+    })
+    .then(res => res.json())
+    .then(data => {
+      alert('Request posted! Neighbors will be notified.');
+      this.router.navigate(['/requests']);
+    })
+    .catch(err => console.error(err));
   }
+
 }

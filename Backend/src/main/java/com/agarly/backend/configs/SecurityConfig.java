@@ -1,3 +1,4 @@
+
 package com.agarly.backend.configs;
 
 import com.agarly.backend.configs.filters.JwtFilter;
@@ -43,7 +44,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(request -> request
                         .requestMatchers("/account/login", "/account/register", "/users/**", "/account/gAuth",
                                 "/register/verify", "/register/resend-otp", "/uploads/**", "/api/images/upload",
-                                "/account/Admin-login", "/account/Admin-register", "/items/approved")
+                                "/account/Admin-login", "/account/Admin-register", "/items/approved",
+                                "/payments/webhook") // Paymob webhook callback (must be public)
                         .permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

@@ -5,9 +5,9 @@ import lombok.Data;
 
 @Data
 public class JWTResponse {
+    private String Token;
     public JWTResponse(String token) {
         Token = token;
     }
 
-    private String Token;
 }

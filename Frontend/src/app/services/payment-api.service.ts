@@ -1,14 +1,18 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
+
+// ==================== INTERFACES ====================
 
 export interface PaymentMethod {
     id: number;
+    provider?: string;
     displayName: string;
     lastFourDigits: string;
     cardType: string;
     expiryMonth: number;
     expiryYear: number;
+    phoneNumber?: string;
     isDefault: boolean;
     isActive: boolean;
 }
@@ -30,12 +34,69 @@ export interface ChargeRequest {
     description: string;
 }
 
+/**
+ * Request to initiate a new payment.
+ * method: 'CARD' | 'WALLET' | 'FAWRY'
+ */
+export interface InitiatePaymentRequest {
+    amount: number;
+    method: 'CARD' | 'WALLET' | 'FAWRY';
+    phoneNumber?: string;  // Required for WALLET payments
+    bookingId?: number;
+    description: string;
+}
+
+/**
+ * Response from payment initiation.
+ * Different fields are populated based on payment method:
+ * - CARD: paymentKey + iframeId
+ * - WALLET: redirectUrl
+ * - FAWRY: fawryReference
+ */
+export interface InitiatePaymentResponse {
+    success: boolean;
+    errorMessage?: string;
+    method: string;
+    orderId: string;
+    // For CARD payments
+    paymentKey?: string;
+    iframeId?: string;
+    // For WALLET payments
+    redirectUrl?: string;
+    // For FAWRY payments
+    fawryReference?: string;
+}
+
+// ==================== SERVICE ====================
+
 @Injectable({ providedIn: 'root' })
 export class PaymentApiService {
     private http = inject(HttpClient);
     private baseUrl = 'http://localhost:8080/payments';
 
-    // Payment Methods
+    // ==================== PAYMENT INITIATION ====================
+
+    /**
+     * Initiates a payment with the specified method.
+     * 
+     * For CARD: Returns paymentKey to open Paymob iframe
+     * For WALLET: Returns redirectUrl to redirect user
+     * For FAWRY: Returns fawryReference for user to pay at store
+     */
+    initiatePayment(request: InitiatePaymentRequest): Observable<InitiatePaymentResponse> {
+        return this.http.post<InitiatePaymentResponse>(`${this.baseUrl}/initiate`, request);
+    }
+
+    /**
+     * Builds the Paymob iframe URL for card payments.
+     * Use the paymentKey and iframeId from InitiatePaymentResponse.
+     */
+    getPaymobIframeUrl(iframeId: string, paymentKey: string): string {
+        return `https://accept.paymob.com/api/acceptance/iframes/${iframeId}?payment_token=${paymentKey}`;
+    }
+
+    // ==================== PAYMENT METHODS CRUD ====================
+
     getPaymentMethods(): Observable<PaymentMethod[]> {
         return this.http.get<PaymentMethod[]>(`${this.baseUrl}/methods`);
     }
@@ -52,81 +113,16 @@ export class PaymentApiService {
         return this.http.patch<PaymentMethod>(`${this.baseUrl}/methods/${id}/default`, {});
     }
 
-    // Transactions
+    // ==================== TRANSACTIONS ====================
+
     charge(request: ChargeRequest): Observable<Transaction> {
         return this.http.post<Transaction>(`${this.baseUrl}/charge`, request);
     }
 
-    getTransactionHistory(page: number = 0, size: number = 10): Observable<Transaction[]> {
-        return this.http.get<Transaction[]>(`${this.baseUrl}/history`, {
+    getTransactionHistory(page: number = 0, size: number = 10): Observable<any> {
+        return this.http.get<any>(`${this.baseUrl}/history`, {
             params: { page: page.toString(), size: size.toString() }
         });
     }
-
-    // Mock data for demo (until backend is ready)
-    getMockPaymentMethods(): Observable<PaymentMethod[]> {
-        return of([
-            {
-                id: 1,
-                displayName: 'Visa •••• 4242',
-                lastFourDigits: '4242',
-                cardType: 'VISA',
-                expiryMonth: 12,
-                expiryYear: 2026,
-                isDefault: true,
-                isActive: true
-            },
-            {
-                id: 2,
-                displayName: 'Mastercard •••• 8888',
-                lastFourDigits: '8888',
-                cardType: 'MASTERCARD',
-                expiryMonth: 6,
-                expiryYear: 2025,
-                isDefault: false,
-                isActive: true
-            }
-        ]);
-    }
-
-    getMockTransactionHistory(): Observable<Transaction[]> {
-        return of([
-            {
-                id: 1,
-                amount: 25.00,
-                type: 'PAYMENT',
-                status: 'COMPLETED',
-                description: 'Rental: Power Drill - 3 days',
-                createdAt: '2025-01-15T10:30:00',
-                referenceNumber: 'TXN-001234'
-            },
-            {
-                id: 2,
-                amount: 15.00,
-                type: 'EARNING',
-                status: 'COMPLETED',
-                description: 'Rental Income: Stand Mixer',
-                createdAt: '2025-01-14T14:20:00',
-                referenceNumber: 'TXN-001233'
-            },
-            {
-                id: 3,
-                amount: 50.00,
-                type: 'DEPOSIT',
-                status: 'PENDING',
-                description: 'Security Deposit Held',
-                createdAt: '2025-01-13T09:15:00',
-                referenceNumber: 'TXN-001232'
-            },
-            {
-                id: 4,
-                amount: 10.00,
-                type: 'REFUND',
-                status: 'COMPLETED',
-                description: 'Deposit Refund: Ladder',
-                createdAt: '2025-01-12T16:45:00',
-                referenceNumber: 'TXN-001231'
-            }
-        ]);
-    }
 }
+

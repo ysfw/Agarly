@@ -112,9 +112,13 @@ export class DashboardComponent implements OnInit {
   }
 
   loadTransactions() {
-    this.paymentService.getMockTransactionHistory().subscribe({
-      next: (transactions) => this.transactions.set(transactions),
-      error: (err) => console.error('Error loading transactions:', err)
+    this.paymentService.getTransactionHistory().subscribe({
+      next: (response: any) => {
+        // Backend returns paginated response with 'content' array
+        const transactions: Transaction[] = response.content || response || [];
+        this.transactions.set(transactions);
+      },
+      error: (err: any) => console.error('Error loading transactions:', err)
     });
   }
 
