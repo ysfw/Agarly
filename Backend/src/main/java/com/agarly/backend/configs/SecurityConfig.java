@@ -1,3 +1,4 @@
+
 package com.agarly.backend.configs;
 
 import com.agarly.backend.configs.filters.JwtFilter;
