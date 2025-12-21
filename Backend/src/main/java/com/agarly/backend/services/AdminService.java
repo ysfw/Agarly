@@ -1,11 +1,13 @@
 package com.agarly.backend.services;
 
+import com.agarly.backend.models.Enums.TicketStatus;
 import com.agarly.backend.models.Item;
 import com.agarly.backend.models.ItemRequest;
 import com.agarly.backend.models.User;
 import com.agarly.backend.models.Enums.ItemStatus;
 import com.agarly.backend.repos.ItemRepository;
 import com.agarly.backend.repos.ItemRequestRepository;
+import com.agarly.backend.repos.SupportTicketRepository;
 import com.agarly.backend.repos.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,19 +27,22 @@ public class AdminService {
     @Autowired
     private ItemRequestRepository itemRequestRepository;
 
+    @Autowired
+    private SupportTicketRepository supportTicketRepository;
+
     // ==================== User Management ====================
 
     public void banUser(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        user.setBlocked(true);
+        user.setBlocked(Boolean.TRUE);
         userRepository.save(user);
     }
 
     public void unbanUser(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        user.setBlocked(false);
+        user.setBlocked(Boolean.FALSE);
         userRepository.save(user);
     }
 
@@ -60,10 +65,12 @@ public class AdminService {
 
     public Map<String, Long> getDashboardStats() {
         Map<String, Long> stats = new HashMap<>();
-        stats.put("pendingPosts", itemRepository.findByStatus(ItemStatus.PENDING).stream().count());
-        stats.put("pendingRequests", itemRequestRepository.countByStatus(ItemStatus.PENDING));
-        stats.put("totalPosts", itemRepository.count());
-        stats.put("totalRequests", itemRequestRepository.count());
+        stats.put("pendingPosts", Long.valueOf(itemRepository.findByStatus(ItemStatus.PENDING).stream().count()));
+        stats.put("pendingRequests", Long.valueOf(itemRequestRepository.countByStatus(ItemStatus.PENDING)));
+        stats.put("openTickets", Long.valueOf(supportTicketRepository.countByStatus(TicketStatus.OPEN)));
+        stats.put("totalPosts", Long.valueOf(itemRepository.count()));
+        stats.put("totalRequests", Long.valueOf(itemRequestRepository.count()));
+        stats.put("totalTickets", Long.valueOf(supportTicketRepository.count()));
         return stats;
     }
 

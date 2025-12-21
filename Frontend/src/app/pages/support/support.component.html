@@ -1,41 +1,66 @@
-<div class="min-h-screen w-full bg-[#F5F7FA]">
+<div
+  class="min-h-screen w-full bg-gradient-to-br from-[#F5F7FA] via-[#E8EAF6] to-[#C5CAE9]"
+>
   <div class="max-w-3xl mx-auto px-6 py-8">
     <div class="flex items-center gap-4 mb-8">
       <button
         (click)="goBack()"
-        class="w-10 h-10 flex items-center justify-center hover:bg-gray-100 rounded-full"
+        class="w-10 h-10 flex items-center justify-center hover:bg-white/60 rounded-full transition-colors"
       >
         <lucide-icon
           [img]="ArrowLeftIcon"
           class="w-5 h-5 text-[#1A237E]"
         ></lucide-icon>
       </button>
-      <h1 class="text-3xl font-bold text-[#1A237E]">Help & Support</h1>
+      <div>
+        <h1 class="text-3xl font-bold text-[#1A237E]">Help & Support</h1>
+        <p class="text-gray-600 text-sm">
+          Find answers or reach out to our team
+        </p>
+      </div>
     </div>
 
     <div class="space-y-6">
-      <div class="bg-white rounded-2xl p-6 shadow-sm">
-        <h2 class="text-xl font-semibold text-[#1A237E] mb-4">Quick Help</h2>
+      <div
+        class="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/60"
+      >
+        <h2
+          class="text-xl font-semibold text-[#1A237E] mb-4 flex items-center gap-2"
+        >
+          <lucide-icon
+            [img]="BookOpenIcon"
+            class="w-5 h-5 text-[#3949AB]"
+          ></lucide-icon>
+          Quick Help
+        </h2>
         <div class="grid md:grid-cols-2 gap-4">
           <button
-            class="flex items-center gap-3 p-4 bg-[#E8EAF6] rounded-xl hover:bg-[#C5CAE9] transition-colors"
+            class="flex items-center gap-3 p-4 rounded-2xl bg-[#E8EAF6] hover:bg-[#C5CAE9] transition-colors shadow-sm"
           >
-            <lucide-icon
-              [img]="BookOpenIcon"
-              class="w-6 h-6 text-[#3949AB]"
-            ></lucide-icon>
+            <div
+              class="w-10 h-10 rounded-xl bg-white/70 flex items-center justify-center"
+            >
+              <lucide-icon
+                [img]="BookOpenIcon"
+                class="w-5 h-5 text-[#3949AB]"
+              ></lucide-icon>
+            </div>
             <div class="text-left">
               <p class="font-semibold text-[#1A237E]">User Guide</p>
               <p class="text-sm text-gray-600">Learn how to use Agarly</p>
             </div>
           </button>
           <button
-            class="flex items-center gap-3 p-4 bg-[#E8EAF6] rounded-xl hover:bg-[#C5CAE9] transition-colors"
+            class="flex items-center gap-3 p-4 rounded-2xl bg-[#E8EAF6] hover:bg-[#C5CAE9] transition-colors shadow-sm"
           >
-            <lucide-icon
-              [img]="HelpCircleIcon"
-              class="w-6 h-6 text-[#3949AB]"
-            ></lucide-icon>
+            <div
+              class="w-10 h-10 rounded-xl bg-white/70 flex items-center justify-center"
+            >
+              <lucide-icon
+                [img]="HelpCircleIcon"
+                class="w-5 h-5 text-[#3949AB]"
+              ></lucide-icon>
+            </div>
             <div class="text-left">
               <p class="font-semibold text-[#1A237E]">FAQs</p>
               <p class="text-sm text-gray-600">Common questions</p>
@@ -44,9 +69,19 @@
         </div>
       </div>
 
-      <div class="bg-white rounded-2xl overflow-hidden shadow-sm">
-        <div class="px-6 py-4 border-b border-gray-200">
-          <h2 class="text-lg font-semibold text-[#1A237E]">
+      <div
+        class="bg-white/80 backdrop-blur-sm rounded-2xl overflow-hidden shadow-lg border border-white/60"
+      >
+        <div
+          class="px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-[#3949AB]/5 to-transparent"
+        >
+          <h2
+            class="text-lg font-semibold text-[#1A237E] flex items-center gap-2"
+          >
+            <lucide-icon
+              [img]="HelpCircleIcon"
+              class="w-5 h-5 text-[#3949AB]"
+            ></lucide-icon>
             Frequently Asked Questions
           </h2>
         </div>
@@ -62,13 +97,14 @@
                 <svg
                   fill="none"
                   height="24"
-                  shapeRendering="geometricPrecision"
+                  shape-rendering="geometricPrecision"
                   stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="1.5"
                   viewBox="0 0 24 24"
                   width="24"
+                  class="text-[#3949AB]"
                 >
                   <path d="M6 9l6 6 6-6"></path>
                 </svg>
@@ -92,13 +128,14 @@
                 <svg
                   fill="none"
                   height="24"
-                  shapeRendering="geometricPrecision"
+                  shape-rendering="geometricPrecision"
                   stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="1.5"
                   viewBox="0 0 24 24"
                   width="24"
+                  class="text-[#3949AB]"
                 >
                   <path d="M6 9l6 6 6-6"></path>
                 </svg>
@@ -122,13 +159,14 @@
                 <svg
                   fill="none"
                   height="24"
-                  shapeRendering="geometricPrecision"
+                  shape-rendering="geometricPrecision"
                   stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="1.5"
                   viewBox="0 0 24 24"
                   width="24"
+                  class="text-[#3949AB]"
                 >
                   <path d="M6 9l6 6 6-6"></path>
                 </svg>
@@ -152,13 +190,14 @@
                 <svg
                   fill="none"
                   height="24"
-                  shapeRendering="geometricPrecision"
+                  shape-rendering="geometricPrecision"
                   stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="1.5"
                   viewBox="0 0 24 24"
                   width="24"
+                  class="text-[#3949AB]"
                 >
                   <path d="M6 9l6 6 6-6"></path>
                 </svg>
@@ -172,8 +211,16 @@
         </div>
       </div>
 
-      <div class="bg-white rounded-2xl p-6 shadow-sm">
-        <h2 class="text-xl font-semibold text-[#1A237E] mb-4">
+      <div
+        class="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/60"
+      >
+        <h2
+          class="text-xl font-semibold text-[#1A237E] mb-4 flex items-center gap-2"
+        >
+          <lucide-icon
+            [img]="MailIcon"
+            class="w-5 h-5 text-[#3949AB]"
+          ></lucide-icon>
           Contact Support
         </h2>
         <form
@@ -197,7 +244,7 @@
               required
               minlength="3"
               placeholder="Enter a short summary"
-              class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E]"
+              class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E] shadow-sm"
             />
             <p
               *ngIf="
@@ -225,7 +272,7 @@
               required
               minlength="10"
               placeholder="Describe your issue or question..."
-              class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E] resize-none"
+              class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E] resize-none shadow-sm"
             ></textarea>
             <p
               *ngIf="
@@ -240,13 +287,13 @@
 
           <div
             *ngIf="successMessage"
-            class="p-3 rounded-lg bg-green-100 text-green-700"
+            class="p-3 rounded-xl bg-green-100 text-green-700 shadow-sm"
           >
             {{ successMessage }}
           </div>
           <div
             *ngIf="errorMessage"
-            class="p-3 rounded-lg bg-red-100 text-red-600"
+            class="p-3 rounded-xl bg-red-100 text-red-600 shadow-sm"
           >
             {{ errorMessage }}
           </div>
@@ -254,11 +301,11 @@
           <button
             type="submit"
             [disabled]="supportForm.invalid || isSubmitting"
-            class="w-full flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-semibold transition-colors shadow-md"
+            class="w-full flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-semibold transition-all shadow-md"
             [ngClass]="
               supportForm.invalid || isSubmitting
                 ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                : 'bg-[#3949AB] text-white hover:bg-[#1A237E]'
+                : 'bg-gradient-to-r from-[#3949AB] to-[#5C6BC0] text-white hover:from-[#303F9F] hover:to-[#3949AB]'
             "
           >
             <lucide-icon
@@ -276,22 +323,35 @@
         <button
           type="button"
           (click)="viewTickets()"
-          class="mt-4 w-full flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-semibold transition-colors shadow-sm border border-[#3949AB] text-[#3949AB] hover:bg-[#E8EAF6]"
+          class="mt-4 w-full flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-semibold transition-all shadow-sm border border-[#3949AB] text-[#3949AB] hover:bg-[#E8EAF6]"
         >
+          <lucide-icon [img]="MessageCircleIcon" class="w-5 h-5"></lucide-icon>
           View My Tickets
         </button>
       </div>
 
-      <div class="bg-white rounded-2xl p-6 shadow-sm">
-        <h2 class="text-xl font-semibold text-[#1A237E] mb-4">
+      <div
+        class="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/60"
+      >
+        <h2
+          class="text-xl font-semibold text-[#1A237E] mb-4 flex items-center gap-2"
+        >
+          <lucide-icon
+            [img]="MessageCircleIcon"
+            class="w-5 h-5 text-[#3949AB]"
+          ></lucide-icon>
           Other Ways to Reach Us
         </h2>
         <div class="space-y-3">
           <div class="flex items-center gap-3">
-            <lucide-icon
-              [img]="MailIcon"
-              class="w-5 h-5 text-[#3949AB]"
-            ></lucide-icon>
+            <div
+              class="w-10 h-10 bg-[#E8EAF6] rounded-xl flex items-center justify-center"
+            >
+              <lucide-icon
+                [img]="MailIcon"
+                class="w-5 h-5 text-[#3949AB]"
+              ></lucide-icon>
+            </div>
             <div>
               <p class="font-medium text-[#1A237E]">Email</p>
               <a
@@ -303,10 +363,14 @@
             </div>
           </div>
           <div class="flex items-center gap-3">
-            <lucide-icon
-              [img]="MessageCircleIcon"
-              class="w-5 h-5 text-[#3949AB]"
-            ></lucide-icon>
+            <div
+              class="w-10 h-10 bg-[#E8EAF6] rounded-xl flex items-center justify-center"
+            >
+              <lucide-icon
+                [img]="MessageCircleIcon"
+                class="w-5 h-5 text-[#3949AB]"
+              ></lucide-icon>
+            </div>
             <div>
               <p class="font-medium text-[#1A237E]">Live Chat</p>
               <p class="text-sm text-gray-600">

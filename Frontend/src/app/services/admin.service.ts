@@ -49,6 +49,8 @@ export interface DashboardStats {
     pendingRequests: number;
     totalPosts: number;
     totalRequests: number;
+    openTickets: number;
+    totalTickets: number;
 }
 
 export type AdminTicketStatus = 'PENDING' | 'OPEN' | 'CLOSED';

@@ -29,14 +29,19 @@ async function connectSSE(config: SseConfig) {
     const signal = controller.signal;
 
     try {
-        const headers: HeadersInit = {};
+        const headers: HeadersInit = {
+            'Accept': 'text/event-stream',
+            'Cache-Control': 'no-cache'
+        };
         if (config.token) {
             headers['Authorization'] = `Bearer ${config.token}`;
         }
 
         const response = await fetch(config.url, {
             headers,
-            signal
+            signal,
+            mode: 'cors',
+            cache: 'no-store'
         });
 
         if (!response.ok) {
@@ -44,12 +49,22 @@ async function connectSSE(config: SseConfig) {
                 postMessage({ type: 'ERROR', error: { status: 401, message: 'Unauthorized' } });
                 return;
             }
-            throw new Error(`SSE connection failed: ${response.statusText}`);
+
+            const errorBody = await safeReadBody(response);
+            postMessage({
+                type: 'ERROR',
+                error: {
+                    status: response.status,
+                    message: errorBody || response.statusText || 'SSE connection failed'
+                }
+            });
+            return;
         }
 
         const reader = response.body?.getReader();
         if (!reader) {
-            throw new Error('No response body');
+            postMessage({ type: 'ERROR', error: { status: response.status, message: 'SSE stream has no body' } });
+            return;
         }
         eventSource = reader;
 
@@ -79,8 +94,23 @@ async function connectSSE(config: SseConfig) {
             }
         }
     } catch (error: any) {
-        if (error.name !== 'AbortError') {
-            postMessage({ type: 'ERROR', error: { message: error.message } });
+        if (error?.name !== 'AbortError') {
+            postMessage({
+                type: 'ERROR',
+                error: {
+                    message: error?.message || 'SSE connection failed'
+                }
+            });
         }
+    }
+}
+
+async function safeReadBody(response: Response): Promise<string | null> {
+    try {
+        const cloned = response.clone();
+        const text = await cloned.text();
+        return text ? text.trim() : null;
+    } catch {
+        return null;
     }
 }

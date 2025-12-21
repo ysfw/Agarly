@@ -1,72 +1,143 @@
-<div class="min-h-screen w-full bg-[#F5F7FA]">
-  <div class="max-w-3xl mx-auto px-6 py-8">
+<div
+  class="min-h-screen w-full bg-gradient-to-br from-[#F5F7FA] via-[#E8EAF6] to-[#C5CAE9]"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
     <div class="flex items-center gap-4 mb-8">
       <button
         (click)="goBack()"
-        class="w-10 h-10 flex items-center justify-center hover:bg-gray-100 rounded-full"
+        class="w-10 h-10 flex items-center justify-center hover:bg-white/60 rounded-full transition-colors"
       >
         <lucide-icon
           [img]="ArrowLeftIcon"
           class="w-5 h-5 text-[#1A237E]"
         ></lucide-icon>
       </button>
-      <h1 class="text-3xl font-bold text-[#1A237E]">My Support Tickets</h1>
+      <div>
+        <h1 class="text-3xl font-bold text-[#1A237E]">My Support Tickets</h1>
+        <p class="text-gray-600 text-sm">
+          Review your requests and track progress
+        </p>
+      </div>
     </div>
 
     <div class="space-y-6">
-      <div *ngIf="error()" class="banner error">{{ error() }}</div>
-      <div *ngIf="isLoading()" class="banner info">Loading tickets...</div>
+      <div
+        *ngIf="error()"
+        class="bg-red-100/80 border border-red-200 text-red-600 px-4 py-3 rounded-2xl shadow-md"
+      >
+        {{ error() }}
+      </div>
+      <div
+        *ngIf="isLoading()"
+        class="bg-blue-100/80 border border-blue-200 text-[#1A237E] px-4 py-3 rounded-2xl shadow-md"
+      >
+        Loading tickets...
+      </div>
 
-      <div *ngIf="!isLoading() && tickets().length === 0" class="banner muted">
+      <div
+        *ngIf="!isLoading() && tickets().length === 0"
+        class="bg-white/80 backdrop-blur-sm border border-white/60 px-6 py-5 rounded-2xl text-center text-gray-600 shadow-lg"
+      >
         You have not created any support tickets yet.
       </div>
 
-      <div *ngIf="tickets().length > 0" class="table-wrapper">
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Subject</th>
-              <th>Status</th>
-              <th>Created</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let ticket of tickets(); trackBy: trackTicket">
-              <td>#{{ ticket.id }}</td>
-              <td>{{ ticket.subject }}</td>
-              <td>
-                <span [class]="statusClass(ticket.status)">
-                  {{ ticket.status | titlecase }}
-                </span>
-              </td>
-              <td>{{ ticket.createdAt | date: 'medium' }}</td>
-              <td>
-                <button type="button" class="view" (click)="viewTicket(ticket)">
-                  View
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <div
+        *ngIf="tickets().length > 0"
+        class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/60 overflow-hidden"
+      >
+        <div
+          class="px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-[#3949AB]/5 to-transparent"
+        >
+          <h2 class="text-lg font-semibold text-[#1A237E]">Ticket Overview</h2>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-100">
+            <thead class="bg-white/70">
+              <tr class="text-left text-sm font-semibold text-[#1A237E]">
+                <th class="px-6 py-3">ID</th>
+                <th class="px-6 py-3">Subject</th>
+                <th class="px-6 py-3">Status</th>
+                <th class="px-6 py-3">Created</th>
+                <th class="px-6 py-3 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100 text-sm text-gray-700">
+              <tr
+                *ngFor="let ticket of tickets(); trackBy: trackTicket"
+                class="hover:bg-[#E8EAF6]/40 transition-colors"
+              >
+                <td class="px-6 py-4 font-medium text-[#1A237E]">
+                  #{{ ticket.id }}
+                </td>
+                <td class="px-6 py-4">{{ ticket.subject }}</td>
+                <td class="px-6 py-4">
+                  <span
+                    class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#E8EAF6] text-[#3949AB] text-xs font-semibold"
+                    [ngClass]="statusClass(ticket.status)"
+                  >
+                    {{ ticket.status | titlecase }}
+                  </span>
+                </td>
+                <td class="px-6 py-4">
+                  {{ ticket.createdAt | date: 'medium' }}
+                </td>
+                <td class="px-6 py-4 text-right">
+                  <button
+                    type="button"
+                    class="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-[#3949AB] text-[#3949AB] font-medium text-xs hover:bg-[#E8EAF6] transition-colors"
+                    (click)="viewTicket(ticket)"
+                  >
+                    View
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
 
-      <div *ngIf="selectedTicket()" class="ticket-detail">
-        <h2>Ticket Details</h2>
-        <p><strong>ID:</strong> #{{ selectedTicket()?.id }}</p>
-        <p><strong>Subject:</strong> {{ selectedTicket()?.subject }}</p>
-        <p>
-          <strong>Status:</strong> {{ selectedTicket()?.status | titlecase }}
-        </p>
-        <p>
-          <strong>Created:</strong> {{ selectedTicket()?.createdAt | date:
-          'long' }}
-        </p>
-        <div class="detail-actions">
+      <div
+        *ngIf="selectedTicket()"
+        class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/60 p-6"
+      >
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h2 class="text-xl font-semibold text-[#1A237E]">Ticket Details</h2>
+            <p class="text-sm text-gray-500">Information about your request</p>
+          </div>
           <button
             type="button"
-            class="close"
+            class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-[#E8EAF6] transition-colors"
+            (click)="selectedTicket.set(null)"
+          >
+            <lucide-icon
+              [img]="ArrowLeftIcon"
+              class="w-5 h-5 text-[#1A237E]"
+            ></lucide-icon>
+          </button>
+        </div>
+        <div class="space-y-3 text-sm text-gray-700">
+          <p class="flex justify-between">
+            <span class="font-semibold text-[#1A237E]">ID</span>
+            <span>#{{ selectedTicket()?.id }}</span>
+          </p>
+          <p class="flex justify-between">
+            <span class="font-semibold text-[#1A237E]">Subject</span>
+            <span>{{ selectedTicket()?.subject }}</span>
+          </p>
+          <p class="flex justify-between">
+            <span class="font-semibold text-[#1A237E]">Status</span>
+            <span>{{ selectedTicket()?.status | titlecase }}</span>
+          </p>
+          <p class="flex justify-between">
+            <span class="font-semibold text-[#1A237E]">Created</span>
+            <span>{{ selectedTicket()?.createdAt | date: 'long' }}</span>
+          </p>
+        </div>
+        <div class="mt-6 flex justify-end">
+          <button
+            type="button"
+            class="px-5 py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-[#3949AB] to-[#5C6BC0] hover:from-[#303F9F] hover:to-[#3949AB] transition-colors"
             (click)="selectedTicket.set(null)"
           >
             Close

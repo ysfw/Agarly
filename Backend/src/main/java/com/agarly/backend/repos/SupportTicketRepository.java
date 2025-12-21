@@ -10,4 +10,5 @@ import java.util.List;
 public interface SupportTicketRepository extends JpaRepository<SupportTicket, Long> {
     List<SupportTicket> findByCreatedBy(User user);
     List<SupportTicket> findByStatus(TicketStatus status);
+    long countByStatus(TicketStatus status);
 }

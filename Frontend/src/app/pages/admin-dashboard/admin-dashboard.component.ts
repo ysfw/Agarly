@@ -55,7 +55,9 @@ export class AdminDashboardComponent implements OnInit {
         pendingPosts: 0,
         pendingRequests: 0,
         totalPosts: 0,
-        totalRequests: 0
+        totalRequests: 0,
+        openTickets: 0,
+        totalTickets: 0
     });
 
     posts = signal<AdminItem[]>([]);
@@ -73,6 +75,8 @@ export class AdminDashboardComponent implements OnInit {
     pendingRequests = computed(() => this.stats().pendingRequests);
     totalPosts = computed(() => this.stats().totalPosts);
     totalRequests = computed(() => this.stats().totalRequests);
+    openTicketsStat = computed(() => this.stats().openTickets);
+    totalTicketsStat = computed(() => this.stats().totalTickets);
     searchPlaceholder = computed(() => {
         switch (this.activeTab()) {
             case 'posts':
