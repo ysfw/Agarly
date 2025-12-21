@@ -2,8 +2,11 @@ import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Location, CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, ArrowLeft, CreditCard, Lock, Wallet, Plus, Check, Trash2 } from 'lucide-angular';
-import { PaymentApiService, PaymentMethod } from '../../services/payment-api.service';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { LucideAngularModule, ArrowLeft, CreditCard, Lock, Wallet, Plus, Check, Trash2, Smartphone, Store } from 'lucide-angular';
+import { PaymentApiService, PaymentMethod, InitiatePaymentRequest, InitiatePaymentResponse } from '../../services/payment-api.service';
+
+type PaymentMethodType = 'CARD' | 'WALLET' | 'FAWRY';
 
 @Component({
   selector: 'app-payment',
@@ -13,6 +16,7 @@ import { PaymentApiService, PaymentMethod } from '../../services/payment-api.ser
   styleUrl: './payment.component.css'
 })
 export class PaymentComponent implements OnInit {
+  // Icons
   readonly ArrowLeftIcon = ArrowLeft;
   readonly CreditCardIcon = CreditCard;
   readonly LockIcon = Lock;
@@ -20,20 +24,36 @@ export class PaymentComponent implements OnInit {
   readonly PlusIcon = Plus;
   readonly CheckIcon = Check;
   readonly TrashIcon = Trash2;
+  readonly SmartphoneIcon = Smartphone;
+  readonly StoreIcon = Store;
 
+  // Injected services
   router = inject(Router);
   route = inject(ActivatedRoute);
   location = inject(Location);
   paymentService = inject(PaymentApiService);
+  sanitizer = inject(DomSanitizer);
 
   // State
   savedCards = signal<PaymentMethod[]>([]);
   selectedCardId = signal<number | null>(null);
+  selectedPaymentMethod = signal<PaymentMethodType>('CARD');
   showAddCard = signal(false);
   isProcessing = signal(false);
   errorMessage = signal('');
   successMessage = signal('');
 
+  // Fawry result
+  fawryReference = signal<string | null>(null);
+
+  // Wallet phone number
+  walletPhoneNumber = signal('');
+
+  // Paymob iframe
+  showPaymobIframe = signal(false);
+  paymobIframeUrl = signal<SafeResourceUrl | null>(null);
+
+  // New card form
   newCard = {
     cardNumber: '',
     cardName: '',
@@ -42,6 +62,7 @@ export class PaymentComponent implements OnInit {
     saveCard: true
   };
 
+  // Rental summary (would come from route params in real app)
   rentalSummary = {
     itemName: 'Power Drill',
     itemImage: 'https://images.unsplash.com/photo-1504148455328-c376907d081c?w=400',
@@ -60,13 +81,28 @@ export class PaymentComponent implements OnInit {
   }
 
   loadSavedCards() {
-    this.paymentService.getMockPaymentMethods().subscribe({
-      next: (cards) => {
+    // Use real API
+    this.paymentService.getPaymentMethods().subscribe({
+      next: (cards: PaymentMethod[]) => {
         this.savedCards.set(cards);
         const defaultCard = cards.find(c => c.isDefault);
         if (defaultCard) this.selectedCardId.set(defaultCard.id);
+      },
+      error: (err) => {
+        console.error('Failed to load payment methods:', err);
+        // No saved cards available - user can still use Fawry or enter new card
+        this.savedCards.set([]);
       }
     });
+  }
+
+  selectPaymentMethod(method: PaymentMethodType) {
+    this.selectedPaymentMethod.set(method);
+    this.showAddCard.set(false);
+    this.fawryReference.set(null);
+    this.showPaymobIframe.set(false);
+    this.errorMessage.set('');
+    this.successMessage.set('');
   }
 
   selectCard(id: number) {
@@ -81,8 +117,18 @@ export class PaymentComponent implements OnInit {
 
   removeCard(id: number, event: Event) {
     event.stopPropagation();
-    this.savedCards.update(cards => cards.filter(c => c.id !== id));
-    if (this.selectedCardId() === id) this.selectedCardId.set(null);
+    this.paymentService.removePaymentMethod(id).subscribe({
+      next: () => {
+        this.savedCards.update(cards => cards.filter(c => c.id !== id));
+        if (this.selectedCardId() === id) this.selectedCardId.set(null);
+      },
+      error: (err) => {
+        console.error('Failed to remove card:', err);
+        // Fallback: just remove from UI
+        this.savedCards.update(cards => cards.filter(c => c.id !== id));
+        if (this.selectedCardId() === id) this.selectedCardId.set(null);
+      }
+    });
   }
 
   onCardNumberInput(event: Event) {
@@ -100,34 +146,92 @@ export class PaymentComponent implements OnInit {
   }
 
   handleSubmit() {
-    if (!this.selectedCardId() && !this.showAddCard()) {
-      this.errorMessage.set('Please select a payment method or add a new card');
+    const method = this.selectedPaymentMethod();
+
+    // Validate based on payment method
+    if (method === 'CARD' && !this.selectedCardId() && !this.showAddCard()) {
+      this.errorMessage.set('Please select a card or add a new one');
+      return;
+    }
+
+    if (method === 'WALLET' && !this.walletPhoneNumber()) {
+      this.errorMessage.set('Please enter your Vodafone Cash phone number');
       return;
     }
 
     this.isProcessing.set(true);
     this.errorMessage.set('');
+    this.fawryReference.set(null);
 
-    setTimeout(() => {
-      this.isProcessing.set(false);
-      this.successMessage.set('Payment processed successfully!');
+    // Build payment request
+    const request: InitiatePaymentRequest = {
+      amount: this.totalAmount(),
+      method: method,
+      description: `Rental: ${this.rentalSummary.itemName} - ${this.rentalSummary.duration}`,
+      phoneNumber: method === 'WALLET' ? this.walletPhoneNumber() : undefined
+    };
 
-      if (this.showAddCard() && this.newCard.saveCard) {
-        const lastFour = this.newCard.cardNumber.replace(/\s/g, '').slice(-4);
-        const newPaymentMethod: PaymentMethod = {
-          id: Date.now(),
-          displayName: `Card •••• ${lastFour}`,
-          lastFourDigits: lastFour,
-          cardType: 'VISA',
-          expiryMonth: parseInt(this.newCard.expiryDate.split('/')[0]),
-          expiryYear: 2000 + parseInt(this.newCard.expiryDate.split('/')[1]),
-          isDefault: false,
-          isActive: true
-        };
-        this.savedCards.update(cards => [...cards, newPaymentMethod]);
+    // Call the API
+    this.paymentService.initiatePayment(request).subscribe({
+      next: (response) => {
+        this.isProcessing.set(false);
+        this.handlePaymentResponse(response);
+      },
+      error: (err) => {
+        this.isProcessing.set(false);
+        this.errorMessage.set(err.error?.errorMessage || 'Payment failed. Please try again.');
+        console.error('Payment error:', err);
       }
+    });
+  }
 
-      setTimeout(() => this.router.navigate(['/dashboard']), 2000);
-    }, 1500);
+  private handlePaymentResponse(response: InitiatePaymentResponse) {
+    if (!response.success) {
+      this.errorMessage.set(response.errorMessage || 'Payment failed');
+      return;
+    }
+
+    switch (response.method) {
+      case 'CARD':
+        // Open Paymob iframe
+        if (response.paymentKey && response.iframeId) {
+          const url = this.paymentService.getPaymobIframeUrl(response.iframeId, response.paymentKey);
+          this.paymobIframeUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(url));
+          this.showPaymobIframe.set(true);
+          this.successMessage.set('Card payment form opened. Complete payment in the form below.');
+        }
+        break;
+
+      case 'WALLET':
+        // Redirect to wallet payment page
+        if (response.redirectUrl) {
+          this.successMessage.set('Redirecting to Vodafone Cash...');
+          setTimeout(() => {
+            window.location.href = response.redirectUrl!;
+          }, 1000);
+        }
+        break;
+
+      case 'FAWRY':
+        // Show Fawry reference number
+        if (response.fawryReference) {
+          this.fawryReference.set(response.fawryReference);
+          this.successMessage.set('Fawry payment initiated! Use the reference below at any Fawry store.');
+        }
+        break;
+    }
+  }
+
+  copyFawryReference() {
+    const ref = this.fawryReference();
+    if (ref) {
+      navigator.clipboard.writeText(ref);
+      this.successMessage.set('Reference number copied to clipboard!');
+    }
+  }
+
+  closeIframe() {
+    this.showPaymobIframe.set(false);
+    this.paymobIframeUrl.set(null);
   }
 }

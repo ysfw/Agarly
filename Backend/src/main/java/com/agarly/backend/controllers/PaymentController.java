@@ -1,7 +1,6 @@
 package com.agarly.backend.controllers;
-import com.agarly.backend.dtos.ChargeRequest;
-import com.agarly.backend.dtos.PaymentMethodDTO;
-import com.agarly.backend.dtos.TransactionDTO;
+
+import com.agarly.backend.dtos.*;
 import com.agarly.backend.models.UserPrincipal;
 import com.agarly.backend.services.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,13 +9,43 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 import java.util.Map;
+
 @RestController
 @RequestMapping("/payments")
 public class PaymentController {
     @Autowired
     private PaymentService paymentService;
+
+    @PostMapping("/initiate")
+    public ResponseEntity<InitiatePaymentResponse> initiatePayment(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @RequestBody InitiatePaymentRequest request) {
+
+        InitiatePaymentResponse response = paymentService.initiatePayment(principal.getId(), request);
+
+        if (response.isSuccess()) {
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+
+    @PostMapping("/webhook")
+    public ResponseEntity<Map<String, String>> handleWebhook(
+            @RequestBody Map<String, Object> payload,
+            @RequestHeader(value = "hmac", required = false) String hmacHeader) {
+
+        boolean success = paymentService.handleWebhook(payload, hmacHeader);
+
+        if (success) {
+            return ResponseEntity.ok(Map.of("status", "received"));
+        } else {
+            return ResponseEntity.badRequest().body(Map.of("status", "failed"));
+        }
+    }
 
     @GetMapping("/methods")
     public ResponseEntity<List<PaymentMethodDTO>> getPaymentMethods(
@@ -70,8 +99,7 @@ public class PaymentController {
 
         Page<TransactionDTO> history = paymentService.getTransactionHistory(
                 principal.getId(),
-                PageRequest.of(page, size)
-        );
+                PageRequest.of(page, size));
         return ResponseEntity.ok(history);
     }
 }
