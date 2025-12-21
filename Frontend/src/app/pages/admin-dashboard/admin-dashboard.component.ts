@@ -2,8 +2,22 @@ import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { LucideAngularModule, Shield, LogOut, Search, Trash2, Check, X, Package, User, Loader2 } from 'lucide-angular';
-import { AdminService, AdminItem, AdminRequest, DashboardStats } from '../../services/admin.service';
+import { LucideAngularModule, Shield, LogOut, Search, Trash2, Check, X, Package, User, Loader2, LifeBuoy, Mail, Clock } from 'lucide-angular';
+import { AdminService, AdminItem, AdminRequest, DashboardStats, AdminSupportTicketDto, AdminTicketStatus } from '../../services/admin.service';
+
+type SupportTicketStatus = AdminTicketStatus;
+
+interface AdminSupportTicket {
+    id: number;
+    subject: string;
+    message: string;
+    status: SupportTicketStatus;
+    createdAt: Date;
+    user: {
+        name: string;
+        email: string;
+    };
+}
 
 @Component({
     selector: 'app-admin-dashboard',
@@ -26,9 +40,12 @@ export class AdminDashboardComponent implements OnInit {
     readonly PackageIcon = Package;
     readonly UserIcon = User;
     readonly LoaderIcon = Loader2;
+    readonly LifeBuoyIcon = LifeBuoy;
+    readonly MailIcon = Mail;
+    readonly ClockIcon = Clock;
 
     // State
-    activeTab = signal<'posts' | 'requests' | 'users'>('posts');
+    activeTab = signal<'posts' | 'requests' | 'users' | 'tickets'>('posts');
     searchQuery = signal('');
     loading = signal(true);
     error = signal<string | null>(null);
@@ -44,12 +61,32 @@ export class AdminDashboardComponent implements OnInit {
     posts = signal<AdminItem[]>([]);
     requests = signal<AdminRequest[]>([]);
     users = signal<any[]>([]);
+    tickets = signal<AdminSupportTicket[]>([]);
+    ticketFilter = signal<'ALL' | SupportTicketStatus>('ALL');
+    ticketLoading = signal(false);
+    ticketError = signal<string | null>(null);
+    selectedTicket = signal<AdminSupportTicket | null>(null);
+    openTicketCount = computed(() => this.tickets().filter(ticket => ticket.status !== 'CLOSED').length);
 
     // Computed statistics from API data
     pendingPosts = computed(() => this.stats().pendingPosts);
     pendingRequests = computed(() => this.stats().pendingRequests);
     totalPosts = computed(() => this.stats().totalPosts);
     totalRequests = computed(() => this.stats().totalRequests);
+    searchPlaceholder = computed(() => {
+        switch (this.activeTab()) {
+            case 'posts':
+                return 'Search Posts';
+            case 'requests':
+                return 'Search Requests';
+            case 'users':
+                return 'Search Users';
+            case 'tickets':
+                return 'Search Tickets';
+            default:
+                return 'Search';
+        }
+    });
 
     // Filtered lists based on search
     filteredPosts = computed(() => {
@@ -74,9 +111,26 @@ export class AdminDashboardComponent implements OnInit {
         );
     });
 
-    goToSupportTickets(): void {
-        this.router.navigate(['/admin-tickets']);
-    }
+    filteredTickets = computed(() => {
+        const filter = this.ticketFilter();
+        const query = this.searchQuery().toLowerCase().trim();
+
+        return this.tickets().filter(ticket => {
+            if (filter !== 'ALL' && ticket.status !== filter) {
+                return false;
+            }
+
+            if (!query) return true;
+
+            return ticket.subject.toLowerCase().includes(query) ||
+                ticket.user.name.toLowerCase().includes(query) ||
+                ticket.user.email.toLowerCase().includes(query) ||
+                ticket.id.toString().includes(query);
+        });
+    });
+    filteredOpenTicketCount = computed(() =>
+        this.filteredTickets().filter(ticket => ticket.status !== 'CLOSED').length
+    );
     filteredUsers = computed(() => {
         const query = this.searchQuery().toLowerCase();
         if (!query) return this.users();
@@ -86,6 +140,120 @@ export class AdminDashboardComponent implements OnInit {
             (u.email?.toLowerCase().includes(query))
         );
     });
+
+    setTicketFilter(filter: 'ALL' | SupportTicketStatus): void {
+        this.loadTickets(filter);
+    }
+
+    private loadTickets(filter?: 'ALL' | SupportTicketStatus): void {
+        const selectedFilter = filter ?? this.ticketFilter();
+        this.ticketFilter.set(selectedFilter);
+        this.ticketLoading.set(true);
+        this.ticketError.set(null);
+
+        const source$ = selectedFilter === 'PENDING'
+            ? this.adminService.getPendingSupportTickets()
+            : selectedFilter === 'OPEN'
+                ? this.adminService.getOpenSupportTickets()
+                : selectedFilter === 'CLOSED'
+                    ? this.adminService.getClosedSupportTickets()
+                    : this.adminService.getAllSupportTickets();
+
+        source$.subscribe({
+            next: (dtos) => {
+                const mapped = dtos.map(dto => this.mapTicketDto(dto));
+                this.tickets.set(mapped);
+                this.openTicketCount();
+                this.ticketLoading.set(false);
+            },
+            error: (err) => {
+                console.error('Error loading support tickets:', err);
+                this.ticketError.set('Failed to load support tickets.');
+                this.ticketLoading.set(false);
+            }
+        });
+    }
+
+    viewTicket(ticket: AdminSupportTicket): void {
+        this.adminService.getSupportTicket(ticket.id).subscribe({
+            next: (dto) => this.selectedTicket.set(this.mapTicketDto(dto)),
+            error: () => this.selectedTicket.set(ticket)
+        });
+    }
+
+    closeTicketDetail(): void {
+        this.selectedTicket.set(null);
+    }
+
+    closeTicket(ticket: AdminSupportTicket): void {
+        if (ticket.status === 'CLOSED') {
+            return;
+        }
+
+        this.adminService.closeSupportTicket(ticket.id).subscribe({
+            next: (dto) => {
+                const updated = this.mapTicketDto(dto);
+                this.replaceTicketInList(updated);
+                const current = this.selectedTicket();
+                if (current && current.id === updated.id) {
+                    this.selectedTicket.set(updated);
+                }
+            },
+            error: (err) => console.error('Error closing support ticket:', err)
+        });
+    }
+
+    reopenTicket(ticket: AdminSupportTicket): void {
+        if (ticket.status !== 'CLOSED') {
+            return;
+        }
+
+        this.adminService.reopenSupportTicket(ticket.id).subscribe({
+            next: (dto) => {
+                const updated = this.mapTicketDto(dto);
+                this.replaceTicketInList(updated);
+                const current = this.selectedTicket();
+                if (current && current.id === updated.id) {
+                    this.selectedTicket.set(updated);
+                }
+            },
+            error: (err) => console.error('Error reopening support ticket:', err)
+        });
+    }
+
+    private mapTicketDto(dto: AdminSupportTicketDto): AdminSupportTicket {
+        const name = dto.createdBy?.username || dto.createdBy?.email || 'Unknown user';
+        const email = dto.createdBy?.email ?? 'Unknown';
+
+        return {
+            id: dto.id,
+            subject: dto.subject,
+            message: dto.message,
+            status: (dto.status as SupportTicketStatus) ?? 'PENDING',
+            createdAt: new Date(dto.createdAt),
+            user: {
+                name,
+                email
+            }
+        };
+    }
+
+    private replaceTicketInList(updated: AdminSupportTicket): void {
+        this.tickets.update(list => list.map(ticket => ticket.id === updated.id ? updated : ticket));
+    }
+
+    getTicketStatusBadgeClass(status: SupportTicketStatus): string {
+        switch (status) {
+            case 'PENDING':
+                return 'bg-amber-100 text-amber-700';
+            case 'OPEN':
+                return 'bg-blue-100 text-blue-800';
+            case 'CLOSED':
+                return 'bg-emerald-100 text-emerald-700';
+            default:
+                return 'bg-gray-100 text-gray-700';
+        }
+    }
 
     ngOnInit(): void {
         // Check if admin is authenticated
@@ -130,11 +298,16 @@ export class AdminDashboardComponent implements OnInit {
             next: (users) => this.users.set(users),
             error: (err) => console.error('Error loading users:', err)
         });
+
+        this.loadTickets(this.ticketFilter());
     }
 
-    setActiveTab(tab: 'posts' | 'requests' | 'users'): void {
+    setActiveTab(tab: 'posts' | 'requests' | 'users' | 'tickets'): void {
         this.activeTab.set(tab);
         this.searchQuery.set(''); // Clear search when switching tabs
+        if (tab === 'tickets') {
+            this.loadTickets(this.ticketFilter());
+        }
     }
 
     onSearchChange(event: Event): void {
