@@ -70,6 +70,12 @@ public class AccountController {
     @PostMapping("/login")
     public ResponseEntity<JWTResponse> login(@RequestBody LoginCredentials user) {
         if ((userService.existsByEmail(user.getEmail()))) {
+            // Check if user is banned
+            User existingUser = userService.findByEmail(user.getEmail());
+            if (existingUser != null && existingUser.getBlocked()) {
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            }
+
             String JwtToken = userService.verify(user);
             if (!(JwtToken.equals("Fail"))) {
                 return new ResponseEntity<>(new JWTResponse(JwtToken), HttpStatus.OK);
@@ -117,6 +123,12 @@ public class AccountController {
         if (user == null) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
+
+        // Check if user is blocked
+        if (user.getBlocked()) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+
         userService.save(user);
         String token = jwtService.generateToken(user.getUsername());
         return new ResponseEntity<>(new JWTResponse(token), HttpStatus.OK);

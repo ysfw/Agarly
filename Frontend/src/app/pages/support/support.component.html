@@ -35,6 +35,8 @@
         </h2>
         <div class="grid md:grid-cols-2 gap-4">
           <button
+            type="button"
+            (click)="openUserGuide()"
             class="flex items-center gap-3 p-4 rounded-2xl bg-[#E8EAF6] hover:bg-[#C5CAE9] transition-colors shadow-sm"
           >
             <div
@@ -51,6 +53,8 @@
             </div>
           </button>
           <button
+            type="button"
+            (click)="scrollToFaq()"
             class="flex items-center gap-3 p-4 rounded-2xl bg-[#E8EAF6] hover:bg-[#C5CAE9] transition-colors shadow-sm"
           >
             <div
@@ -70,6 +74,7 @@
       </div>
 
       <div
+        #faqSection
         class="bg-white/80 backdrop-blur-sm rounded-2xl overflow-hidden shadow-lg border border-white/60"
       >
         <div

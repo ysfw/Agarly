@@ -1,0 +1,90 @@
+<div class="guide-page">
+  <div class="guide-wrapper">
+    <div class="guide-header">
+      <a routerLink="/support" class="back-button">
+        <lucide-icon [img]="ArrowLeftIcon" class="icon"></lucide-icon>
+        <span>Back to Support</span>
+      </a>
+      <div>
+        <p class="eyebrow">Resource Center</p>
+        <h1>User Guide</h1>
+        <p class="subtitle">
+          Everything you need to share, borrow, and stay safe on Agarly.
+        </p>
+      </div>
+    </div>
+
+    <div class="hero-card">
+      <div class="hero-icon">
+        <lucide-icon [img]="HeroIcon" class="icon"></lucide-icon>
+      </div>
+      <div>
+        <h2>Welcome to the Agarly community</h2>
+        <p>
+          This guide walks through the complete experience—from setting up your
+          profile to managing requests, handling payouts, and contacting
+          support. Bookmark it any time you or a neighbor needs a refresher.
+        </p>
+      </div>
+    </div>
+
+    <section class="section">
+      <h2 class="section-title">Core Basics</h2>
+      <p class="section-subtitle">
+        Build confidence quickly with the key workflows every member uses.
+      </p>
+      <div class="card-grid">
+        @for (section of overviewSections; track section.title) {
+        <article class="info-card">
+          <div class="card-icon">
+            <lucide-icon [img]="section.icon" class="icon"></lucide-icon>
+          </div>
+          <h3>{{ section.title }}</h3>
+          <p class="description">{{ section.description }}</p>
+          <ul>
+            @for (bullet of section.bullets; track bullet) {
+            <li>{{ bullet }}</li>
+            }
+          </ul>
+        </article>
+        }
+      </div>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">Safe Exchanges in Three Steps</h2>
+      <p class="section-subtitle">
+        Follow this checklist whenever you meet up to hand over an item.
+      </p>
+      <div class="stepper">
+        @for (step of safetySteps; track step.title) {
+        <div class="step">
+          <div class="step-icon">
+            <lucide-icon [img]="step.icon" class="icon"></lucide-icon>
+          </div>
+          <div>
+            <h3>{{ step.title }}</h3>
+            <p>{{ step.detail }}</p>
+          </div>
+        </div>
+        }
+      </div>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">Keep Exploring</h2>
+      <div class="support-grid">
+        @for (card of helpCards; track card.title) {
+        <a [routerLink]="card.link" class="support-card">
+          <div class="card-icon">
+            <lucide-icon [img]="card.icon" class="icon"></lucide-icon>
+          </div>
+          <h3>{{ card.title }}</h3>
+          <p>{{ card.description }}</p>
+          <span class="cta">{{ card.cta }}</span>
+        </a>
+        }
+      </div>
+    </section>
+  </div>
+</div>

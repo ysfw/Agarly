@@ -48,6 +48,7 @@ public class User {
         this.profile.setCity("");
         this.profile.setState("");
         this.profile.setZipCode("");
+        this.blocked = false;
     }
 
 }

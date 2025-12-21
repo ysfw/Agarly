@@ -62,8 +62,10 @@ export interface AdminSupportTicketDto {
     status: AdminTicketStatus | string;
     createdAt: string;
     createdBy?: {
+        id?: number;
         username?: string;
         email?: string;
+        blocked?: boolean;
     };
 }
 

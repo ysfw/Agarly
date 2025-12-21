@@ -161,7 +161,12 @@ export class LoginComponent implements OnInit {
       },
       error: (err) => {
         this.loading = false;
-        this.backendError = 'Invalid email or password';
+        const statusCode = err?.status;
+        if (statusCode === 403) {
+          this.backendError = 'Your account has been banned. Please contact support for assistance.';
+        } else {
+          this.backendError = 'Invalid email or password';
+        }
       },
     });
   }

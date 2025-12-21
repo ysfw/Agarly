@@ -25,6 +25,7 @@ import { AdminAuthGuard } from './services/admin-auth.guard';
 import { PasswordChange } from './pages/password-change/password-change';
 import { TicketsComponent } from './pages/tickets/tickets';
 import { UserProfileComponent } from './pages/user-profile/user-profile';
+import { UserGuide } from './pages/user-guide/user-guide';
 
 
 export const routes: Routes = [
@@ -45,6 +46,7 @@ export const routes: Routes = [
   { path: 'book-item/:id', component: BookItemComponent, canActivate: [AuthGuard] },
   { path: 'settings', component: SettingsComponent, canActivate: [AuthGuard] },
   { path: 'support', component: SupportComponent, canActivate: [AuthGuard] },
+  { path: 'user-guide', component: UserGuide, canActivate: [AuthGuard] },
   { path: 'add-item', component: AddItemComponent, canActivate: [AuthGuard] },
   { path: 'requests', component: RequestsComponent, canActivate: [AuthGuard] },
   { path: 'request/:id', component: RequestDetailsComponent, canActivate: [AuthGuard] },

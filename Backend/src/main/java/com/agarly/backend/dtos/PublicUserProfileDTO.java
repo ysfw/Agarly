@@ -26,6 +26,7 @@ public class PublicUserProfileDTO {
     private String state;
     private Long totalItemsPosted;
     private LocalDateTime joinedDate;
+    private Boolean blocked;
 
     // Constructor for easy mapping from User entity
     public PublicUserProfileDTO(User user, Long totalItemsPosted) {
@@ -45,5 +46,6 @@ public class PublicUserProfileDTO {
         this.state = user.getProfile() != null ? user.getProfile().getState() : "";
         this.totalItemsPosted = totalItemsPosted;
         this.joinedDate = LocalDateTime.now(); // Placeholder - adjust if User has createdAt field
+        this.blocked = user.getBlocked();
     }
 }

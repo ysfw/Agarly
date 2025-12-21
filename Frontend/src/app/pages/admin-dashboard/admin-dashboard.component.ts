@@ -14,8 +14,10 @@ interface AdminSupportTicket {
     status: SupportTicketStatus;
     createdAt: Date;
     user: {
+        id?: number;
         name: string;
         email: string;
+        blocked?: boolean;
     };
 }
 
@@ -228,6 +230,8 @@ export class AdminDashboardComponent implements OnInit {
     private mapTicketDto(dto: AdminSupportTicketDto): AdminSupportTicket {
         const name = dto.createdBy?.username || dto.createdBy?.email || 'Unknown user';
         const email = dto.createdBy?.email ?? 'Unknown';
+        const id = dto.createdBy?.id;
+        const blocked = dto.createdBy?.blocked;
 
         return {
             id: dto.id,
@@ -236,8 +240,10 @@ export class AdminDashboardComponent implements OnInit {
             status: (dto.status as SupportTicketStatus) ?? 'PENDING',
             createdAt: new Date(dto.createdAt),
             user: {
+                id,
                 name,
-                email
+                email,
+                blocked
             }
         };
     }
@@ -456,8 +462,14 @@ export class AdminDashboardComponent implements OnInit {
         }
     }
 
-    unbanUser(user: any): void {
-        this.adminService.unbanUser(user.id).subscribe({
+    unbanUser(userOrId: any): void {
+        const userId = typeof userOrId === 'number' ? userOrId : userOrId?.id;
+        if (!userId) {
+            console.error('Missing user id for unban action');
+            return;
+        }
+
+        this.adminService.unbanUser(userId).subscribe({
             next: () => {
                 // Reload users
                 this.adminService.getUsers().subscribe({

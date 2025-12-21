@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, ElementRef, ViewChild, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule, NgForm } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -13,6 +13,8 @@ import { SupportService } from '../../services/support.service';
   styleUrl: './support.component.css'
 })
 export class SupportComponent {
+  @ViewChild('faqSection') faqSection?: ElementRef<HTMLElement>;
+
   readonly ArrowLeftIcon = ArrowLeft;
   readonly HelpCircleIcon = HelpCircle;
   readonly MessageCircleIcon = MessageCircle;
@@ -31,6 +33,14 @@ export class SupportComponent {
 
   goBack() {
     this.router.navigate(['/settings']);
+  }
+
+  openUserGuide() {
+    this.router.navigate(['/user-guide']);
+  }
+
+  scrollToFaq() {
+    this.faqSection?.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   handleSubmit(form: NgForm) {
