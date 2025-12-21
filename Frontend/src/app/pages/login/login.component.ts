@@ -1,7 +1,7 @@
 import { Component, inject, NgZone, OnInit } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, Mail, Lock, Eye, EyeOff } from 'lucide-angular';
+import { LucideAngularModule, Mail, Lock, Eye, EyeOff, AlertCircle, Loader2 } from 'lucide-angular';
 
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
@@ -21,6 +21,8 @@ export class LoginComponent implements OnInit {
   readonly LockIcon = Lock;
   readonly EyeIcon = Eye;
   readonly EyeOffIcon = EyeOff;
+  readonly AlertCircleIcon = AlertCircle;
+  readonly LoaderIcon = Loader2;
 
   showPassword = false;
   togglePassword() {

@@ -11,6 +11,11 @@ export interface UserProfileDTO {
   bio: string;
   address: string;
   city: string;
+  // Profile statistics
+  itemsShared: number;
+  itemsBorrowed: number;
+  averageRating: number;
+  reviewCount: number;
 }
 
 export interface PasswordChangeRequest {

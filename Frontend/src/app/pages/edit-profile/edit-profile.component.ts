@@ -20,7 +20,7 @@ export class EditProfileComponent implements OnInit {
   readonly LoaderIcon = Loader2;
   readonly CheckIcon = Check;
   readonly XIcon = X;
-  
+
   router = inject(Router);
   private profileService = inject(ProfileApiService);
 
@@ -39,7 +39,12 @@ export class EditProfileComponent implements OnInit {
     phoneNumber: '',
     bio: '',
     address: '',
-    city: ''
+    city: '',
+    // Stats are read-only, but required by the interface
+    itemsShared: 0,
+    itemsBorrowed: 0,
+    averageRating: 0,
+    reviewCount: 0
   };
 
   ngOnInit() {
@@ -49,7 +54,7 @@ export class EditProfileComponent implements OnInit {
   loadProfile() {
     this.loading.set(true);
     this.error.set(null);
-    
+
     this.profileService.getProfile().subscribe({
       next: (profile) => {
         this.formData = { ...profile };
@@ -104,7 +109,7 @@ export class EditProfileComponent implements OnInit {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {
       const file = input.files[0];
-      
+
       // Validate file size (max 2MB)
       if (file.size > 2 * 1024 * 1024) {
         this.error.set('Image must be less than 2MB');

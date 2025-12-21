@@ -1,124 +1,183 @@
-<div class="min-h-screen w-full bg-[#F5F7FA]">
+<div class="min-h-screen w-full bg-gradient-to-br from-[#F5F7FA] via-[#E8EAF6] to-[#C5CAE9]">
   <div class="max-w-3xl mx-auto px-6 py-8">
+    <!-- Header -->
     <div class="flex items-center gap-4 mb-8">
       <button (click)="navigateTo('/profile')"
-        class="w-10 h-10 flex items-center justify-center hover:bg-gray-100 rounded-full">
+        class="w-10 h-10 flex items-center justify-center hover:bg-white/50 rounded-full transition-colors">
         <lucide-icon [img]="ArrowLeftIcon" class="w-5 h-5 text-[#1A237E]"></lucide-icon>
       </button>
-      <h1 class="text-3xl font-bold text-[#1A237E]">Settings</h1>
+      <div>
+        <h1 class="text-3xl font-bold text-[#1A237E]">Settings</h1>
+        <p class="text-gray-600 text-sm">Manage your preferences</p>
+      </div>
     </div>
 
     <div class="space-y-6">
-      <div class="bg-white rounded-2xl overflow-hidden shadow-sm">
-        <div class="px-6 py-4 border-b border-gray-200">
-          <h2 class="text-lg font-semibold text-[#1A237E]">Account</h2>
+      <!-- Account Section -->
+      <div class="bg-white/80 backdrop-blur-sm rounded-2xl overflow-hidden shadow-lg border border-white/50">
+        <div class="px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-[#3949AB]/5 to-transparent">
+          <h2 class="text-lg font-semibold text-[#1A237E] flex items-center gap-2">
+            <lucide-icon [img]="UserIcon" class="w-5 h-5 text-[#3949AB]"></lucide-icon>
+            Account
+          </h2>
         </div>
         <button (click)="navigateTo('/edit-profile')"
-          class="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors border-b border-gray-100">
+          class="w-full px-6 py-4 flex items-center justify-between hover:bg-[#E8EAF6]/50 transition-colors border-b border-gray-100 group">
           <div class="flex items-center gap-3">
-            <lucide-icon [img]="UserIcon" class="w-5 h-5 text-[#3949AB]"></lucide-icon>
-            <span class="text-[#1A237E] font-medium">Edit Profile</span>
+            <div
+              class="w-10 h-10 bg-[#E8EAF6] rounded-xl flex items-center justify-center group-hover:bg-[#C5CAE9] transition-colors">
+              <lucide-icon [img]="UserIcon" class="w-5 h-5 text-[#3949AB]"></lucide-icon>
+            </div>
+            <div class="text-left">
+              <span class="text-[#1A237E] font-medium">Edit Profile</span>
+              <p class="text-sm text-gray-500">Update your personal information</p>
+            </div>
           </div>
-          <lucide-icon [img]="ChevronRightIcon" class="w-5 h-5 text-gray-400"></lucide-icon>
+          <lucide-icon [img]="ChevronRightIcon"
+            class="w-5 h-5 text-gray-400 group-hover:text-[#3949AB] transition-colors"></lucide-icon>
         </button>
         <button (click)="changePassword()"
-          class="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors border-b border-gray-100">
+          class="w-full px-6 py-4 flex items-center justify-between hover:bg-[#E8EAF6]/50 transition-colors border-b border-gray-100 group">
           <div class="flex items-center gap-3">
-            <lucide-icon [img]="ShieldIcon" class="w-5 h-5 text-[#3949AB]"></lucide-icon>
-            <span class="text-[#1A237E] font-medium">Change Password</span>
+            <div
+              class="w-10 h-10 bg-[#E8EAF6] rounded-xl flex items-center justify-center group-hover:bg-[#C5CAE9] transition-colors">
+              <lucide-icon [img]="ShieldIcon" class="w-5 h-5 text-[#3949AB]"></lucide-icon>
+            </div>
+            <div class="text-left">
+              <span class="text-[#1A237E] font-medium">Change Password</span>
+              <p class="text-sm text-gray-500">Update your security credentials</p>
+            </div>
           </div>
-          <lucide-icon [img]="ChevronRightIcon" class="w-5 h-5 text-gray-400"></lucide-icon>
+          <lucide-icon [img]="ChevronRightIcon"
+            class="w-5 h-5 text-gray-400 group-hover:text-[#3949AB] transition-colors"></lucide-icon>
         </button>
         <button (click)="navigateTo('/payment')"
-          class="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
+          class="w-full px-6 py-4 flex items-center justify-between hover:bg-[#E8EAF6]/50 transition-colors group">
           <div class="flex items-center gap-3">
-            <lucide-icon [img]="CreditCardIcon" class="w-5 h-5 text-[#3949AB]"></lucide-icon>
-            <span class="text-[#1A237E] font-medium">Payment Methods</span>
+            <div
+              class="w-10 h-10 bg-[#E8EAF6] rounded-xl flex items-center justify-center group-hover:bg-[#C5CAE9] transition-colors">
+              <lucide-icon [img]="CreditCardIcon" class="w-5 h-5 text-[#3949AB]"></lucide-icon>
+            </div>
+            <div class="text-left">
+              <span class="text-[#1A237E] font-medium">Payment Methods</span>
+              <p class="text-sm text-gray-500">Manage your cards and wallets</p>
+            </div>
           </div>
-          <lucide-icon [img]="ChevronRightIcon" class="w-5 h-5 text-gray-400"></lucide-icon>
+          <lucide-icon [img]="ChevronRightIcon"
+            class="w-5 h-5 text-gray-400 group-hover:text-[#3949AB] transition-colors"></lucide-icon>
         </button>
       </div>
 
-      <div class="bg-white rounded-2xl overflow-hidden shadow-sm">
-        <div class="px-6 py-4 border-b border-gray-200">
-          <h2 class="text-lg font-semibold text-[#1A237E]">Notifications</h2>
+      <!-- Notifications Section -->
+      <div class="bg-white/80 backdrop-blur-sm rounded-2xl overflow-hidden shadow-lg border border-white/50">
+        <div class="px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-[#3949AB]/5 to-transparent">
+          <h2 class="text-lg font-semibold text-[#1A237E] flex items-center gap-2">
+            <lucide-icon [img]="BellIcon" class="w-5 h-5 text-[#3949AB]"></lucide-icon>
+            Notifications
+          </h2>
         </div>
 
         <div class="px-6 py-4 flex items-center justify-between border-b border-gray-100">
           <div class="flex items-center gap-3">
-            <lucide-icon [img]="BellIcon" class="w-5 h-5 text-[#3949AB]"></lucide-icon>
+            <div class="w-10 h-10 bg-[#E8EAF6] rounded-xl flex items-center justify-center">
+              <lucide-icon [img]="BellIcon" class="w-5 h-5 text-[#3949AB]"></lucide-icon>
+            </div>
             <div>
               <p class="text-[#1A237E] font-medium">Push Notifications</p>
-              <p class="text-sm text-gray-600">Get notified about new messages</p>
+              <p class="text-sm text-gray-500">Get notified about new messages</p>
             </div>
           </div>
           <label class="relative inline-flex items-center cursor-pointer">
             <input type="checkbox" class="sr-only peer" checked />
             <div
-              class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#3949AB]">
+              class="w-12 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-[#3949AB] peer-checked:to-[#5C6BC0] shadow-inner">
             </div>
           </label>
         </div>
 
         <div class="px-6 py-4 flex items-center justify-between border-b border-gray-100">
           <div class="flex items-center gap-3">
-            <lucide-icon [img]="MailIcon" class="w-5 h-5 text-[#3949AB]"></lucide-icon>
+            <div class="w-10 h-10 bg-[#E8EAF6] rounded-xl flex items-center justify-center">
+              <lucide-icon [img]="MailIcon" class="w-5 h-5 text-[#3949AB]"></lucide-icon>
+            </div>
             <div>
               <p class="text-[#1A237E] font-medium">Email Notifications</p>
-              <p class="text-sm text-gray-600">Receive updates via email</p>
+              <p class="text-sm text-gray-500">Receive updates via email</p>
             </div>
           </div>
           <label class="relative inline-flex items-center cursor-pointer">
             <input type="checkbox" class="sr-only peer" checked />
             <div
-              class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#3949AB]">
+              class="w-12 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-[#3949AB] peer-checked:to-[#5C6BC0] shadow-inner">
             </div>
           </label>
         </div>
 
         <div class="px-6 py-4 flex items-center justify-between">
           <div class="flex items-center gap-3">
-            <lucide-icon [img]="MessageSquareIcon" class="w-5 h-5 text-[#3949AB]"></lucide-icon>
+            <div class="w-10 h-10 bg-[#E8EAF6] rounded-xl flex items-center justify-center">
+              <lucide-icon [img]="MessageSquareIcon" class="w-5 h-5 text-[#3949AB]"></lucide-icon>
+            </div>
             <div>
               <p class="text-[#1A237E] font-medium">SMS Notifications</p>
-              <p class="text-sm text-gray-600">Get text message alerts</p>
+              <p class="text-sm text-gray-500">Get text message alerts</p>
             </div>
           </div>
           <label class="relative inline-flex items-center cursor-pointer">
             <input type="checkbox" class="sr-only peer" />
             <div
-              class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#3949AB]">
+              class="w-12 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-[#3949AB] peer-checked:to-[#5C6BC0] shadow-inner">
             </div>
           </label>
         </div>
       </div>
 
-      <div class="bg-white rounded-2xl overflow-hidden shadow-sm">
-        <div class="px-6 py-4 border-b border-gray-200">
-          <h2 class="text-lg font-semibold text-[#1A237E]">Privacy & Support</h2>
+      <!-- Privacy & Support Section -->
+      <div class="bg-white/80 backdrop-blur-sm rounded-2xl overflow-hidden shadow-lg border border-white/50">
+        <div class="px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-[#3949AB]/5 to-transparent">
+          <h2 class="text-lg font-semibold text-[#1A237E] flex items-center gap-2">
+            <lucide-icon [img]="ShieldIcon" class="w-5 h-5 text-[#3949AB]"></lucide-icon>
+            Privacy & Support
+          </h2>
         </div>
         <button (click)="navigateTo('/privacy-safety')"
-          class="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors border-b border-gray-100">
+          class="w-full px-6 py-4 flex items-center justify-between hover:bg-[#E8EAF6]/50 transition-colors border-b border-gray-100 group">
           <div class="flex items-center gap-3">
-            <lucide-icon [img]="ShieldIcon" class="w-5 h-5 text-[#3949AB]"></lucide-icon>
-            <span class="text-[#1A237E] font-medium">Privacy & Safety</span>
+            <div
+              class="w-10 h-10 bg-[#E8EAF6] rounded-xl flex items-center justify-center group-hover:bg-[#C5CAE9] transition-colors">
+              <lucide-icon [img]="ShieldIcon" class="w-5 h-5 text-[#3949AB]"></lucide-icon>
+            </div>
+            <div class="text-left">
+              <span class="text-[#1A237E] font-medium">Privacy & Safety</span>
+              <p class="text-sm text-gray-500">Control your data and privacy</p>
+            </div>
           </div>
-          <lucide-icon [img]="ChevronRightIcon" class="w-5 h-5 text-gray-400"></lucide-icon>
+          <lucide-icon [img]="ChevronRightIcon"
+            class="w-5 h-5 text-gray-400 group-hover:text-[#3949AB] transition-colors"></lucide-icon>
         </button>
         <button (click)="navigateTo('/support')"
-          class="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
+          class="w-full px-6 py-4 flex items-center justify-between hover:bg-[#E8EAF6]/50 transition-colors group">
           <div class="flex items-center gap-3">
-            <lucide-icon [img]="HelpCircleIcon" class="w-5 h-5 text-[#3949AB]"></lucide-icon>
-            <span class="text-[#1A237E] font-medium">Help & Support</span>
+            <div
+              class="w-10 h-10 bg-[#E8EAF6] rounded-xl flex items-center justify-center group-hover:bg-[#C5CAE9] transition-colors">
+              <lucide-icon [img]="HelpCircleIcon" class="w-5 h-5 text-[#3949AB]"></lucide-icon>
+            </div>
+            <div class="text-left">
+              <span class="text-[#1A237E] font-medium">Help & Support</span>
+              <p class="text-sm text-gray-500">Get help and contact us</p>
+            </div>
           </div>
-          <lucide-icon [img]="ChevronRightIcon" class="w-5 h-5 text-gray-400"></lucide-icon>
+          <lucide-icon [img]="ChevronRightIcon"
+            class="w-5 h-5 text-gray-400 group-hover:text-[#3949AB] transition-colors"></lucide-icon>
         </button>
       </div>
 
+      <!-- Logout Button -->
       <button (click)="handleLogout()"
-        class="w-full bg-white rounded-2xl px-6 py-4 flex items-center justify-center gap-3 hover:bg-red-50 transition-colors shadow-sm border-2 border-red-200">
-        <lucide-icon [img]="LogOutIcon" class="w-5 h-5 text-red-600"></lucide-icon>
-        <span class="text-red-600 font-semibold">Log Out</span>
+        class="w-full bg-white/80 backdrop-blur-sm rounded-2xl px-6 py-4 flex items-center justify-center gap-3 hover:bg-red-50 transition-all shadow-lg border-2 border-red-200 hover:border-red-300 group">
+        <lucide-icon [img]="LogOutIcon"
+          class="w-5 h-5 text-red-500 group-hover:text-red-600 transition-colors"></lucide-icon>
+        <span class="text-red-500 font-semibold group-hover:text-red-600 transition-colors">Log Out</span>
       </button>
     </div>
   </div>

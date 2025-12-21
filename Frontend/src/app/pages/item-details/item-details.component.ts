@@ -9,7 +9,7 @@ import { MapDisplayComponent } from '../../components/map-display/map-display.co
 @Component({
   selector: 'app-item-details',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule, MapDisplayComponent, RouterLink],
+  imports: [CommonModule, LucideAngularModule, MapDisplayComponent],
   templateUrl: 'item-details.component.html'
 })
 export class ItemDetailsComponent implements OnInit {

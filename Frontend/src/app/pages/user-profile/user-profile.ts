@@ -2,6 +2,7 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserService, UserProfile } from '../../services/user.service';
+import { Item } from '../../models/item.model';
 import { LucideAngularModule, User, MapPin, Calendar, Package, Star, Loader2 } from 'lucide-angular';
 
 @Component({
@@ -26,6 +27,7 @@ export class UserProfileComponent implements OnInit {
 
   // State
   profile = signal<UserProfile | null>(null);
+  items = signal<Item[]>([]);
   loading = signal(true);
   error = signal<string | null>(null);
 
@@ -47,11 +49,24 @@ export class UserProfileComponent implements OnInit {
     this.userService.getUserProfile(userId).subscribe({
       next: (profile) => {
         this.profile.set(profile);
-        this.loading.set(false);
+        this.loadUserItems(userId);
       },
       error: (err) => {
         console.error('Error loading profile:', err);
         this.error.set('Failed to load user profile');
+        this.loading.set(false);
+      }
+    });
+  }
+
+  loadUserItems(userId: number): void {
+    this.userService.getUserItems(userId).subscribe({
+      next: (items) => {
+        this.items.set(items);
+        this.loading.set(false);
+      },
+      error: (err) => {
+        console.error('Error loading user items:', err);
         this.loading.set(false);
       }
     });
@@ -76,6 +91,16 @@ export class UserProfileComponent implements OnInit {
     const first = p.firstName?.[0] || '';
     const last = p.lastName?.[0] || '';
     return (first + last).toUpperCase() || '?';
+  }
+
+  getItemImage(item: Item): string {
+    return item.imageUrls?.[0] || 'https://via.placeholder.com/200x150?text=No+Image';
+  }
+
+  viewItem(itemId: number | undefined): void {
+    if (itemId) {
+      this.router.navigate(['/item', itemId]);
+    }
   }
 
   goBack(): void {

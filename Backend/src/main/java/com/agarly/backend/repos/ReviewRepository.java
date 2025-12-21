@@ -15,4 +15,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     @Query("SELECT AVG(r.rating) FROM Review r WHERE r.targetItem.id = :userId")
     Optional<Double> findAverageRatingByTargetItemId(Long userId);
 
+    @Query("SELECT COUNT(r) FROM Review r WHERE r.targetUser.id = :userId")
+    Long countByTargetUserId(Long userId);
+
 }

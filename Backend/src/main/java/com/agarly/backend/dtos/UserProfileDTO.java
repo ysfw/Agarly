@@ -18,4 +18,10 @@ public class UserProfileDTO {
     private String bio;
     private String address;
     private String city;
+
+    // Profile statistics
+    private Long itemsShared;
+    private Long itemsBorrowed;
+    private Double averageRating;
+    private Long reviewCount;
 }

@@ -29,12 +29,17 @@ public class PublicUserProfileDTO {
 
     // Constructor for easy mapping from User entity
     public PublicUserProfileDTO(User user, Long totalItemsPosted) {
+        this(user, totalItemsPosted, user.getRating());
+    }
+
+    // Constructor with live average rating from reviews
+    public PublicUserProfileDTO(User user, Long totalItemsPosted, Double avgRating) {
         this.id = user.getId();
         this.firstName = user.getFirstName();
         this.lastName = user.getLastName();
         this.email = user.getEmail();
         this.profileImageUrl = user.getProfileImageUrl();
-        this.rating = user.getRating();
+        this.rating = avgRating != null ? avgRating : 0.0;
         this.bio = user.getProfile() != null ? user.getProfile().getBio() : "";
         this.city = user.getProfile() != null ? user.getProfile().getCity() : "";
         this.state = user.getProfile() != null ? user.getProfile().getState() : "";

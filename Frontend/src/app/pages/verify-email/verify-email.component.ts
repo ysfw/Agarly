@@ -2,7 +2,7 @@ import { Component, signal, computed, effect, ViewChildren, QueryList, AfterView
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { LucideAngularModule, Mail, ArrowLeft } from 'lucide-angular';
+import { LucideAngularModule, Mail, ArrowLeft, Check, AlertCircle, Loader2 } from 'lucide-angular';
 import { AuthService } from 'src/app/services/auth.service';
 import { ApiService } from 'src/app/services/api.service';
 import { UserDTO } from 'src/app/models/user';
@@ -19,6 +19,9 @@ export class VerifyEmailComponent implements AfterViewInit {
 
   readonly MailIcon = Mail;
   readonly ArrowLeftIcon = ArrowLeft;
+  readonly CheckIcon = Check;
+  readonly AlertIcon = AlertCircle;
+  readonly LoaderIcon = Loader2;
   private ngZone = inject(NgZone)
   private apiService = inject(ApiService)
   private router = inject(Router);

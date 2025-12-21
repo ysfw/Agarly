@@ -79,18 +79,35 @@
                 </div>
                 }
 
-                <!-- Recent Items Section (Placeholder for now) -->
+                <!-- Listed Items Section -->
                 <div class="mt-8">
                     <h2 class="text-xl font-bold text-slate-800 mb-4">Listed Items</h2>
-                    @if (profile()!.totalItemsPosted === 0) {
+                    @if (items().length === 0) {
                     <div class="text-center py-12 bg-slate-50 rounded-lg">
                         <lucide-icon [img]="PackageIcon" class="w-12 h-12 mx-auto text-gray-300 mb-2"></lucide-icon>
                         <p class="text-gray-500">This user hasn't posted any items yet.</p>
                     </div>
                     } @else {
-                    <div class="bg-slate-50 rounded-lg p-6 text-center">
-                        <p class="text-gray-600">{{ profile()!.totalItemsPosted }} items posted</p>
-                        <p class="text-sm text-gray-500 mt-1">Item listings coming soon...</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        @for (item of items(); track item.id) {
+                        <div (click)="viewItem(item.id)"
+                            class="bg-white border rounded-lg overflow-hidden hover:shadow-md transition-shadow cursor-pointer">
+                            <img [src]="getItemImage(item)" [alt]="item.title" class="w-full h-40 object-cover">
+                            <div class="p-4">
+                                <h3 class="font-semibold text-gray-800 truncate">{{ item.title }}</h3>
+                                <p class="text-sm text-gray-500">{{ item.category }}</p>
+                                <div class="flex items-center justify-between mt-2">
+                                    <span class="text-blue-800 font-bold">${{ item.pricePerDay }}/{{
+                                        item.priceUnit.toLowerCase() || 'day' }}</span>
+                                    <div class="flex items-center gap-1">
+                                        <lucide-icon [img]="StarIcon" class="w-4 h-4 text-yellow-500"></lucide-icon>
+                                        <span class="text-sm text-gray-600">{{ item.rating?.toFixed(1) || '0.0'
+                                            }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        }
                     </div>
                     }
                 </div>

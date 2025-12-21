@@ -7,6 +7,8 @@ import com.agarly.backend.exceptions.WrongPasswordException;
 import com.agarly.backend.models.User;
 import com.agarly.backend.models.UserPrincipal;
 import com.agarly.backend.models.UserProfile;
+import com.agarly.backend.repos.ItemRepository;
+import com.agarly.backend.repos.ReviewRepository;
 import com.agarly.backend.repos.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -23,20 +25,37 @@ public class UserProfileService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private ItemRepository itemRepository;
+
+    @Autowired
+    private ReviewRepository reviewRepository;
+
     public UserProfileDTO getProfile(String username) {
         User user = userService.findByUsername(username);
         if (user == null) {
             throw new UserNotFoundException("The user associated with username{" + username + "} is not found");
         }
+
+        // Fetch profile statistics
+        Long itemsShared = itemRepository.countByOwner(user);
+        Long itemsBorrowed = itemRepository.countByBorrower(user);
+        Double averageRating = reviewRepository.findAverageRatingByUserId(user.getId()).orElse(0.0);
+        Long reviewCount = reviewRepository.countByTargetUserId(user.getId());
+
         return UserProfileDTO.builder()
                 .profileImageUrl(user.getProfileImageUrl())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .email(user.getEmail())
                 .phoneNumber(user.getPhoneNumber())
-                .bio(user.getProfile().getBio())
+                .bio(user.getProfile() != null ? user.getProfile().getBio() : null)
                 .address(user.getAddress())
-                .city(user.getProfile().getCity())
+                .city(user.getProfile() != null ? user.getProfile().getCity() : null)
+                .itemsShared(itemsShared != null ? itemsShared : 0L)
+                .itemsBorrowed(itemsBorrowed != null ? itemsBorrowed : 0L)
+                .averageRating(averageRating)
+                .reviewCount(reviewCount != null ? reviewCount : 0L)
                 .build();
     }
 

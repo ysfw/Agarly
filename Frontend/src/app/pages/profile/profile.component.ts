@@ -4,14 +4,14 @@ import { CommonModule } from '@angular/common';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { AuthService } from '../../services/auth.service';
 import { ProfileApiService, UserProfileDTO } from '../../services/profile-api.service';
-import { 
-  LucideAngularModule, 
-  Settings, 
-  ShieldCheck, 
-  Star, 
-  Package, 
-  TrendingUp, 
-  Award, 
+import {
+  LucideAngularModule,
+  Settings,
+  ShieldCheck,
+  Star,
+  Package,
+  TrendingUp,
+  Award,
   Edit,
   Check,
   Plus,
@@ -51,7 +51,7 @@ export class ProfileComponent implements OnInit {
 
   loading = signal(true);
   error = signal<string | null>(null);
-  
+
   profile = signal<UserProfileDTO>({
     profileImageUrl: '',
     firstName: '',
@@ -60,7 +60,11 @@ export class ProfileComponent implements OnInit {
     phoneNumber: '',
     bio: '',
     address: '',
-    city: ''
+    city: '',
+    itemsShared: 0,
+    itemsBorrowed: 0,
+    averageRating: 0,
+    reviewCount: 0
   });
 
   ngOnInit() {
@@ -70,7 +74,7 @@ export class ProfileComponent implements OnInit {
   loadProfile() {
     this.loading.set(true);
     this.error.set(null);
-    
+
     this.profileService.getProfile().subscribe({
       next: (data) => {
         this.profile.set(data);

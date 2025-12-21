@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, Mail, Lock, User, MapPin, Eye, EyeOff, Phone } from 'lucide-angular';
+import { LucideAngularModule, Mail, Lock, User, MapPin, Eye, EyeOff, Phone, AtSign, Loader2, Check } from 'lucide-angular';
 
 import { ApiService } from '../../services/api.service';
 import { UserDTO } from 'src/app/models/user';
@@ -26,6 +26,9 @@ export class RegisterComponent {
   readonly EyeIcon = Eye;
   readonly EyeOffIcon = EyeOff;
   readonly PhoneIcon = Phone;
+  readonly AtSignIcon = AtSign;
+  readonly LoaderIcon = Loader2;
+  readonly CheckIcon = Check;
 
   showPassword = false;
   togglePassword() {

@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, Mail, Lock, Eye, EyeOff, Shield } from 'lucide-angular';
+import { LucideAngularModule, Mail, Lock, Eye, EyeOff, Shield, Loader2 } from 'lucide-angular';
 import { AdminService } from '../../services/admin.service';
 import { HttpErrorResponse } from '@angular/common/http';
 
@@ -19,6 +19,7 @@ export class AdminLoginComponent {
   readonly LockIcon = Lock;
   readonly EyeIcon = Eye;
   readonly EyeOffIcon = EyeOff;
+  readonly LoaderIcon = Loader2;
 
   showPassword = false;
   togglePassword() {

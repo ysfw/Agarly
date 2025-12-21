@@ -1,6 +1,7 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { Item } from '../models/item.model';
 
 export interface UserProfile {
     id: number;
@@ -27,5 +28,7 @@ export class UserService {
         return this.http.get<UserProfile>(`${this.baseUrl}/users/${id}`);
     }
 
-    // Note: User items are fetched from ItemService.getItems() with owner filter
+    getUserItems(id: number): Observable<Item[]> {
+        return this.http.get<Item[]>(`${this.baseUrl}/users/${id}/items`);
+    }
 }
