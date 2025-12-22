@@ -2,6 +2,7 @@ import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule, Image as ImageIcon, X, Upload, Loader2 } from 'lucide-angular';
 import { ItemService } from '../../services/item.service';
+import { ModalService } from '../../services/modal.service';
 
 @Component({
     selector: 'app-image-uploader',
@@ -17,6 +18,7 @@ export class ImageUploaderComponent {
     readonly LoaderIcon = Loader2;
 
     private itemService = inject(ItemService);
+    private modalService = inject(ModalService);
 
     @Input() images: string[] = [];
     @Input() maxImages: number = 6;
@@ -62,9 +64,9 @@ export class ImageUploaderComponent {
 
         if (filesToUpload.length === 0) {
             if (imageFiles.length === 0) {
-                alert('Please select only image files.');
+                this.modalService.alert('Please select only image files.', 'Validation Error');
             } else {
-                alert(`Maximum ${this.maxImages} images allowed.`);
+                this.modalService.alert(`Maximum ${this.maxImages} images allowed.`, 'Validation Error');
             }
             return;
         }

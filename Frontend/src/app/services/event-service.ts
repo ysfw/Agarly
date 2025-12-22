@@ -56,9 +56,6 @@ export class EventService {
           if (data.type === 'EVENT') {
             this.ngZone.run(() => observer.next(data.payload));
           }
-          else if (data.type === 'LOGOUT') {
-            this.ngZone.run(() => this.authService.logout());
-          }
           else if (data.type === 'ERROR') {
             if (data.error.status === 401) {
               console.warn('SSE Unauthorized (401). Logging out.');

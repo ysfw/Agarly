@@ -5,6 +5,7 @@ import { ItemService } from '../../services/item.service';
 import { Item } from '../../models/item.model';
 import { LucideAngularModule, Plus, Edit, Trash2, Search, Calendar, User, CheckCircle, Clock, AlertCircle } from 'lucide-angular';
 import { NavbarLoggedInComponent } from '../../components/navbar-logged-in/navbar-logged-in.component';
+import { ModalService } from '../../services/modal.service';
 
 import { FormsModule } from '@angular/forms';
 
@@ -18,6 +19,7 @@ import { FormsModule } from '@angular/forms';
 export class MyItemsComponent implements OnInit {
     itemService = inject(ItemService);
     router = inject(Router);
+    modalService = inject(ModalService);
 
     activeTab: 'lent' | 'borrowed' = 'lent';
     lentItems: Item[] = [];
@@ -79,27 +81,31 @@ export class MyItemsComponent implements OnInit {
     }
 
     deleteItem(id: number) {
-        if (confirm('Are you sure you want to delete this item?')) {
-            this.itemService.delete(id).subscribe({
-                next: () => {
-                    if (this.activeTab === 'lent') {
-                        this.lentItems = this.lentItems.filter(item => item.id !== id);
-                    } else {
-                        this.borrowedItems = this.borrowedItems.filter(item => item.id !== id);
-                    }
-                },
-                error: (err) => {
-                    console.error('Error deleting item:', err);
-                    alert('Failed to delete item.');
+        this.modalService.confirm('Are you sure you want to delete this item?', 'Confirm Delete')
+            .then((confirmed) => {
+                if (confirmed) {
+                    this.itemService.delete(id).subscribe({
+                        next: () => {
+                            if (this.activeTab === 'lent') {
+                                this.lentItems = this.lentItems.filter(item => item.id !== id);
+                            } else {
+                                this.borrowedItems = this.borrowedItems.filter(item => item.id !== id);
+                            }
+                            this.modalService.alert('Item deleted successfully', 'Success');
+                        },
+                        error: (err) => {
+                            console.error('Error deleting item:', err);
+                            this.modalService.alert('Failed to delete item.', 'Error');
+                        }
+                    });
                 }
             });
-        }
     }
 
     editItem(id: number) {
         // TODO: Navigate to edit page
         // this.router.navigate(['/edit-item', id]);
-        alert('Edit functionality coming soon!');
+        this.modalService.alert('Edit functionality coming soon!', 'Info');
     }
 
     navigateToAddItem() {
@@ -112,7 +118,7 @@ export class MyItemsComponent implements OnInit {
 
     contactBorrower(item: Item) {
         // Mock chat navigation
-        alert(`Opening chat with ${item.borrower?.name || item.owner?.name}...`);
+        this.modalService.alert(`Opening chat with ${item.borrower?.name || item.owner?.name}...`, 'Chat');
         // this.router.navigate(['/chat', item.borrower?.id]);
     }
 
@@ -138,7 +144,7 @@ export class MyItemsComponent implements OnInit {
 
     submitLend() {
         if (!this.lendForm.email || !this.lendForm.itemId) {
-            alert('Please enter borrower email');
+            this.modalService.alert('Please enter borrower email', 'Validation Error');
             return;
         }
 
@@ -146,26 +152,30 @@ export class MyItemsComponent implements OnInit {
             next: () => {
                 this.closeLendModal();
                 this.loadItems(); // Refresh list
+                this.modalService.alert('Item marked as lent successfully', 'Success');
             },
             error: (err) => {
                 console.error('Error marking as lent:', err);
-                alert('Failed to mark as lent. Ensure user exists.');
+                this.modalService.alert('Failed to mark as lent. Ensure user exists.', 'Error');
             }
         });
     }
 
     markAsReturned(item: Item) {
-        if (confirm(`Mark ${item.title} as returned?`)) {
-            this.itemService.returnItem(item.id!).subscribe({
-                next: () => {
-                    alert('Item marked as returned!');
-                    this.loadItems(); // Refresh list
-                },
-                error: (err) => {
-                    console.error('Error marking as returned:', err);
-                    alert('Failed to mark as returned.');
+        this.modalService.confirm(`Mark ${item.title} as returned?`, 'Confirm Return')
+            .then((confirmed) => {
+                if (confirmed) {
+                    this.itemService.returnItem(item.id!).subscribe({
+                        next: () => {
+                            this.modalService.alert('Item marked as returned!', 'Success');
+                            this.loadItems(); // Refresh list
+                        },
+                        error: (err) => {
+                            console.error('Error marking as returned:', err);
+                            this.modalService.alert('Failed to mark as returned.', 'Error');
+                        }
+                    });
                 }
             });
-        }
     }
 }

@@ -199,14 +199,29 @@ export class RegisterComponent {
         this.success = true;
         this.authService.login();
         this.authService.register(userData)
-        this.router.navigate(['/verify-email']);
+        this.router.navigate(['/verify-email'], { replaceUrl: true });
       },
       error: (err: HttpErrorResponse) => {
         // a callback function called if the Observable emits an error
         console.error('An error occurred, Status Code:', err.status)
         console.error('Error body:', err.error)
         this.loading = false;
-        this.backendError = 'Registration failed. Try again';
+
+        // Display specific error message from backend if available
+        // Backend returns error in err.error.status field
+        if (err.error && err.error.status) {
+          this.backendError = err.error.status;
+        } else if (err.error && typeof err.error === 'string') {
+          this.backendError = err.error;
+        } else if (err.error && err.error.message) {
+          this.backendError = err.error.message;
+        } else if (err.status === 409) {
+          this.backendError = 'Username or email already exists';
+        } else if (err.status === 400) {
+          this.backendError = 'Invalid registration data. Please check your inputs';
+        } else {
+          this.backendError = 'Registration failed. Please try again';
+        }
       },
     });
   }

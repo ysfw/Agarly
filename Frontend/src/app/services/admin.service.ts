@@ -116,7 +116,8 @@ export class AdminService {
     }
 
     isAuthenticated(): boolean {
-        return this.isAdminLoggedIn();
+        const token = localStorage.getItem('adminToken');
+        return !!token;
     }
 
     // ==================== Dashboard Stats ====================
@@ -239,7 +240,7 @@ export class AdminService {
     }
 
     // ==================== Support Tickets ====================
-    
+
     getAllSupportTickets(): Observable<AdminSupportTicketDto[]> {
         return this.http.get<AdminSupportTicketDto[]>(
             `${this.baseUrl}/admin/tickets`,

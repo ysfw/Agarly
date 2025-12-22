@@ -12,9 +12,8 @@ import { LucideAngularModule, Home, ClipboardList, LayoutDashboard, User } from 
         <div class="flex items-center justify-between h-16">
 
           <!-- Logo -->
-          <h1 class="text-2xl font-bold text-[#3949AB] cursor-pointer" routerLink="/home">
-            Agarly
-          </h1>
+          <img src="assets/agarlyblu.png" alt="Agarly" routerLink="/home" class="h-10 cursor-pointer">
+
 
           <!-- Buttons -->
           <div class="flex gap-2">

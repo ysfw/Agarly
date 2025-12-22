@@ -3,6 +3,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Location } from '@angular/common';
 import { LucideAngularModule, ArrowLeft, Calendar, CheckCircle, AlertCircle } from 'lucide-angular';
+import { ModalService } from '../../services/modal.service';
 
 @Component({
   selector: 'app-book-item',
@@ -28,6 +29,7 @@ export class BookItemComponent {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private location = inject(Location);
+  private modalService = inject(ModalService);
 
   // You can access route params here if needed:
   // itemId = this.route.snapshot.params['id'];
@@ -49,7 +51,7 @@ export class BookItemComponent {
   }
 
   handleConfirm() {
-    alert('Booking request sent! The owner will review and respond.');
+    this.modalService.alert('Booking request sent! The owner will review and respond.', 'Success');
     this.router.navigate(['/dashboard']);
   }
 }

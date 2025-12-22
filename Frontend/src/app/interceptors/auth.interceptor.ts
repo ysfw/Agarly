@@ -3,13 +3,19 @@ import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
 import { AuthService } from '../services/auth.service';
+import { AdminService } from '../services/admin.service';
+import { ModalService } from '../services/modal.service';
 
 export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>, next: HttpHandlerFn) => {
     const authService = inject(AuthService);
+    const adminService = inject(AdminService);
+    const modalService = inject(ModalService);
     const router = inject(Router);
 
-    // Get the token from AuthService
-    const token = authService.getToken();
+    // Get the token from AuthService (try user token first, then admin token)
+    const userToken = authService.getToken();
+    const adminToken = localStorage.getItem('adminToken');
+    const token = userToken || adminToken;
 
     // Clone the request and add the Authorization header if token exists
     let authReq = req;
@@ -23,18 +29,42 @@ export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>, ne
 
     return next(authReq).pipe(
         catchError((error: HttpErrorResponse) => {
+            // Skip auto-logout for login and register endpoints
+            const isAuthEndpoint = req.url.includes('/login') ||
+                req.url.includes('/register') ||
+                req.url.includes('/verify') ||
+                req.url.includes('/gAuth') ||
+                req.url.includes('/Admin-login');
+
             // Check if the error is a 401 Unauthorized
             if (error.status === 401) {
-                // Skip auto-logout for login and register endpoints
-                const isAuthEndpoint = req.url.includes('/login') ||
-                    req.url.includes('/register') ||
-                    req.url.includes('/verify') ||
-                    req.url.includes('/gAuth');
-
                 if (!isAuthEndpoint) {
                     console.warn('401 Unauthorized - Logging out user');
-                    // Clear authentication data and redirect to login
-                    authService.logout();
+
+                    // Check if admin is authenticated and logout accordingly
+                    if (adminService.isAuthenticated()) {
+                        console.log('Logging out admin');
+                        adminService.logout();
+                    } else if (authService.isAuthenticated()) {
+                        console.log('Logging out regular user');
+                        authService.logout();
+                    }
+                }
+            }
+
+            // Check for connection refused or network errors (status 0)
+            if (error.status === 0 && !isAuthEndpoint) {
+                console.error('Connection refused or network error - Backend is unreachable');
+
+                // Only logout if user is authenticated (to avoid logout loop on login page)
+                if (adminService.isAuthenticated()) {
+                    console.log('Backend unreachable - Logging out admin');
+                    modalService.alert('Cannot connect to server. You will be logged out.', 'Connection Error')
+                        .then(() => adminService.logout());
+                } else if (authService.isAuthenticated()) {
+                    console.log('Backend unreachable - Logging out regular user');
+                    modalService.alert('Cannot connect to server. You will be logged out.', 'Connection Error')
+                        .then(() => authService.logout());
                 }
             }
 

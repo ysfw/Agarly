@@ -1,7 +1,7 @@
-import {inject, Injectable, signal} from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { UserDTO } from '../models/user';
-import {HttpClient} from '@angular/common/http';
-import {Router} from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -9,20 +9,23 @@ import {Router} from '@angular/router';
 export class AuthService {
   otp = signal<string>('')
   email = signal<string>('');
-  isLoggedIn = signal(false);
+
+  // Initialize isLoggedIn from localStorage
+  isLoggedIn = signal(localStorage.getItem('isAuthenticated') === 'true');
+
   userData = signal<UserDTO>({
-    email : "",
-    password : "",
-    firstName : "",
-    lastName : "",
-    address : "",
-    phoneNumber : "",
-    username : "",
-    activated : true,
-    blocked : false
+    email: "",
+    password: "",
+    firstName: "",
+    lastName: "",
+    address: "",
+    phoneNumber: "",
+    username: "",
+    activated: true,
+    blocked: false
   })
 
-  register(userData : UserDTO) {
+  register(userData: UserDTO) {
     this.email.set(userData.email)
     this.userData.set(userData)
   }
@@ -36,6 +39,7 @@ export class AuthService {
   setToken(token: string) {
     localStorage.setItem('authToken', token);
     localStorage.setItem('isAuthenticated', 'true');
+    this.isLoggedIn.set(true); // Sync signal with localStorage
   }
 
   getToken(): string | null {
@@ -52,6 +56,7 @@ export class AuthService {
     localStorage.removeItem('authToken');
     localStorage.removeItem('isAuthenticated');
     localStorage.removeItem('currentUser');
+    this.isLoggedIn.set(false); // Sync signal with localStorage
     this.router.navigate(['/login']);
   }
 

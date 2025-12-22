@@ -11,9 +11,8 @@ import { AuthService } from '../../services/auth.service';
     <nav class="bg-white shadow-sm sticky top-0 z-50">
       <div class="max-w-7xl mx-auto px-6">
         <div class="flex items-center justify-between h-16">
-          <h1 class="text-2xl font-bold text-[#3949AB] cursor-pointer" (click)="navigate('/home')">
-            Agarly
-          </h1>
+          <img src="assets/agarlyblu.png" alt="Agarly" class="h-10 cursor-pointer" (click)="navigate('/home')">
+
           <div class="flex gap-2">
             <button (click)="navigate('/home')" class="flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-colors text-[#1A237E] hover:bg-gray-100">
               <lucide-icon [img]="HomeIcon" class="w-5 h-5"></lucide-icon>

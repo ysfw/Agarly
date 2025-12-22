@@ -1,9 +1,6 @@
 package com.agarly.backend.models;
 
-import com.agarly.backend.models.Enums.ItemCategory;
-import com.agarly.backend.models.Enums.ItemCondition;
-import com.agarly.backend.models.Enums.ItemRentalStatus;
-import com.agarly.backend.models.Enums.PriceUnit;
+import com.agarly.backend.models.Enums.*;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Data;
@@ -64,5 +61,5 @@ public class Item {
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    private com.agarly.backend.models.Enums.ItemStatus status;
+    private ItemStatus status;
 }

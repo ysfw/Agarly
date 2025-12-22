@@ -82,7 +82,7 @@ export class AdminLoginComponent {
         console.log("Admin login successful");
         this.loading = false;
         // Navigate to admin dashboard
-        this.router.navigate(['/admin-dashboard']);
+        this.router.navigate(['/admin-dashboard'], { replaceUrl: true });
       },
       error: (err: HttpErrorResponse) => {
         console.error('Admin login failed, Status Code:', err.status);

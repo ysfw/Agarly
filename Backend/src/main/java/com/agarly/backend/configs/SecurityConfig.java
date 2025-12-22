@@ -36,6 +36,9 @@ public class SecurityConfig {
     @Autowired
     private _UserDetailsService userDetailsService;
 
+    @Autowired
+    private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
@@ -45,9 +48,11 @@ public class SecurityConfig {
                         .requestMatchers("/account/login", "/account/register", "/users/**", "/account/gAuth",
                                 "/register/verify", "/register/resend-otp", "/uploads/**", "/api/images/upload",
                                 "/account/Admin-login", "/account/Admin-register", "/items/approved",
-                                "/payments/webhook") // Paymob webhook callback (must be public)
+                                "/payments/webhook") // Paymob webhook callback (must be public) + SSE endpoint
                         .permitAll()
                         .anyRequest().authenticated())
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
@@ -58,7 +63,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Accept"));
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Accept", "Cache-Control"));
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

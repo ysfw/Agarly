@@ -18,6 +18,7 @@ public class PublicUserProfileDTO {
     private Long id;
     private String firstName;
     private String lastName;
+    private String username;
     private String email;
     private String profileImageUrl;
     private double rating;
@@ -38,6 +39,7 @@ public class PublicUserProfileDTO {
         this.id = user.getId();
         this.firstName = user.getFirstName();
         this.lastName = user.getLastName();
+        this.username = user.getUsername();
         this.email = user.getEmail();
         this.profileImageUrl = user.getProfileImageUrl();
         this.rating = avgRating != null ? avgRating : 0.0;

@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserService, UserProfile } from '../../services/user.service';
 import { Item } from '../../models/item.model';
@@ -16,6 +16,7 @@ export class UserProfileComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private userService = inject(UserService);
+  private location = inject(Location);
 
   // Icons
   readonly UserIcon = User;
@@ -104,6 +105,6 @@ export class UserProfileComponent implements OnInit {
   }
 
   goBack(): void {
-    this.router.navigate(['/home']);
+    this.location.back();
   }
 }

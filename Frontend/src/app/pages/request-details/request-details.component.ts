@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, ArrowLeft, Calendar, User, CheckCircle } from 'lucide-angular';
+import { ModalService } from '../../services/modal.service';
 
 @Component({
   selector: 'app-request-details',
@@ -15,15 +16,16 @@ export class RequestDetailsComponent {
   readonly CalendarIcon = Calendar;
   readonly UserIcon = User;
   readonly CheckCircleIcon = CheckCircle;
-  
+
   router = inject(Router);
   route = inject(ActivatedRoute);
+  modalService = inject(ModalService);
 
   showOfferForm = false;
   offerMessage = '';
 
   handleSubmitOffer() {
-    alert('Your offer has been sent!');
+    this.modalService.alert('Your offer has been sent!', 'Success');
     this.router.navigate(['/requests']);
   }
 }

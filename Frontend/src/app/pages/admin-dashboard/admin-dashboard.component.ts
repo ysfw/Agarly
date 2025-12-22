@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { LucideAngularModule, Shield, LogOut, Search, Trash2, Check, X, Package, User, Loader2, LifeBuoy, Mail, Clock } from 'lucide-angular';
 import { AdminService, AdminItem, AdminRequest, DashboardStats, AdminSupportTicketDto, AdminTicketStatus } from '../../services/admin.service';
+import { ModalService } from '../../services/modal.service';
 
 type SupportTicketStatus = AdminTicketStatus;
 
@@ -31,6 +32,7 @@ interface AdminSupportTicket {
 export class AdminDashboardComponent implements OnInit {
     private router = inject(Router);
     private adminService = inject(AdminService);
+    private modalService = inject(ModalService);
 
     // Icons
     readonly ShieldIcon = Shield;
@@ -351,15 +353,22 @@ export class AdminDashboardComponent implements OnInit {
     }
 
     deletePost(post: AdminItem): void {
-        if (confirm(`Are you sure you want to delete "${post.title}"?`)) {
-            this.adminService.deleteItem(post.id).subscribe({
-                next: () => {
-                    this.posts.update(posts => posts.filter(p => p.id !== post.id));
-                    this.refreshStats();
-                },
-                error: (err) => console.error('Error deleting item:', err)
+        this.modalService.confirm(`Are you sure you want to delete "${post.title}"?`, 'Confirm Delete')
+            .then((confirmed) => {
+                if (confirmed) {
+                    this.adminService.deleteItem(post.id).subscribe({
+                        next: () => {
+                            this.posts.update(posts => posts.filter(p => p.id !== post.id));
+                            this.refreshStats();
+                            this.modalService.alert('Post deleted successfully', 'Success');
+                        },
+                        error: (err) => {
+                            console.error('Error deleting item:', err);
+                            this.modalService.alert('Failed to delete post', 'Error');
+                        }
+                    });
+                }
             });
-        }
     }
 
     // Request actions
@@ -388,15 +397,22 @@ export class AdminDashboardComponent implements OnInit {
     }
 
     deleteRequest(request: AdminRequest): void {
-        if (confirm(`Are you sure you want to delete "${request.title}"?`)) {
-            this.adminService.deleteRequest(request.id).subscribe({
-                next: () => {
-                    this.requests.update(requests => requests.filter(r => r.id !== request.id));
-                    this.refreshStats();
-                },
-                error: (err) => console.error('Error deleting request:', err)
+        this.modalService.confirm(`Are you sure you want to delete "${request.title}"?`, 'Confirm Delete')
+            .then((confirmed) => {
+                if (confirmed) {
+                    this.adminService.deleteRequest(request.id).subscribe({
+                        next: () => {
+                            this.requests.update(requests => requests.filter(r => r.id !== request.id));
+                            this.refreshStats();
+                            this.modalService.alert('Request deleted successfully', 'Success');
+                        },
+                        error: (err) => {
+                            console.error('Error deleting request:', err);
+                            this.modalService.alert('Failed to delete request', 'Error');
+                        }
+                    });
+                }
             });
-        }
     }
 
     private refreshStats(): void {
@@ -449,17 +465,31 @@ export class AdminDashboardComponent implements OnInit {
 
     // User actions
     banUser(user: any): void {
-        if (confirm(`Are you sure you want to ban ${this.getOwnerName(user)}?`)) {
-            this.adminService.banUser(user.id).subscribe({
-                next: () => {
-                    // Reload users
-                    this.adminService.getUsers().subscribe({
-                        next: (users) => this.users.set(users)
-                    });
-                },
-                error: (err) => console.error('Error banning user:', err)
-            });
+        console.log('banUser called with user:', user);
+        console.log('User ID:', user?.id);
+        console.log('User object keys:', Object.keys(user || {}));
+
+        if (!user || !user.id) {
+            this.modalService.alert('Error: User ID is missing', 'Error');
+            console.error('User object is invalid:', user);
+            return;
         }
+
+        console.log('Executing ban for user ID:', user.id);
+        this.adminService.banUser(user.id).subscribe({
+            next: (response) => {
+                console.log('Ban successful:', response);
+                this.modalService.alert(`User ${this.getOwnerName(user)} has been banned successfully`, 'Success');
+                // Reload users
+                this.adminService.getUsers().subscribe({
+                    next: (users) => this.users.set(users)
+                });
+            },
+            error: (err) => {
+                console.error('Error banning user:', err);
+                this.modalService.alert(`Failed to ban user: ${err.error || err.message || 'Unknown error'}`, 'Error');
+            }
+        });
     }
 
     unbanUser(userOrId: any): void {
@@ -469,14 +499,20 @@ export class AdminDashboardComponent implements OnInit {
             return;
         }
 
+        console.log('Unbanning user with ID:', userId);
         this.adminService.unbanUser(userId).subscribe({
-            next: () => {
+            next: (response) => {
+                console.log('Unban successful:', response);
+                this.modalService.alert('User has been unbanned successfully', 'Success');
                 // Reload users
                 this.adminService.getUsers().subscribe({
                     next: (users) => this.users.set(users)
                 });
             },
-            error: (err) => console.error('Error unbanning user:', err)
+            error: (err) => {
+                console.error('Error unbanning user:', err);
+                this.modalService.alert(`Failed to unban user: ${err.error || err.message || 'Unknown error'}`, 'Error');
+            }
         });
     }
 

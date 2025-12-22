@@ -9,6 +9,7 @@ import { ReviewService } from '../../services/review.service';
 import { PaymentApiService, Transaction } from '../../services/payment-api.service';
 import { ItemService } from '../../services/item.service';
 import { Item } from '../../models/item.model';
+import { ModalService } from '../../services/modal.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -24,6 +25,7 @@ export class DashboardComponent implements OnInit {
   paymentService = inject(PaymentApiService);
   itemService = inject(ItemService);
   router = inject(Router);
+  modalService = inject(ModalService);
   auth = this.authService.isLoggedIn;
 
   // Icons
@@ -159,7 +161,7 @@ export class DashboardComponent implements OnInit {
         },
         error: (err) => {
           console.error('Error deleting item:', err);
-          alert('Failed to delete item');
+          this.modalService.alert('Failed to delete item', 'Error');
         }
       });
     }
@@ -175,16 +177,22 @@ export class DashboardComponent implements OnInit {
   }
 
   markAsReturned(item: Item) {
-    if (item.id && confirm(`Mark "${item.title}" as returned?`)) {
-      this.itemService.returnItem(item.id).subscribe({
-        next: () => {
-          this.loadAllData(); // Refresh all data
-        },
-        error: (err) => {
-          console.error('Error marking as returned:', err);
-          alert('Failed to mark as returned');
-        }
-      });
+    if (item.id) {
+      this.modalService.confirm(`Mark "${item.title}" as returned?`, 'Confirm Return')
+        .then((confirmed) => {
+          if (confirmed) {
+            this.itemService.returnItem(item.id!).subscribe({
+              next: () => {
+                this.loadAllData(); // Refresh all data
+                this.modalService.alert('Item marked as returned successfully', 'Success');
+              },
+              error: (err) => {
+                console.error('Error marking as returned:', err);
+                this.modalService.alert('Failed to mark as returned', 'Error');
+              }
+            });
+          }
+        });
     }
   }
 

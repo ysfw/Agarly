@@ -7,6 +7,7 @@ import { LocationPickerComponent } from '../../components/location-picker/locati
 import { ImageUploaderComponent } from '../../components/image-uploader/image-uploader.component';
 import { ItemService } from '../../services/item.service';
 import { Item } from '../../models/item.model';
+import { ModalService } from '../../services/modal.service';
 
 @Component({
   selector: 'app-add-item',
@@ -27,6 +28,7 @@ export class AddItemComponent {
   router = inject(Router);
   location = inject(Location);
   itemService = inject(ItemService);
+  modalService = inject(ModalService);
 
   // Wizard state
   currentStep = 1;
@@ -85,13 +87,13 @@ export class AddItemComponent {
     switch (this.currentStep) {
       case 1: // Details
         if (!this.formData.title || !this.formData.pricePerDay) {
-          alert('Please fill in the title and price.');
+          this.modalService.alert('Please fill in the title and price.', 'Validation Error');
           return false;
         }
         return true;
       case 2: // Location
         if (!this.formData.location) {
-          alert('Please select a location.');
+          this.modalService.alert('Please select a location.', 'Validation Error');
           return false;
         }
         return true;
@@ -117,7 +119,7 @@ export class AddItemComponent {
 
   handleSubmit() {
     if (!this.formData.title || !this.formData.pricePerDay || !this.formData.location) {
-      alert('Please fill in all required fields');
+      this.modalService.alert('Please fill in all required fields', 'Validation Error');
       return;
     }
 
@@ -146,7 +148,7 @@ export class AddItemComponent {
       error: (err) => {
         console.error('Error creating item:', err);
         this.isSubmitting = false;
-        alert('Failed to create item. Please try again.');
+        this.modalService.alert('Failed to create item. Please try again.', 'Error');
       }
     });
   }

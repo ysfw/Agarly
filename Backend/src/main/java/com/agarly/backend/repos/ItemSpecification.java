@@ -57,7 +57,7 @@ public class ItemSpecification implements Specification<Item> {
             predicates.add(cb.equal(root.get("rentalStatus"), criteria.getRentalStatus()));
         }
         if (criteria.getApprovalStatus() != null) {         // only for feed
-            predicates.add(cb.equal(root.get("approvalStatus"), criteria.getApprovalStatus()));
+            predicates.add(cb.equal(root.get("status"), criteria.getApprovalStatus()));
         }
         if (criteria.getLatitude() != null && criteria.getLongitude() != null && criteria.getRadius() != null) {
             Expression<Double> latDiff = cb.diff(root.get("latitude"), criteria.getLatitude());     // lat - lat0

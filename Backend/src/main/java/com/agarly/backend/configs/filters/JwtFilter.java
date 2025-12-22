@@ -53,18 +53,22 @@ public class JwtFilter extends OncePerRequestFilter {
                 System.out.println("Username extracted from token: " + username);
             } catch (SignatureException e) {
                 System.err.println("JWT SignatureException: Invalid signature - " + e.getMessage());
+                request.setAttribute("jwtError", "Invalid JWT signature");
                 filterChain.doFilter(request, response);
                 return;
             } catch (ExpiredJwtException e) {
                 System.err.println("JWT ExpiredJwtException: Token expired - " + e.getMessage());
+                request.setAttribute("jwtError", "JWT token expired");
                 filterChain.doFilter(request, response);
                 return;
             } catch (MalformedJwtException e) {
                 System.err.println("JWT MalformedJwtException: Malformed token - " + e.getMessage());
+                request.setAttribute("jwtError", "Malformed JWT token");
                 filterChain.doFilter(request, response);
                 return;
             } catch (Exception e) {
                 System.err.println("JWT Exception: " + e.getClass().getName() + " - " + e.getMessage());
+                request.setAttribute("jwtError", "Invalid JWT token");
                 filterChain.doFilter(request, response);
                 return;
             }

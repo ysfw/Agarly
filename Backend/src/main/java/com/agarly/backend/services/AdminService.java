@@ -3,6 +3,7 @@ package com.agarly.backend.services;
 import com.agarly.backend.models.Enums.TicketStatus;
 import com.agarly.backend.models.Item;
 import com.agarly.backend.models.ItemRequest;
+import com.agarly.backend.models.SSE;
 import com.agarly.backend.models.User;
 import com.agarly.backend.models.Enums.ItemStatus;
 import com.agarly.backend.repos.ItemRepository;
@@ -12,6 +13,7 @@ import com.agarly.backend.repos.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,12 +32,18 @@ public class AdminService {
     @Autowired
     private SupportTicketRepository supportTicketRepository;
 
+    @Autowired
+    private EventService eventService;
+
     // ==================== User Management ====================
 
     public void banUser(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         user.setBlocked(Boolean.TRUE);
+        List <String> bannedUsersList = new ArrayList<>(); // it's only one user really but to match the SSE DTO
+        bannedUsersList.add(user.getUsername());
+        eventService.publishEvent(new SSE("Banned",bannedUsersList));
         userRepository.save(user);
     }
 

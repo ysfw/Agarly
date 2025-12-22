@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, ArrowLeft, Calendar } from 'lucide-angular';
+import { ModalService } from '../../services/modal.service';
 
 @Component({
   selector: 'app-request-item',
@@ -17,6 +18,7 @@ export class RequestItemComponent {
 
   router = inject(Router);
   location = inject(Location);
+  modalService = inject(ModalService);
   categories = ['Tools', 'Kitchen', 'Cleaning', 'Electronics', 'Sports', 'Garden', 'Other'];
 
   goBack() {
@@ -38,12 +40,12 @@ export class RequestItemComponent {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(this.formData)
     })
-    .then(res => res.json())
-    .then(data => {
-      alert('Request posted! Neighbors will be notified.');
-      this.router.navigate(['/requests']);
-    })
-    .catch(err => console.error(err));
+      .then(res => res.json())
+      .then(data => {
+        this.modalService.alert('Request posted! Neighbors will be notified.', 'Success');
+        this.router.navigate(['/requests']);
+      })
+      .catch(err => console.error(err));
   }
 
 }

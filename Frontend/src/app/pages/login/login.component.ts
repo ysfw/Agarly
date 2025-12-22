@@ -122,7 +122,7 @@ export class LoginComponent implements OnInit {
         this.authService.setToken(jwtToken);
         this.ngZone.run(() => {
           this.authService.login();
-          this.router.navigate(['/home']);
+          this.router.navigate(['/home'], { replaceUrl: true });
         });
       },
       error: (err) => {
@@ -185,7 +185,7 @@ export class LoginComponent implements OnInit {
         this.authService.setToken(token);
         this.loading = false;
         this.authService.login();
-        this.router.navigate(['/home']);
+        this.router.navigate(['/home'], { replaceUrl: true });
       },
       error: (err) => {
         this.loading = false;

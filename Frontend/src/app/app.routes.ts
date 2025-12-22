@@ -22,6 +22,7 @@ import { RequestItemComponent } from './pages/request-item/request-item.componen
 import { VerifyEmailComponent } from './pages/verify-email/verify-email.component';
 import { AuthGuard } from './services/auth-gaurd';
 import { AdminAuthGuard } from './services/admin-auth.guard';
+import { GuestGuard } from './services/guest.guard';
 import { PasswordChange } from './pages/password-change/password-change';
 import { TicketsComponent } from './pages/tickets/tickets';
 import { UserProfileComponent } from './pages/user-profile/user-profile';
@@ -32,10 +33,10 @@ export const routes: Routes = [
   // Public routes (no AuthGuard)
   { path: '', redirectTo: 'home', pathMatch: 'full' },
   { path: 'home', component: HomeComponent },
-  { path: 'login', component: LoginComponent },
-  { path: 'register', component: RegisterComponent },
-  { path: 'verify-email', component: VerifyEmailComponent },
-  { path: 'admin-login', component: AdminLoginComponent },
+  { path: 'login', component: LoginComponent, canActivate: [GuestGuard] },
+  { path: 'register', component: RegisterComponent, canActivate: [GuestGuard] },
+  { path: 'verify-email', component: VerifyEmailComponent, canActivate: [GuestGuard] },
+  { path: 'admin-login', component: AdminLoginComponent, canActivate: [GuestGuard] },
   // Admin routes (should require AdminAuthGuard)
   { path: 'admin-dashboard', component: AdminDashboardComponent, canActivate: [AdminAuthGuard] },
   { path: 'item/:id', component: ItemDetailsComponent },
