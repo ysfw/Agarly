@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { LucideAngularModule, Calendar, User, Wallet, TrendingUp, TrendingDown, ArrowUpRight, ArrowDownLeft, Clock, CreditCard, ChevronRight, Package, Eye, Edit, Trash2, AlertCircle, CheckCircle, XCircle, Plus } from 'lucide-angular';
+import { LucideAngularModule, Calendar, User, Wallet, TrendingUp, TrendingDown, ArrowUpRight, ArrowDownLeft, Clock, CreditCard, ChevronRight, Package, Eye, Edit, Trash2, AlertCircle, CheckCircle, XCircle, Plus, Mail } from 'lucide-angular';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { AuthService } from '../../services/auth.service';
 import { NavbarLoggedInComponent } from 'src/app/components/navbar-logged-in/navbar-logged-in.component';
@@ -10,6 +10,7 @@ import { PaymentApiService, Transaction } from '../../services/payment-api.servi
 import { ItemService } from '../../services/item.service';
 import { Item } from '../../models/item.model';
 import { ModalService } from '../../services/modal.service';
+import { BookingService, Booking } from '../../services/booking.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -19,13 +20,14 @@ import { ModalService } from '../../services/modal.service';
   styleUrl: './dashboard.component.css'
 })
 export class DashboardComponent implements OnInit {
-  activeTab: 'myitems' | 'pending' | 'borrowed' | 'lent' | 'wallet' = 'myitems';
+  activeTab: 'myitems' | 'pending' | 'borrowed' | 'lent' | 'requestsReceived' | 'requestsSent' | 'wallet' = 'myitems';
   authService = inject(AuthService);
   reviewService = inject(ReviewService);
   paymentService = inject(PaymentApiService);
   itemService = inject(ItemService);
   router = inject(Router);
   modalService = inject(ModalService);
+  bookingService = inject(BookingService);
   auth = this.authService.isLoggedIn;
 
   // Icons
@@ -47,6 +49,7 @@ export class DashboardComponent implements OnInit {
   readonly CheckIcon = CheckCircle;
   readonly XIcon = XCircle;
   readonly PlusIcon = Plus;
+  readonly MailIcon = Mail;
 
   // State - using real API data
   transactions = signal<Transaction[]>([]);
@@ -54,6 +57,14 @@ export class DashboardComponent implements OnInit {
   pendingItems = signal<Item[]>([]); // My items pending approval
   borrowedItems = signal<Item[]>([]); // Items I BORROWED from others
   lentItems = signal<Item[]>([]); // Items currently lent to others (with borrower)
+  receivedRequests = signal<Booking[]>([]);
+  sentRequests = signal<Booking[]>([]);
+  selectedRequest = signal<Booking | null>(null);
+  showRequestModal = signal(false);
+  requestActionLoading = signal(false);
+  showReturnConfirmModal = signal(false);
+  returnConfirmationItem = signal<Item | null>(null);
+  returningItemId = signal<number | null>(null);
 
   walletBalance = signal(125.50);
   totalEarnings = signal(450.00);
@@ -68,6 +79,7 @@ export class DashboardComponent implements OnInit {
   reviewItemId: number | null = null;
   reviewBorrowerId: number | null = null;
   itemToDelete: Item | null = null;
+  itemBeingReviewed: Item | null = null;
 
   ngOnInit() {
     this.loadAllData();
@@ -79,6 +91,8 @@ export class DashboardComponent implements OnInit {
     this.loadPendingItems();
     this.loadBorrowedItems();
     this.loadTransactions();
+    this.loadReceivedRequests();
+    this.loadSentRequests();
   }
 
   loadMyItems() {
@@ -121,6 +135,28 @@ export class DashboardComponent implements OnInit {
         this.transactions.set(transactions);
       },
       error: (err: any) => console.error('Error loading transactions:', err)
+    });
+  }
+
+  loadReceivedRequests() {
+    this.bookingService.getReceivedRequests().subscribe({
+      next: (requests) => {
+        const pending = requests.filter(req => (req.status || '').toUpperCase() === 'PENDING');
+        const others = requests.filter(req => (req.status || '').toUpperCase() !== 'PENDING');
+        this.receivedRequests.set([...pending, ...others]);
+      },
+      error: (err) => console.error('Error loading received booking requests:', err)
+    });
+  }
+
+  getPendingReceivedCount(): number {
+    return this.receivedRequests().filter(req => (req.status || '').toUpperCase() === 'PENDING').length;
+  }
+
+  loadSentRequests() {
+    this.bookingService.getSentRequests().subscribe({
+      next: (requests) => this.sentRequests.set(requests),
+      error: (err) => console.error('Error loading sent booking requests:', err)
     });
   }
 
@@ -176,24 +212,78 @@ export class DashboardComponent implements OnInit {
     this.router.navigate(['/add-item']);
   }
 
-  markAsReturned(item: Item) {
-    if (item.id) {
-      this.modalService.confirm(`Mark "${item.title}" as returned?`, 'Confirm Return')
-        .then((confirmed) => {
-          if (confirmed) {
-            this.itemService.returnItem(item.id!).subscribe({
-              next: () => {
-                this.loadAllData(); // Refresh all data
-                this.modalService.alert('Item marked as returned successfully', 'Success');
-              },
-              error: (err) => {
-                console.error('Error marking as returned:', err);
-                this.modalService.alert('Failed to mark as returned', 'Error');
-              }
-            });
+  promptReturnConfirmation(item: Item): void {
+    if (!item?.id) {
+      return;
+    }
+
+    this.returnConfirmationItem.set(item);
+    this.showReturnConfirmModal.set(true);
+  }
+
+  cancelReturnConfirmation(): void {
+    this.showReturnConfirmModal.set(false);
+    this.returnConfirmationItem.set(null);
+  }
+
+  confirmReturn(): void {
+    const pendingItem = this.returnConfirmationItem();
+    if (!pendingItem) {
+      this.cancelReturnConfirmation();
+      return;
+    }
+
+    this.showReturnConfirmModal.set(false);
+    this.returnConfirmationItem.set(null);
+    this.openReviewModal(pendingItem);
+  }
+
+  isAwaitingReturnConfirmation(item: Item): boolean {
+    const pendingItem = this.returnConfirmationItem();
+    return !!pendingItem?.id && pendingItem.id === item.id;
+  }
+
+  markAsReturned(item: Item, options: { skipConfirm?: boolean; skipStatusUpdate?: boolean } = {}) {
+    const { skipStatusUpdate = false } = options;
+
+    if (!item?.id) {
+      return;
+    }
+
+    const proceed = () => {
+      const booking = this.findActiveBookingForItem(item);
+      this.returningItemId.set(item.id!);
+
+      const finalizeItemReturn = () => {
+        this.itemService.returnItem(item.id!).subscribe({
+          next: () => {
+            this.returningItemId.set(null);
+            this.loadAllData();
+            this.modalService.alert('Item marked as returned successfully', 'Success');
+          },
+          error: (err) => {
+            console.error('Error marking as returned:', err);
+            this.returningItemId.set(null);
+            this.modalService.alert('Failed to mark as returned', 'Error');
           }
         });
-    }
+      };
+
+      if (!skipStatusUpdate && booking?.id) {
+        this.bookingService.updateStatus(booking.id, 'COMPLETED').subscribe({
+          next: () => finalizeItemReturn(),
+          error: (err) => {
+            console.error('Error updating booking status to RETURNED:', err);
+            this.returningItemId.set(null);
+            this.modalService.alert('Failed to update booking status. Please try again.', 'Error');
+          }
+        });
+      } else {
+        finalizeItemReturn();
+      }
+    };
+
+    proceed();
   }
 
   // Transaction helpers
@@ -241,21 +331,223 @@ export class DashboardComponent implements OnInit {
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   }
 
+  getRequestStatusBadge(status?: string): { class: string; text: string } {
+    switch (status) {
+      case 'APPROVED':
+        return { class: 'bg-emerald-100 text-emerald-700', text: 'Approved' };
+      case 'COMPLETED':
+        return { class: 'bg-blue-100 text-blue-700', text: 'Completed' };
+      case 'DECLINED':
+        return { class: 'bg-red-100 text-red-700', text: 'Declined' };
+      case 'REJECTED':
+        return { class: 'bg-red-100 text-red-700', text: 'Rejected' };
+      case 'CANCELLED':
+        return { class: 'bg-gray-100 text-gray-600', text: 'Cancelled' };
+      case 'PENDING':
+      default:
+        return { class: 'bg-amber-100 text-amber-700', text: status || 'Pending' };
+    }
+  }
+
+  formatDateRange(start?: string, end?: string): string {
+    if (!start || !end) {
+      return 'Dates unavailable';
+    }
+
+    const startDate = this.formatDate(start);
+    const endDate = this.formatDate(end);
+    return `${startDate} – ${endDate}`;
+  }
+
+  getBorrowerName(booking: Booking): string {
+    const participant = booking.borrower;
+    if (participant) {
+      const first = participant.firstName?.trim() || '';
+      const last = participant.lastName?.trim() || '';
+      const full = `${first} ${last}`.trim();
+      if (full) {
+        return full;
+      }
+      if (participant.username) {
+        return participant.username;
+      }
+    }
+
+    if (booking.borrowerName) {
+      return booking.borrowerName;
+    }
+
+    return 'Borrower';
+  }
+
+  getOwnerName(booking: Booking): string {
+    const participant = booking.owner || booking.item?.owner;
+    if (participant) {
+      const first = participant.firstName?.trim() || '';
+      const last = participant.lastName?.trim() || '';
+      const full = `${first} ${last}`.trim();
+      if (full) {
+        return full;
+      }
+      if (participant.username) {
+        return participant.username;
+      }
+    }
+
+    if (booking.ownerName) {
+      return booking.ownerName;
+    }
+
+    return 'Owner';
+  }
+
+  getBorrowerEmail(booking: Booking): string | undefined {
+    return booking.borrower?.email;
+  }
+
+  getOwnerEmail(booking: Booking): string | undefined {
+    return booking.owner?.email || booking.item?.owner?.email;
+  }
+
+  getItemTitle(booking: Booking): string {
+    return booking.itemTitle || booking.item?.title || 'Requested Item';
+  }
+
+  getItemImage(booking: Booking): string {
+    if (booking.itemImageUrl) {
+      return booking.itemImageUrl;
+    }
+
+    const item = booking.item;
+    if (item) {
+      if (item.primaryImageUrl) {
+        return item.primaryImageUrl;
+      }
+      if (item.imageUrl) {
+        return item.imageUrl;
+      }
+      if (item.imageUrls && item.imageUrls.length > 0) {
+        return item.imageUrls[0];
+      }
+    }
+
+    return 'https://via.placeholder.com/80';
+  }
+
+  canRespondToRequest(booking: Booking | null | undefined): boolean {
+    if (!booking) {
+      return false;
+    }
+
+    const status = booking.status?.toUpperCase() || 'PENDING';
+    return status === 'PENDING';
+  }
+
+  openRequestModal(request: Booking): void {
+    this.selectedRequest.set(request);
+    this.showRequestModal.set(true);
+  }
+
+  closeRequestModal(): void {
+    this.showRequestModal.set(false);
+    this.selectedRequest.set(null);
+  }
+
+  acceptRequest(request: Booking): void {
+    if (!request?.id || this.requestActionLoading()) {
+      return;
+    }
+
+    this.requestActionLoading.set(true);
+    this.bookingService.updateStatus(request.id, 'APPROVED').subscribe({
+      next: () => {
+        this.requestActionLoading.set(false);
+        this.modalService.alert('Booking request accepted.', 'Success');
+        this.closeRequestModal();
+        this.loadReceivedRequests();
+      },
+      error: (err) => {
+        console.error('Error accepting booking request:', err);
+        this.requestActionLoading.set(false);
+        this.modalService.alert('Failed to accept booking request. Please try again.', 'Error');
+      }
+    });
+  }
+
+  rejectRequest(request: Booking): void {
+    if (!request?.id || this.requestActionLoading()) {
+      return;
+    }
+
+    this.modalService.confirm('Reject this booking request?', 'Confirm Rejection').then((confirmed) => {
+      if (!confirmed) {
+        return;
+      }
+
+      this.requestActionLoading.set(true);
+      this.bookingService.updateStatus(request.id, 'REJECTED').subscribe({
+        next: () => {
+          this.requestActionLoading.set(false);
+          this.modalService.alert('Booking request rejected.', 'Success');
+          this.closeRequestModal();
+          this.loadReceivedRequests();
+        },
+        error: (err) => {
+          console.error('Error rejecting booking request:', err);
+          this.requestActionLoading.set(false);
+          this.modalService.alert('Failed to reject booking request. Please try again.', 'Error');
+        }
+      });
+    });
+  }
+
+  goToBorrowerProfile(request: Booking): void {
+    const borrowerId = request.borrower?.id;
+    if (borrowerId) {
+      this.closeRequestModal();
+      this.router.navigate(['/user', borrowerId]);
+    } else {
+      this.modalService.alert('Borrower profile is unavailable for this request.', 'Profile Unavailable');
+    }
+  }
+
   navigateToPayment() {
     this.router.navigate(['/payment']);
   }
 
   // Review modal
   openReviewModal(item: Item) {
-    this.showReviewModal = true;
-    this.reviewBorrowerName = item.borrower?.firstName || item.borrower?.name || 'Borrower';
-    this.reviewBorrowerId = item.borrower?.id || null;
-    this.reviewItemId = item.id || null;
-    this.reviewStars = 0;
+    if (!item?.id) {
+      return;
+    }
+
+    const booking = this.findActiveBookingForItem(item);
+    if (!booking?.id) {
+      this.presentReviewModal(item);
+      return;
+    }
+
+    if (this.returningItemId() === item.id) {
+      return;
+    }
+
+    this.returningItemId.set(item.id);
+    this.bookingService.updateStatus(booking.id, 'COMPLETED').subscribe({
+      next: () => {
+        this.returningItemId.set(null);
+        this.presentReviewModal(item);
+      },
+      error: (err) => {
+        console.error('Error updating booking status before review:', err);
+        this.returningItemId.set(null);
+        this.modalService.alert('Failed to update booking status. Please try again.', 'Error');
+      }
+    });
   }
 
   closeReviewModal() {
     this.showReviewModal = false;
+    this.itemBeingReviewed = null;
     this.reviewBorrowerName = '';
     this.reviewBorrowerId = null;
     this.reviewItemId = null;
@@ -285,7 +577,11 @@ export class DashboardComponent implements OnInit {
       this.reviewService.addUserReview(this.reviewBorrowerId, this.reviewStars).subscribe({
         next: () => {
           console.log('Review submitted successfully');
-          this.markAsReturned({ id: this.reviewItemId } as Item);
+          if (this.itemBeingReviewed) {
+            this.markAsReturned(this.itemBeingReviewed, { skipConfirm: true, skipStatusUpdate: true });
+          } else if (this.reviewItemId) {
+            this.markAsReturned({ id: this.reviewItemId } as Item, { skipConfirm: true, skipStatusUpdate: true });
+          }
           this.closeReviewModal();
         },
         error: (err) => console.error('Error submitting review', err)
@@ -297,5 +593,37 @@ export class DashboardComponent implements OnInit {
 
   round(n: number): number {
     return Math.round(n);
+  }
+
+  private findActiveBookingForItem(item: Item): Booking | undefined {
+    const itemId = item.id;
+    if (!itemId) {
+      return undefined;
+    }
+
+    const borrowerId = item.borrower?.id ?? this.reviewBorrowerId ?? undefined;
+
+    return this.receivedRequests().find((request) => {
+      const sameItem = request.itemId === itemId || request.item?.id === itemId;
+      if (!sameItem) {
+        return false;
+      }
+
+      if (borrowerId && request.borrower?.id && request.borrower.id !== borrowerId) {
+        return false;
+      }
+
+      const status = request.status?.toUpperCase() || 'PENDING';
+      return status === 'APPROVED' || status === 'RETURNED';
+    });
+  }
+
+  private presentReviewModal(item: Item): void {
+    this.itemBeingReviewed = item;
+    this.reviewBorrowerName = item.borrower?.firstName || item.borrower?.name || 'Borrower';
+    this.reviewBorrowerId = item.borrower?.id || null;
+    this.reviewItemId = item.id || null;
+    this.reviewStars = 0;
+    this.showReviewModal = true;
   }
 }

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -29,6 +30,10 @@ public class ItemRequestService {
         }
         request.setStatus("PENDING");
         return repository.save(request);
+    }
+
+    private boolean datesOverlap(LocalDate s1, LocalDate e1, LocalDate s2, LocalDate e2) {
+        return !e1.isBefore(s2) && !e2.isBefore(s1);
     }
 
     public List<ItemRequest> getAllRequests() {
