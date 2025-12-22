@@ -49,23 +49,54 @@
         <div class="space-y-3">
           <label class="block text-sm font-semibold text-[#1A237E]">Location</label>
           <div class="flex gap-2">
-            <button (click)="useCurrentLocation()"
-              class="flex-1 px-3 py-2 bg-[#E8EAF6] text-[#3949AB] rounded-lg text-sm font-medium hover:bg-[#C5CAE9] transition-colors">
+            <button
+              (click)="useCurrentLocation()"
+              class="flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors"
+              [ngClass]="{
+                'bg-[#E8EAF6] text-[#3949AB] hover:bg-[#C5CAE9]': !isNearMeActive,
+                'bg-[#3949AB] text-white hover:bg-[#1A237E]': isNearMeActive
+              }">
               Near Me
             </button>
+
+
             <button (click)="openMap()"
-              class="flex-1 px-3 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors">
+              class="flex-1 px-3 py-2 bg-[#E8EAF6] text-[#3949AB] rounded-lg text-sm font-medium hover:bg-[#C5CAE9] transition-colors">
               Pick Map
             </button>
           </div>
-          <div *ngIf="filters.latitude" class="text-xs text-green-600 font-medium flex items-center gap-1">
-            <lucide-icon [img]="MapPinIcon" class="w-3 h-3"></lucide-icon>
-            Location selected
-          </div>
+          <div *ngIf="filters.latitude && filters.longitude"
+            class="text-xs font-medium flex items-center gap-1"
+            [ngClass]="{
+              'text-blue-600': isNearMeActive,
+              'text-green-600': !isNearMeActive
+            }">
+
+          <lucide-icon [img]="MapPinIcon" class="w-3 h-3"></lucide-icon>
+
+          <span *ngIf="isNearMeActive; else mapLocation">
+            Using your current location
+          </span>
+
+          <ng-template #mapLocation>
+            Location selected on map
+          </ng-template>
+        </div>
+
+        <!-- Clear location -->
+        <button
+          *ngIf="filters.latitude && filters.longitude"
+          (click)="clearLocation()"
+          class="text-xs text-red-500 underline self-start hover:text-red-600"
+        >
+          Clear location
+        </button>
+
           <div>
             <label class="text-xs text-gray-500 mb-1 block">Radius: {{filters.radius}} km</label>
             <input type="range" min="1" max="50" [(ngModel)]="filters.radius" class="w-full accent-[#3949AB]">
           </div>
+          
         </div>
 
         <!-- Price Filter -->

@@ -43,6 +43,7 @@ export class SearchResultsComponent implements OnInit {
 
   showFilters = false;
   isMapOpen = false;
+  isNearMeActive = false;
 
   filters: SearchCriteria = {
     keyword: '',
@@ -98,26 +99,49 @@ export class SearchResultsComponent implements OnInit {
   onLocationPicked(coords: { lat: number, lng: number }) {
     this.filters.latitude = coords.lat;
     this.filters.longitude = coords.lng;
+    this.isNearMeActive = false;
+    this.loadItems();
   }
 
   useCurrentLocation() {
+    // If already active turn it off
+    if (this.isNearMeActive) {
+      this.clearLocation();
+      return;
+    }
+
+    // Otherwise turn on
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition((position) => {
-        this.filters.latitude = position.coords.latitude;
-        this.filters.longitude = position.coords.longitude;
-      }, (error) => {
-        console.error('Error getting location', error);
-        this.modalService.alert('Could not get your location. Please allow location access.', 'Location Error');
-      });
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          this.filters.latitude = position.coords.latitude;
+          this.filters.longitude = position.coords.longitude;
+          this.isNearMeActive = true;
+        },
+        (error) => {
+          console.error('Error getting location', error);
+          this.modalService.alert(
+            'Could not get your location. Please allow location access.',
+            'Location Error'
+          );
+        }
+      );
     } else {
-      this.modalService.alert('Geolocation is not supported by this browser.', 'Not Supported');
+      this.modalService.alert(
+        'Geolocation is not supported by this browser.',
+        'Not Supported'
+      );
     }
   }
 
+  clearLocation() {
+    this.filters.latitude = undefined;
+    this.filters.longitude = undefined;
+    this.isNearMeActive = false;
+    this.loadItems();
+  }
+
   applyFilters() {
-    if (this.filters.approvalStatus === undefined) {
-      this.filters.approvalStatus = undefined;
-    }
     this.loadItems();
     this.showFilters = false;
   }

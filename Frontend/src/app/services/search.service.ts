@@ -2,8 +2,8 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Item } from '../models/item.model';
-import { SearchCriteria} from '../models/search.criteria.model';
-import { ItemCategory} from '../models/enums/item.category.enum';
+import { SearchCriteria } from '../models/search.criteria.model';
+import { ItemCategory } from '../models/enums/item.category.enum';
 
 @Injectable({
   providedIn: 'root'
@@ -13,11 +13,19 @@ export class SearchService {
   private baseUrl = 'http://localhost:8080/items';
 
   search(criteria: SearchCriteria): Observable<Item[]> {
-    return this.http.post<Item[]>(`${this.baseUrl}/search`, criteria);
+    const params: any = {};
+
+    Object.entries(criteria).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== '') {
+        params[key] = value;
+      }
+    });
+
+    return this.http.get<Item[]>(`${this.baseUrl}/search`, { params });
   }
 
   searchByCategory(category: ItemCategory): Observable<Item[]> {
-    return this.http.get<Item[]>(`${this.baseUrl}/category/{category}`);
+    return this.http.get<Item[]>(`${this.baseUrl}/category/${category}`);
   }
 
   getFeed(): Observable<Item[]> {
