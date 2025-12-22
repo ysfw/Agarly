@@ -48,7 +48,7 @@ public class SecurityConfig {
                         .requestMatchers("/account/login", "/account/register", "/users/**", "/account/gAuth",
                                 "/register/verify", "/register/resend-otp", "/uploads/**", "/api/images/upload",
                                 "/account/Admin-login", "/account/Admin-register", "/items/approved",
-                                "/payments/webhook") // Paymob webhook callback (must be public) + SSE endpoint
+                                "/payments/webhook","/search") // Paymob webhook callback (must be public) + SSE endpoint
                         .permitAll()
                         .anyRequest().authenticated())
                 .exceptionHandling(exception -> exception
