@@ -17,7 +17,7 @@ public class SearchController {
     @Autowired
     private SearchService searchService;
 
-    @GetMapping("/search")
+    @PostMapping("/search")
     public ResponseEntity<List<Item>> search(@Valid @RequestBody SearchCriteria criteria) {
         return ResponseEntity.ok(searchService.searchItems(criteria));
     }
