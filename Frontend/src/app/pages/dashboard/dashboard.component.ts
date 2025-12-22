@@ -211,7 +211,7 @@ export class DashboardComponent implements OnInit {
     switch (type) {
       case 'PAYMENT': return 'text-red-500 bg-red-50';
       case 'EARNING': return 'text-emerald-500 bg-emerald-50';
-      case 'REFUND': return 'text-blue-500 bg-blue-50';
+      case 'REFUND': return 'text-[#3949AB] bg-[#E8EAF6]';
       case 'DEPOSIT': return 'text-amber-500 bg-amber-50';
       default: return 'text-gray-500 bg-gray-50';
     }
@@ -231,7 +231,7 @@ export class DashboardComponent implements OnInit {
       case 'COMPLETED': return 'bg-emerald-100 text-emerald-700';
       case 'PENDING': return 'bg-amber-100 text-amber-700';
       case 'FAILED': return 'bg-red-100 text-red-700';
-      case 'REFUNDED': return 'bg-blue-100 text-blue-700';
+      case 'REFUNDED': return 'bg-[#E8EAF6] text-[#3949AB]';
       default: return 'bg-gray-100 text-gray-700';
     }
   }

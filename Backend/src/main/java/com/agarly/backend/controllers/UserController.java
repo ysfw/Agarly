@@ -25,6 +25,12 @@ public class UserController {
     @Autowired
     ReviewRepository reviewRepository;
 
+    @Autowired
+    private com.agarly.backend.services.EmailService emailService;
+
+    @Autowired
+    private com.agarly.backend.services.JWTService jwtService;
+
     @GetMapping("username/{username}")
     public ResponseEntity<User> findByUsername(@PathVariable String username) {
         User user = userService.findByUsername(username);
@@ -79,5 +85,38 @@ public class UserController {
         List<Item> items = itemRepository.findByOwnerAndStatus(user, 
             com.agarly.backend.models.Enums.ItemStatus.APPROVED);
         return ResponseEntity.ok(items);
+    }
+
+    // Resend verification email for logged-in users
+    @PostMapping("/resend-verification")
+    public ResponseEntity<com.agarly.backend.models.StatusResponse> resendVerification(
+            @RequestHeader("Authorization") String authHeader) {
+        try {
+            String token = authHeader.substring(7);
+            String username = jwtService.extractUsername(token);
+            
+            User user = userService.findByUsername(username);
+            if (user == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new com.agarly.backend.models.StatusResponse("User not found"));
+            }
+
+            if (Boolean.TRUE.equals(user.getVerified())) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new com.agarly.backend.models.StatusResponse("Email already verified"));
+            }
+
+            com.agarly.backend.utils.OtpGenerator generator = new com.agarly.backend.utils.OtpGenerator();
+            String newOtp = generator.generateOTP();
+            user.setOtp(newOtp);
+            userService.save(user);
+
+            emailService.sendVerificationEmail(user.getEmail(), newOtp);
+
+            return ResponseEntity.ok(new com.agarly.backend.models.StatusResponse("Verification email sent successfully"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new com.agarly.backend.models.StatusResponse("Failed to send verification email"));
+        }
     }
 }

@@ -78,7 +78,8 @@ public class AccountController {
 
             String JwtToken = userService.verify(user);
             if (!(JwtToken.equals("Fail"))) {
-                return new ResponseEntity<>(new JWTResponse(JwtToken), HttpStatus.OK);
+                boolean isVerified = existingUser.getVerified() != null ? existingUser.getVerified() : false;
+                return new ResponseEntity<>(new JWTResponse(JwtToken, isVerified, existingUser.getUsername(), existingUser.getEmail()), HttpStatus.OK);
             } else {
                 System.out.println("Invalid Credentials");
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -100,7 +101,7 @@ public class AccountController {
             // Generate token with admin email as username
             String token = jwtService.generateToken(admin.getEmail());
             System.out.println("Admin login successful: " + admin.getEmail());
-            return new ResponseEntity<>(new JWTResponse(token), HttpStatus.OK);
+            return new ResponseEntity<>(new JWTResponse(token, true, admin.getEmail(), admin.getEmail()), HttpStatus.OK);
         }
 
         System.out.println("Invalid admin password");
@@ -131,7 +132,8 @@ public class AccountController {
 
         userService.save(user);
         String token = jwtService.generateToken(user.getUsername());
-        return new ResponseEntity<>(new JWTResponse(token), HttpStatus.OK);
+        boolean isVerified = user.getVerified() != null ? user.getVerified() : true; // Google users are auto-verified
+        return new ResponseEntity<>(new JWTResponse(token, isVerified, user.getUsername(), user.getEmail()), HttpStatus.OK);
     }
 
 }

@@ -12,10 +12,21 @@ export class EventService {
   private readonly streamUrl: string = 'http://localhost:8080/event-stream';
   private readonly reconnnectionDelay: number = 5000
   private stopStream$ = new Subject<void>();
+  private sseInitialized = false;
   router = inject(Router);
   constructor(private ngZone: NgZone, private authService: AuthService,
     private route: ActivatedRoute) {
+    // Listen for login events to initialize SSE
+    this.authService.loginSuccess$.subscribe(() => {
+      console.log('Login detected, initializing SSE');
+      this.initializeSSE();
+    });
 
+    // Listen for logout events to stop SSE
+    this.authService.logout$.subscribe(() => {
+      console.log('Logout detected, stopping SSE');
+      this.stopEvents();
+    });
   }
   /**
    * Main method to get the stream of typed notifications.
@@ -37,6 +48,40 @@ export class EventService {
         }
       })
     )
+  }
+
+  /**
+   * Initialize SSE connection. Can be called explicitly after login.
+   */
+  public initializeSSE(): void {
+    if (this.sseInitialized) {
+      console.log('SSE already initialized');
+      return;
+    }
+    this.sseInitialized = true;
+    console.log('Initializing SSE connection');
+    // Start the connection by subscribing to events
+    this.createEventObservable().pipe(
+      map((rawStringData: String) => {
+        const cleanJSON = rawStringData.trim().replace(/^data:/, '').trim();
+        return JSON.parse(cleanJSON) as sseEvent;
+      }),
+      takeUntil(this.stopStream$),
+      retry({
+        delay: (error) => {
+          console.warn('SSE connection failed. Retrying in 5s.', error);
+          return timer(this.reconnnectionDelay);
+        }
+      })
+    ).subscribe({
+      next: (event) => {
+        console.log('SSE Event received in EventService:', event);
+        // Events will be handled by components that subscribe to getEvents()
+      },
+      error: (err) => {
+        console.error('SSE Error in EventService:', err);
+      }
+    });
   }
 
   /**
@@ -96,6 +141,7 @@ export class EventService {
    */
   public stopEvents(): void {
     this.stopStream$.next();
+    this.sseInitialized = false;
     if (this.worker) {
       this.worker.postMessage({ type: 'STOP' });
       this.worker.terminate();

@@ -41,12 +41,15 @@ export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>, ne
                 if (!isAuthEndpoint) {
                     console.warn('401 Unauthorized - Logging out user');
 
-                    // Check if admin is authenticated and logout accordingly
-                    if (adminService.isAuthenticated()) {
-                        console.log('Logging out admin');
+                    // Check admin token first (more specific check)
+                    const hasAdminToken = !!localStorage.getItem('adminToken');
+                    const hasUserToken = !!authService.getToken();
+
+                    if (hasAdminToken) {
+                        console.log('Logging out admin due to 401');
                         adminService.logout();
-                    } else if (authService.isAuthenticated()) {
-                        console.log('Logging out regular user');
+                    } else if (hasUserToken) {
+                        console.log('Logging out regular user due to 401');
                         authService.logout();
                     }
                 }

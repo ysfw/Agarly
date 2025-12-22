@@ -109,10 +109,15 @@ export class AdminService {
     }
 
     logout(): void {
+        console.log('AdminService: Logging out admin');
         localStorage.removeItem('adminToken');
+        localStorage.removeItem('isAuthenticated'); // Clear any shared auth state
         this.adminToken.set(null);
         this.isAdminLoggedIn.set(false);
-        this.router.navigate(['/admin-login']);
+        // Force navigation and reload to ensure clean state
+        this.router.navigate(['/admin-login']).then(() => {
+            console.log('AdminService: Navigated to admin login');
+        });
     }
 
     isAuthenticated(): boolean {

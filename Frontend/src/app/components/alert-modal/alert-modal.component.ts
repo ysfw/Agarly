@@ -30,7 +30,7 @@ import { CommonModule } from '@angular/common';
               </button>
             }
             <button (click)="onConfirm()"
-                    class="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors font-medium">
+                    class="px-4 py-2 text-white bg-[#3949AB] rounded-lg hover:bg-[#1A237E] transition-colors font-medium">
               {{ confirmText }}
             </button>
           </div>

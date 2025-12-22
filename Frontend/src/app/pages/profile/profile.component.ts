@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { NavbarComponent } from '../../components/navbar/navbar.component';
+import { NavbarLoggedInComponent } from '../../components/navbar-logged-in/navbar-logged-in.component';
 import { AuthService } from '../../services/auth.service';
 import { ProfileApiService, UserProfileDTO } from '../../services/profile-api.service';
 import { AchievementService, Achievement } from '../../services/achievement.service';
@@ -27,13 +27,14 @@ import {
   Trophy,
   Rocket,
   CalendarCheck,
-  Lock
+  Lock,
+  AlertCircle
 } from 'lucide-angular';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [NavbarComponent, LucideAngularModule, CommonModule],
+  imports: [NavbarLoggedInComponent, LucideAngularModule, CommonModule],
   templateUrl: 'profile.component.html'
 })
 export class ProfileComponent implements OnInit {
@@ -59,6 +60,7 @@ export class ProfileComponent implements OnInit {
   readonly RocketIcon = Rocket;
   readonly CalendarCheckIcon = CalendarCheck;
   readonly LockIcon = Lock;
+  readonly AlertIcon = AlertCircle;
 
   // Icon map for dynamic selection
   iconMap: { [key: string]: any } = {
@@ -177,7 +179,7 @@ export class ProfileComponent implements OnInit {
       'red': 'bg-red-100',
       'yellow': 'bg-yellow-100',
       'green': 'bg-green-100',
-      'blue': 'bg-blue-100',
+      'blue': 'bg-[#E8EAF6]',
       'purple': 'bg-purple-100',
       'orange': 'bg-orange-100',
       'gold': 'bg-amber-100',
@@ -191,7 +193,7 @@ export class ProfileComponent implements OnInit {
       'red': 'text-red-500',
       'yellow': 'text-yellow-600',
       'green': 'text-green-600',
-      'blue': 'text-blue-600',
+      'blue': 'text-[#3949AB]',
       'purple': 'text-purple-600',
       'orange': 'text-orange-600',
       'gold': 'text-amber-600',

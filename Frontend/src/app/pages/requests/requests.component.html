@@ -1,8 +1,8 @@
 <div class="min-h-screen w-full bg-[#F5F7FA]">
   @if (auth()) {
-    <app-navbar-logged-in></app-navbar-logged-in>
+  <app-navbar-logged-in></app-navbar-logged-in>
   } @else {
-    <app-navbar></app-navbar>
+  <app-navbar></app-navbar>
   }
   <div class="max-w-5xl mx-auto px-6 py-8">
     <div class="flex items-center justify-between mb-8">
@@ -10,49 +10,83 @@
         <h1 class="text-3xl font-bold text-[#1A237E] mb-2">Item Requests</h1>
         <p class="text-gray-600">Help your neighbors by offering items they need</p>
       </div>
-      <button (click)="router.navigate(['/request-item'])" class="flex items-center gap-2 px-6 py-3 bg-[#3949AB] text-white rounded-xl font-semibold hover:bg-[#1A237E] transition-colors shadow-md">
+      <button (click)="router.navigate(['/request-item'])"
+        class="flex items-center gap-2 px-6 py-3 bg-[#3949AB] text-white rounded-xl font-semibold hover:bg-[#1A237E] transition-colors shadow-md">
         <lucide-icon [img]="PlusIcon" class="w-5 h-5"></lucide-icon>
         Post Request
       </button>
     </div>
+
+    <!-- Loading State -->
+    @if (loading()) {
+    <div class="flex flex-col items-center justify-center py-16">
+      <lucide-icon [img]="LoaderIcon" class="w-12 h-12 text-[#3949AB] animate-spin mb-4"></lucide-icon>
+      <p class="text-gray-600">Loading requests...</p>
+    </div>
+    }
+
+    <!-- Error State -->
+    @else if (error()) {
+    <div class="bg-red-50 border border-red-200 rounded-2xl p-6 text-center">
+      <p class="text-red-700 font-medium">{{ error() }}</p>
+      <button (click)="loadRequests()"
+        class="mt-4 px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
+        Try Again
+      </button>
+    </div>
+    }
+
+    <!-- Requests List -->
+    @else if (requests().length === 0) {
+    <div class="bg-white rounded-2xl p-12 text-center shadow-sm">
+      <p class="text-gray-600 text-lg mb-4">No requests available yet</p>
+      <p class="text-gray-500 text-sm">Be the first to post a request!</p>
+    </div>
+    }
+
+    @else {
     <div class="space-y-4">
-      @for (request of requests; track request.id) {
-        <div (click)="router.navigate(['/request', request.id])" class="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
-          <div class="flex items-start justify-between mb-4">
-            <div class="flex-1">
-              <div class="flex items-center gap-3 mb-2">
-                <h3 class="text-xl font-semibold text-[#1A237E]">{{request.title}}</h3>
-                <span class="px-3 py-1 rounded-full text-xs font-semibold" [class]="getUrgencyColor(request.urgency)">
-                  {{getUrgencyText(request.urgency)}}
-                </span>
-              </div>
-              <p class="text-gray-600 mb-3">{{request.description}}</p>
+      @for (request of requests(); track request.id) {
+      <div (click)="router.navigate(['/request', request.id])"
+        class="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+        <div class="flex items-start justify-between mb-4">
+          <div class="flex-1">
+            <div class="flex items-center gap-3 mb-2">
+              <h3 class="text-xl font-semibold text-[#1A237E]">{{request.title}}</h3>
+              <span class="px-3 py-1 rounded-full text-xs font-semibold" [class]="getUrgencyColor(request.urgency)">
+                {{getUrgencyText(request.urgency)}}
+              </span>
+              @if (request.category) {
+              <span class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-semibold">
+                {{request.category}}
+              </span>
+              }
             </div>
-          </div>
-          <div class="flex flex-wrap items-center gap-4 text-sm text-gray-600">
-            <div class="flex items-center gap-2">
-              <lucide-icon [img]="UserIcon" class="w-4 h-4"></lucide-icon>
-              <span>{{request.requester}}</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <lucide-icon [img]="CalendarIcon" class="w-4 h-4"></lucide-icon>
-              <span>{{request.startDate}} - {{request.endDate}}</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <lucide-icon [img]="ClockIcon" class="w-4 h-4"></lucide-icon>
-              <span>{{request.postedTime}}</span>
-            </div>
-          </div>
-          <div class="mt-4 pt-4 border-t border-gray-200 flex items-center justify-between">
-            <span class="text-sm text-gray-600">
-              {{request.responses}} {{request.responses === 1 ? 'offer' : 'offers'}}
-            </span>
-            <button class="px-4 py-2 bg-[#C6FF00] text-[#1A237E] rounded-lg font-semibold hover:bg-[#B0E600] transition-colors">
-              Offer Item
-            </button>
+            <p class="text-gray-600 mb-3">{{request.description}}</p>
           </div>
         </div>
+        <div class="flex flex-wrap items-center gap-4 text-sm text-gray-600">
+          <div class="flex items-center gap-2">
+            <lucide-icon [img]="UserIcon" class="w-4 h-4"></lucide-icon>
+            <span>{{getRequesterName(request)}}</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <lucide-icon [img]="CalendarIcon" class="w-4 h-4"></lucide-icon>
+            <span>{{getFormattedDate(request.startDate)}} - {{getFormattedDate(request.endDate)}}</span>
+          </div>
+        </div>
+        <div class="mt-4 pt-4 border-t border-gray-200 flex items-center justify-between">
+          <span class="text-sm text-gray-600">
+            {{request.status || 'PENDING'}}
+          </span>
+          <button
+            class="px-4 py-2 bg-[#C6FF00] text-[#1A237E] rounded-lg font-semibold hover:bg-[#B0E600] transition-colors">
+            Offer Item
+          </button>
+        </div>
+      </div>
       }
     </div>
+    }
   </div>
 </div>

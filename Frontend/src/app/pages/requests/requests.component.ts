@@ -1,9 +1,10 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { LucideAngularModule, Calendar, User, Clock, Plus } from 'lucide-angular';
-import { NavbarComponent } from '../../components/navbar/navbar.component'; // Adjust path as needed
+import { LucideAngularModule, Calendar, User, Clock, Plus, Loader2 } from 'lucide-angular';
+import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { NavbarLoggedInComponent } from 'src/app/components/navbar-logged-in/navbar-logged-in.component';
 import { AuthService } from 'src/app/services/auth.service';
+import { ItemRequestService, ItemRequest } from 'src/app/services/item-request.service';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -13,61 +14,65 @@ import { CommonModule } from '@angular/common';
   templateUrl: './requests.component.html',
   styleUrl: './requests.component.css'
 })
-export class RequestsComponent {
+export class RequestsComponent implements OnInit {
   readonly CalendarIcon = Calendar;
   readonly UserIcon = User;
   readonly ClockIcon = Clock;
   readonly PlusIcon = Plus;
-  
+  readonly LoaderIcon = Loader2;
+
   router = inject(Router);
   authService = inject(AuthService);
+  itemRequestService = inject(ItemRequestService);
+
   auth = this.authService.isLoggedIn;
+  requests = signal<ItemRequest[]>([]);
+  loading = signal(true);
+  error = signal<string | null>(null);
 
-  requests = [{
-    id: 1,
-    title: 'Pressure Washer',
-    category: 'Cleaning',
-    description: 'Need to clean my driveway and patio this weekend',
-    requester: 'Mike Johnson',
-    startDate: 'Jan 27, 2025',
-    endDate: 'Jan 28, 2025',
-    urgency: 'soon',
-    responses: 3,
-    postedTime: '2 hours ago'
-  }, {
-    id: 2,
-    title: 'Table Saw',
-    category: 'Tools',
-    description: 'Building a bookshelf and need a table saw for cutting wood',
-    requester: 'Emma Wilson',
-    startDate: 'Feb 1, 2025',
-    endDate: 'Feb 3, 2025',
-    urgency: 'flexible',
-    responses: 1,
-    postedTime: '5 hours ago'
-  }, {
-    id: 3,
-    title: 'Camping Tent (4-person)',
-    category: 'Sports',
-    description: 'Family camping trip next weekend',
-    requester: 'David Lee',
-    startDate: 'Feb 5, 2025',
-    endDate: 'Feb 7, 2025',
-    urgency: 'urgent',
-    responses: 5,
-    postedTime: '1 day ago'
-  }];
+  ngOnInit() {
+    this.loadRequests();
+  }
 
-  getUrgencyColor(urgency: string) {
-    switch (urgency) {
+  loadRequests() {
+    this.loading.set(true);
+    this.error.set(null);
+
+    this.itemRequestService.getAllRequests().subscribe({
+      next: (data) => {
+        this.requests.set(data);
+        this.loading.set(false);
+      },
+      error: (err) => {
+        console.error('Error loading requests:', err);
+        this.error.set('Failed to load requests. Please try again later.');
+        this.loading.set(false);
+      }
+    });
+  }
+
+  getRequesterName(request: ItemRequest): string {
+    if (request.requester) {
+      return `${request.requester.firstName} ${request.requester.lastName}`;
+    }
+    return 'Unknown';
+  }
+
+  getFormattedDate(dateString: string): string {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  }
+
+  getUrgencyColor(urgency?: string) {
+    switch (urgency?.toLowerCase()) {
       case 'urgent': return 'bg-red-100 text-red-700';
       case 'soon': return 'bg-orange-100 text-orange-700';
-      default: return 'bg-blue-100 text-blue-700';
+      default: return 'bg-[#E8EAF6] text-[#3949AB]';
     }
   }
 
-  getUrgencyText(urgency: string) {
-    switch (urgency) {
+  getUrgencyText(urgency?: string) {
+    switch (urgency?.toLowerCase()) {
       case 'urgent': return 'Urgent';
       case 'soon': return 'Soon';
       default: return 'Flexible';

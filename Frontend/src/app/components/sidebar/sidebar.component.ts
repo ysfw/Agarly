@@ -98,7 +98,7 @@ export class SidebarComponent {
 
   navItems = [
     { id: 'home', icon: Home, label: 'Explore' },
-    { id: 'my-items', icon: Grid3x3, label: 'My Items' },
+    { id: 'dashboard', icon: Grid3x3, label: 'Dashboard' },
     // Messages removed
     { id: 'profile', icon: User, label: 'Profile' }
   ];

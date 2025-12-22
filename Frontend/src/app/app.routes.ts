@@ -27,6 +27,7 @@ import { PasswordChange } from './pages/password-change/password-change';
 import { TicketsComponent } from './pages/tickets/tickets';
 import { UserProfileComponent } from './pages/user-profile/user-profile';
 import { UserGuide } from './pages/user-guide/user-guide';
+import { NotFoundComponent } from './pages/not-found/not-found.component';
 
 
 export const routes: Routes = [
@@ -60,6 +61,6 @@ export const routes: Routes = [
   { path: 'user/:id', component: UserProfileComponent }, // Public profile view (accessible by users and admins)
   { path: 'my-items', redirectTo: 'dashboard', pathMatch: 'full' }, // Consolidated into dashboard
 
-  // Fallback
-  { path: '**', redirectTo: 'home' }
+  // 404 Not Found
+  { path: '**', component: NotFoundComponent }
 ];

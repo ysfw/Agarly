@@ -1,10 +1,13 @@
-import { Component, inject, OnInit, signal, computed } from '@angular/core';
+import { Component, inject, OnInit, signal, computed, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { LucideAngularModule, Shield, LogOut, Search, Trash2, Check, X, Package, User, Loader2, LifeBuoy, Mail, Clock } from 'lucide-angular';
 import { AdminService, AdminItem, AdminRequest, DashboardStats, AdminSupportTicketDto, AdminTicketStatus } from '../../services/admin.service';
 import { ModalService } from '../../services/modal.service';
+import { EventService } from '../../services/event-service';
+import { AuthService } from '../../services/auth.service';
+import { Subscription } from 'rxjs';
 
 type SupportTicketStatus = AdminTicketStatus;
 
@@ -259,7 +262,7 @@ export class AdminDashboardComponent implements OnInit {
             case 'PENDING':
                 return 'bg-amber-100 text-amber-700';
             case 'OPEN':
-                return 'bg-blue-100 text-blue-800';
+                return 'bg-[#E8EAF6] text-[#3949AB]';
             case 'CLOSED':
                 return 'bg-emerald-100 text-emerald-700';
             default:
@@ -475,19 +478,29 @@ export class AdminDashboardComponent implements OnInit {
             return;
         }
 
-        console.log('Executing ban for user ID:', user.id);
-        this.adminService.banUser(user.id).subscribe({
-            next: (response) => {
-                console.log('Ban successful:', response);
-                this.modalService.alert(`User ${this.getOwnerName(user)} has been banned successfully`, 'Success');
-                // Reload users
-                this.adminService.getUsers().subscribe({
-                    next: (users) => this.users.set(users)
+        const userName = this.getOwnerName(user);
+
+        // Show confirmation modal before banning
+        this.modalService.confirm(
+            `Are you sure you want to ban ${userName}? This will prevent them from accessing the platform.`,
+            'Confirm Ban User'
+        ).then((confirmed) => {
+            if (confirmed) {
+                console.log('Executing ban for user ID:', user.id);
+                this.adminService.banUser(user.id).subscribe({
+                    next: (response) => {
+                        console.log('Ban successful:', response);
+                        this.modalService.alert(`User ${userName} has been banned successfully`, 'Success');
+                        // Reload users
+                        this.adminService.getUsers().subscribe({
+                            next: (users) => this.users.set(users)
+                        });
+                    },
+                    error: (err) => {
+                        console.error('Error banning user:', err);
+                        this.modalService.alert(`Failed to ban user: ${err.error || err.message || 'Unknown error'}`, 'Error');
+                    }
                 });
-            },
-            error: (err) => {
-                console.error('Error banning user:', err);
-                this.modalService.alert(`Failed to ban user: ${err.error || err.message || 'Unknown error'}`, 'Error');
             }
         });
     }

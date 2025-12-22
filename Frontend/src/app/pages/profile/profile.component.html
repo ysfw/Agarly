@@ -1,5 +1,5 @@
 <div class="min-h-screen w-full bg-[#F5F7FA]">
-    <app-navbar></app-navbar>
+    <app-navbar-logged-in></app-navbar-logged-in>
 
     <!-- Loading State -->
     @if (loading()) {
@@ -33,9 +33,15 @@
                 <div class="flex-1 text-center md:text-left">
                     <div class="flex items-center justify-center md:justify-start gap-3 mb-2">
                         <h1 class="text-3xl font-bold text-[#1A237E]">{{ getFullName() }}</h1>
+                        @if (authService.isVerified()) {
                         <span class="px-3 py-1 bg-[#4CAF50] text-white text-sm rounded-full font-semibold">
                             Verified
                         </span>
+                        } @else {
+                        <span class="px-3 py-1 bg-[#FFB300] text-white text-sm rounded-full font-semibold">
+                            Not Verified
+                        </span>
+                        }
                     </div>
                     <p class="text-gray-600 mb-2">{{ profile().email }}</p>
                     @if (profile().bio) {

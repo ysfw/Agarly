@@ -245,6 +245,11 @@ export class VerifyEmailComponent implements AfterViewInit {
     this.router.navigate(['/register']);
   }
 
+  skipVerification(): void {
+    // Navigate to login, user can verify later from their profile
+    this.router.navigate(['/login']);
+  }
+
   ngOnDestroy(): void {
     // Clean up interval on component destroy
     if (this.countdownInterval) {

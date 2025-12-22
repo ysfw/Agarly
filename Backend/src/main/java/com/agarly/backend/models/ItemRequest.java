@@ -26,10 +26,14 @@ public class ItemRequest {
     private User requester;
 
     private String status; // PENDING, FULFILLED, CANCELLED
+    
+    private String category; // e.g., "Tools", "Sports", "Cleaning"
+    private String urgency; // URGENT, SOON, FLEXIBLE
 
     public ItemRequest(String title, String description) {
         this.title = title;
         this.description = description;
         this.status = "PENDING";
+        this.urgency = "FLEXIBLE";
     }
 }

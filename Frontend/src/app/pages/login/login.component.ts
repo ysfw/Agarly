@@ -119,7 +119,10 @@ export class LoginComponent implements OnInit {
         this.googleAuthLoading = false;
         console.log('Login successful on backend', res);
         const jwtToken = res.Token || res.token || token;
-        this.authService.setToken(jwtToken);
+        const verified = res.verified !== undefined ? res.verified : true; // Google users default to verified
+        const username = res.username || '';
+        const email = res.email || '';
+        this.authService.setToken(jwtToken, verified, username, email);
         this.ngZone.run(() => {
           this.authService.login();
           this.router.navigate(['/home'], { replaceUrl: true });
@@ -182,7 +185,10 @@ export class LoginComponent implements OnInit {
     this.api.loginUser(this.formData).subscribe({
       next: (res: any) => {
         const token = res.Token;
-        this.authService.setToken(token);
+        const verified = res.verified !== undefined ? res.verified : false;
+        const username = res.username || '';
+        const email = res.email || '';
+        this.authService.setToken(token, verified, username, email);
         this.loading = false;
         this.authService.login();
         this.router.navigate(['/home'], { replaceUrl: true });

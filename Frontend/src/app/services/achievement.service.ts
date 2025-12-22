@@ -97,7 +97,7 @@ export class AchievementService {
             'red': { bg: 'bg-red-100', text: 'text-red-500' },
             'yellow': { bg: 'bg-yellow-100', text: 'text-yellow-600' },
             'green': { bg: 'bg-green-100', text: 'text-green-600' },
-            'blue': { bg: 'bg-blue-100', text: 'text-blue-600' },
+            'blue': { bg: 'bg-[#E8EAF6]', text: 'text-[#3949AB]' },
             'purple': { bg: 'bg-purple-100', text: 'text-purple-600' },
             'orange': { bg: 'bg-orange-100', text: 'text-orange-600' },
             'gold': { bg: 'bg-amber-100', text: 'text-amber-600' },

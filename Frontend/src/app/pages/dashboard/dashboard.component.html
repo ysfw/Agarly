@@ -1,4 +1,4 @@
-<div class="min-h-screen w-full bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+<div class="min-h-screen w-full bg-gradient-to-br from-slate-50 via-blue-50 to-[#E8EAF6]">
   @if (auth()) {
   <app-navbar-logged-in></app-navbar-logged-in>
   } @else {
@@ -7,10 +7,10 @@
   <div class="max-w-6xl mx-auto px-6 py-8">
     <!-- Header -->
     <div class="flex items-center justify-between mb-8">
-      <h1 class="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">My
+      <h1 class="text-3xl font-bold bg-gradient-to-r from-[#3949AB] to-[#5C6BC0] bg-clip-text text-transparent">My
         Dashboard</h1>
       <button (click)="navigateToAddItem()"
-        class="flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-semibold shadow-lg shadow-indigo-200 hover:shadow-xl hover:-translate-y-0.5 transition-all">
+        class="flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-[#3949AB] to-[#5C6BC0] text-white rounded-xl font-semibold shadow-lg shadow-[#C5CAE9] hover:shadow-xl hover:-translate-y-0.5 transition-all">
         <lucide-icon [img]="PlusIcon" class="w-5 h-5"></lucide-icon>
         Add Item
       </button>
@@ -20,12 +20,12 @@
     <div class="flex gap-2 mb-8 overflow-x-auto pb-2 scrollbar-hide">
       <button (click)="activeTab = 'myitems'"
         class="flex-none px-5 py-3 rounded-xl font-semibold text-sm transition-all duration-300"
-        [ngClass]="activeTab === 'myitems' ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-200' : 'bg-white text-gray-600 hover:bg-gray-50 shadow-sm'">
+        [ngClass]="activeTab === 'myitems' ? 'bg-gradient-to-r from-[#3949AB] to-[#5C6BC0] text-white shadow-lg shadow-[#C5CAE9]' : 'bg-white text-gray-600 hover:bg-gray-50 shadow-sm'">
         📦 My Items
       </button>
       <button (click)="activeTab = 'pending'"
         class="flex-none px-5 py-3 rounded-xl font-semibold text-sm transition-all duration-300 relative"
-        [ngClass]="activeTab === 'pending' ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-200' : 'bg-white text-gray-600 hover:bg-gray-50 shadow-sm'">
+        [ngClass]="activeTab === 'pending' ? 'bg-gradient-to-r from-[#3949AB] to-[#5C6BC0] text-white shadow-lg shadow-[#C5CAE9]' : 'bg-white text-gray-600 hover:bg-gray-50 shadow-sm'">
         ⏳ Pending
         @if (pendingItems().length > 0) {
         <span
@@ -35,17 +35,17 @@
       </button>
       <button (click)="activeTab = 'borrowed'"
         class="flex-none px-5 py-3 rounded-xl font-semibold text-sm transition-all duration-300"
-        [ngClass]="activeTab === 'borrowed' ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-200' : 'bg-white text-gray-600 hover:bg-gray-50 shadow-sm'">
+        [ngClass]="activeTab === 'borrowed' ? 'bg-gradient-to-r from-[#3949AB] to-[#5C6BC0] text-white shadow-lg shadow-[#C5CAE9]' : 'bg-white text-gray-600 hover:bg-gray-50 shadow-sm'">
         🛒 Borrowed
       </button>
       <button (click)="activeTab = 'lent'"
         class="flex-none px-5 py-3 rounded-xl font-semibold text-sm transition-all duration-300"
-        [ngClass]="activeTab === 'lent' ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-200' : 'bg-white text-gray-600 hover:bg-gray-50 shadow-sm'">
+        [ngClass]="activeTab === 'lent' ? 'bg-gradient-to-r from-[#3949AB] to-[#5C6BC0] text-white shadow-lg shadow-[#C5CAE9]' : 'bg-white text-gray-600 hover:bg-gray-50 shadow-sm'">
         📤 Lent Out
       </button>
       <button (click)="activeTab = 'wallet'"
         class="flex-none px-5 py-3 rounded-xl font-semibold text-sm transition-all duration-300"
-        [ngClass]="activeTab === 'wallet' ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-200' : 'bg-white text-gray-600 hover:bg-gray-50 shadow-sm'">
+        [ngClass]="activeTab === 'wallet' ? 'bg-gradient-to-r from-[#3949AB] to-[#5C6BC0] text-white shadow-lg shadow-[#C5CAE9]' : 'bg-white text-gray-600 hover:bg-gray-50 shadow-sm'">
         💰 Wallet
       </button>
     </div>
@@ -53,7 +53,7 @@
     <!-- Loading State -->
     @if (loading()) {
     <div class="flex items-center justify-center py-12">
-      <div class="w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+      <div class="w-8 h-8 border-4 border-[#3949AB] border-t-transparent rounded-full animate-spin"></div>
     </div>
     }
 
@@ -67,7 +67,7 @@
         <h3 class="text-xl font-bold text-gray-800 mb-2">No items listed yet</h3>
         <p class="text-gray-500 mb-6">Start sharing items with your neighbors!</p>
         <button (click)="navigateToAddItem()"
-          class="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all">
+          class="px-6 py-3 bg-gradient-to-r from-[#3949AB] to-[#5C6BC0] text-white rounded-xl font-semibold hover:shadow-lg transition-all">
           Add Your First Item
         </button>
       </div>
@@ -89,7 +89,7 @@
             </div>
             <p class="text-gray-500 text-sm mb-2 line-clamp-1">{{ item.description }}</p>
             <div class="flex items-center gap-4 text-sm text-gray-500">
-              <span class="font-semibold text-indigo-600">${{ item.pricePerDay }}/{{ item.priceUnit.toLowerCase()
+              <span class="font-semibold text-[#3949AB]">${{ item.pricePerDay }}/{{ item.priceUnit.toLowerCase()
                 }}</span>
               <span>{{ item.location }}</span>
             </div>
@@ -98,7 +98,7 @@
           <!-- Actions -->
           <div class="flex items-center gap-2">
             <button (click)="viewItem(item)"
-              class="p-3 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all" title="View">
+              class="p-3 text-gray-400 hover:text-[#3949AB] hover:bg-[#E8EAF6] rounded-xl transition-all" title="View">
               <lucide-icon [img]="EyeIcon" class="w-5 h-5"></lucide-icon>
             </button>
             <button (click)="editItem(item)"
@@ -154,7 +154,7 @@
 
             @if (item.status === 'REJECTED') {
             <button (click)="editItem(item)"
-              class="px-4 py-2 bg-indigo-100 text-indigo-700 rounded-xl font-semibold text-sm hover:bg-indigo-200 transition-colors">
+              class="px-4 py-2 bg-[#E8EAF6] text-indigo-700 rounded-xl font-semibold text-sm hover:bg-[#C5CAE9] transition-colors">
               Edit & Resubmit
             </button>
             }
@@ -195,7 +195,7 @@
           </div>
         </div>
         <button
-          class="px-5 py-2.5 bg-indigo-100 text-indigo-700 rounded-xl font-semibold hover:bg-indigo-600 hover:text-white transition-all duration-300">
+          class="px-5 py-2.5 bg-[#E8EAF6] text-indigo-700 rounded-xl font-semibold hover:bg-[#3949AB] hover:text-white transition-all duration-300">
           Contact Owner
         </button>
       </div>
@@ -233,7 +233,7 @@
           </div>
         </div>
         <button
-          class="px-5 py-2.5 bg-indigo-100 text-indigo-700 rounded-xl font-semibold hover:bg-indigo-600 hover:text-white transition-all duration-300">
+          class="px-5 py-2.5 bg-[#E8EAF6] text-indigo-700 rounded-xl font-semibold hover:bg-[#3949AB] hover:text-white transition-all duration-300">
           Contact
         </button>
         <button
@@ -250,7 +250,7 @@
       @if (activeTab === 'wallet' && !loading()) {
       <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
         <div
-          class="bg-gradient-to-br from-indigo-600 to-purple-700 rounded-2xl p-6 text-white shadow-lg shadow-indigo-200">
+          class="bg-gradient-to-br from-[#3949AB] to-[#5C6BC0] rounded-2xl p-6 text-white shadow-lg shadow-[#C5CAE9]">
           <div class="flex items-center gap-3 mb-3">
             <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
               <lucide-icon [img]="WalletIcon" class="w-5 h-5"></lucide-icon>
@@ -281,7 +281,7 @@
 
       <div class="flex gap-4 mb-6">
         <button (click)="navigateToPayment()"
-          class="flex items-center gap-2 px-5 py-3 bg-white rounded-xl shadow-sm hover:shadow-md transition-all font-semibold text-gray-700 hover:text-indigo-600">
+          class="flex items-center gap-2 px-5 py-3 bg-white rounded-xl shadow-sm hover:shadow-md transition-all font-semibold text-gray-700 hover:text-[#3949AB]">
           <lucide-icon [img]="CreditCardIcon" class="w-5 h-5"></lucide-icon>
           Payment Methods
           <lucide-icon [img]="ChevronRightIcon" class="w-4 h-4"></lucide-icon>
@@ -374,7 +374,7 @@
       }
     </div>
     <button
-      class="w-full px-6 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-bold text-lg shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+      class="w-full px-6 py-4 bg-gradient-to-r from-[#3949AB] to-[#5C6BC0] text-white rounded-xl font-bold text-lg shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
       (click)="submitReview()" [disabled]="reviewStars === 0">
       Submit Review
     </button>
