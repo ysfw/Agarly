@@ -93,7 +93,7 @@ public class UserService {
                     user.setBlocked(false);
                     user.setProvider(AuthProvider.GOOGLE);
                     user.setVerified(true);
-                    user.setProfileImageUrl(payload.get("picture").toString());
+                    user.setProfileImageUrl((String) payload.get("picture"));
                 }
 
                 return user;
