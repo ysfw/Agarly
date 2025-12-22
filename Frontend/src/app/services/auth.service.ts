@@ -34,7 +34,8 @@ export class AuthService {
     phoneNumber: "",
     username: "",
     activated: true,
-    blocked: false
+    blocked: false,
+    verified: false
   })
 
   http = inject(HttpClient);

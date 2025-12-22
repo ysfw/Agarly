@@ -7,5 +7,6 @@ export interface UserDTO {
     lastName : string,
     address : string,
     activated : boolean,
-    blocked : boolean
+    blocked : boolean,
+    verified : boolean
 }

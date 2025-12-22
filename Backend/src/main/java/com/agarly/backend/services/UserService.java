@@ -77,6 +77,7 @@ public class UserService {
             com.google.api.client.googleapis.auth.oauth2.GoogleIdToken idToken = verifier.verify(idTokenString);
             if (idToken != null) {
                 com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload payload = idToken.getPayload();
+                System.out.println(payload.toString());
                 String email = payload.getEmail();
                 String firstName = (String) payload.get("given_name");
                 String lastName = (String) payload.get("family_name");
@@ -91,6 +92,8 @@ public class UserService {
                     user.setActivated(true);
                     user.setBlocked(false);
                     user.setProvider(AuthProvider.GOOGLE);
+                    user.setVerified(true);
+                    user.setProfileImageUrl(payload.get("picture").toString());
                 }
 
                 return user;

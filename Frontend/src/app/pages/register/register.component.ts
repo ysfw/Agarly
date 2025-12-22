@@ -188,7 +188,8 @@ export class RegisterComponent {
       lastName: this.formData.lastName,
       address: this.formData.address,
       activated: true,
-      blocked: false
+      blocked: false,
+      verified : false
     }
 
     this.api.registerUser(userData).subscribe({
