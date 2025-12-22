@@ -125,13 +125,13 @@
           </h2>
           <div class="space-y-4 mb-6">
             <div class="flex items-center gap-3 p-4 bg-[#F5F7FA] rounded-xl">
-              <img src="https://images.unsplash.com/photo-1504148455328-c376907d081c?w=100" alt="Power Drill" class="w-16 h-16 rounded-lg object-cover" />
+              <img [src]="itemPrimaryImage" [alt]="item?.title || 'Selected Item'" class="w-16 h-16 rounded-lg object-cover" />
               <div>
                 <h3 class="font-semibold text-[#1A237E]">
-                  Power Drill
+                  {{item?.title || 'Selected Item'}}
                 </h3>
                 <p class="text-sm text-gray-600">
-                  Owner: Sarah Mitchell
+                  Owner: {{ownerDisplayName}}
                 </p>
               </div>
             </div>
@@ -168,8 +168,12 @@
               </div>
             </div>
           </div>
-          <button (click)="handleConfirm()" class="w-full px-6 py-4 bg-[#3949AB] text-white rounded-xl font-semibold hover:bg-[#1A237E] transition-colors shadow-md">
-            Send Booking Request
+          <button (click)="handleConfirm()" [disabled]="isSubmitting" class="w-full px-6 py-4 bg-[#3949AB] text-white rounded-xl font-semibold hover:bg-[#1A237E] transition-colors shadow-md disabled:bg-gray-300 disabled:text-gray-600 disabled:cursor-not-allowed">
+            @if (isSubmitting) {
+              Sending...
+            } @else {
+              Send Booking Request
+            }
           </button>
         </div>
       </div>

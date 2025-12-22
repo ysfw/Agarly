@@ -15,4 +15,10 @@ export interface Item {
   dueDate?: string;
   status?: 'PENDING' | 'APPROVED' | 'REJECTED';
   rating?: number;
+  currentBookingId?: number;
+  activeBookingId?: number;
+  bookingId?: number;
+  latestBookingId?: number;
+  currentBooking?: { id?: number };
+  activeBooking?: { id?: number };
 }

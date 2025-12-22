@@ -43,6 +43,22 @@
         [ngClass]="activeTab === 'lent' ? 'bg-gradient-to-r from-[#3949AB] to-[#5C6BC0] text-white shadow-lg shadow-[#C5CAE9]' : 'bg-white text-gray-600 hover:bg-gray-50 shadow-sm'">
         📤 Lent Out
       </button>
+      <button (click)="activeTab = 'requestsReceived'"
+        class="relative flex-none px-5 py-3 rounded-xl font-semibold text-sm transition-all duration-300"
+        [ngClass]="activeTab === 'requestsReceived' ? 'bg-gradient-to-r from-[#3949AB] to-[#5C6BC0] text-white shadow-lg shadow-[#C5CAE9]' : 'bg-white text-gray-600 hover:bg-gray-50 shadow-sm'">
+        📥 Requests Received
+        @if (getPendingReceivedCount() > 0) {
+        <span
+          class="absolute -top-1 -right-1 w-5 h-5 bg-amber-500 text-white text-xs rounded-full flex items-center justify-center">
+          {{ getPendingReceivedCount() }}
+        </span>
+        }
+      </button>
+      <button (click)="activeTab = 'requestsSent'"
+        class="flex-none px-5 py-3 rounded-xl font-semibold text-sm transition-all duration-300"
+        [ngClass]="activeTab === 'requestsSent' ? 'bg-gradient-to-r from-[#3949AB] to-[#5C6BC0] text-white shadow-lg shadow-[#C5CAE9]' : 'bg-white text-gray-600 hover:bg-gray-50 shadow-sm'">
+        🚀 Requests Sent
+      </button>
       <button (click)="activeTab = 'wallet'"
         class="flex-none px-5 py-3 rounded-xl font-semibold text-sm transition-all duration-300"
         [ngClass]="activeTab === 'wallet' ? 'bg-gradient-to-r from-[#3949AB] to-[#5C6BC0] text-white shadow-lg shadow-[#C5CAE9]' : 'bg-white text-gray-600 hover:bg-gray-50 shadow-sm'">
@@ -236,11 +252,146 @@
           class="px-5 py-2.5 bg-[#E8EAF6] text-indigo-700 rounded-xl font-semibold hover:bg-[#3949AB] hover:text-white transition-all duration-300">
           Contact
         </button>
+        @if (!isAwaitingReturnConfirmation(item) && returningItemId() !== item.id) {
         <button
           class="px-5 py-2.5 bg-emerald-100 text-emerald-700 rounded-xl font-semibold hover:bg-emerald-600 hover:text-white transition-all duration-300"
-          (click)="openReviewModal(item)">
+          (click)="promptReturnConfirmation(item)">
           Mark Returned
         </button>
+        }
+        @if (returningItemId() === item.id) {
+        <span class="px-5 py-2.5 bg-emerald-100 text-emerald-700 rounded-xl font-semibold">
+          Processing...
+        </span>
+        }
+      </div>
+      }
+      }
+      }
+
+      <!-- REQUESTS RECEIVED TAB - Booking requests from other users -->
+      @if (activeTab === 'requestsReceived' && !loading()) {
+      <h2 class="text-xl font-bold text-gray-800 mb-6">Requests Received</h2>
+      @if (receivedRequests().length === 0) {
+      <div class="bg-white rounded-2xl p-12 shadow-sm text-center">
+        <div class="text-5xl mb-4">📭</div>
+        <h3 class="text-xl font-bold text-gray-800 mb-2">No booking requests yet</h3>
+        <p class="text-gray-500">When other users request your items, they will appear here</p>
+      </div>
+      } @else {
+      @for (request of receivedRequests(); track request.id) {
+      <div
+        class="bg-white rounded-2xl p-5 shadow-sm hover:shadow-lg transition-all duration-300 flex items-start gap-5 group">
+        <img [src]="getItemImage(request)" [alt]="getItemTitle(request)"
+          class="w-20 h-20 rounded-xl object-cover shadow-md group-hover:scale-105 transition-transform" />
+        <div class="flex-1 min-w-0 space-y-2">
+          <div class="flex items-center gap-3">
+            <h3 class="text-lg font-bold text-gray-800 truncate">{{ getItemTitle(request) }}</h3>
+            <span class="px-2.5 py-1 rounded-full text-xs font-semibold"
+              [ngClass]="getRequestStatusBadge(request.status).class">
+              {{ getRequestStatusBadge(request.status).text }}
+            </span>
+          </div>
+          <div class="flex flex-wrap gap-x-6 gap-y-2 text-sm text-gray-500">
+            <span class="flex items-center gap-1.5">
+              <lucide-icon [img]="UserIcon" class="w-4 h-4"></lucide-icon>
+              Borrower: {{ getBorrowerName(request) }}
+            </span>
+            @if (getBorrowerEmail(request)) {
+            <span class="flex items-center gap-1.5">
+              <lucide-icon [img]="MailIcon" class="w-4 h-4"></lucide-icon>
+              {{ getBorrowerEmail(request) }}
+            </span>
+            }
+            <span class="flex items-center gap-1.5">
+              <lucide-icon [img]="CalendarIcon" class="w-4 h-4"></lucide-icon>
+              {{ formatDateRange(request.startDate, request.endDate) }}
+            </span>
+            @if (request.createdAt) {
+            <span class="flex items-center gap-1.5">
+              <lucide-icon [img]="ClockIcon" class="w-4 h-4"></lucide-icon>
+              Requested on {{ formatDate(request.createdAt) }}
+            </span>
+            }
+          </div>
+          @if (request.notes) {
+          <p class="text-sm text-gray-600 bg-[#F5F7FA] rounded-xl px-4 py-3">{{ request.notes }}</p>
+          }
+        </div>
+        <div class="flex flex-col gap-2 ml-2">
+          <button (click)="openRequestModal(request)"
+            class="px-4 py-2 bg-[#E8EAF6] text-indigo-700 rounded-xl text-sm font-semibold hover:bg-[#3949AB] hover:text-white transition-all"
+            title="View request details">
+            View
+          </button>
+          @if (canRespondToRequest(request)) {
+          <button (click)="rejectRequest(request)"
+            [disabled]="requestActionLoading()"
+            class="px-4 py-2 bg-red-50 text-red-600 rounded-xl text-sm font-semibold hover:bg-red-100 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+            title="Reject request">
+            Reject
+          </button>
+          <button (click)="acceptRequest(request)"
+            [disabled]="requestActionLoading()"
+            class="px-4 py-2 bg-emerald-50 text-emerald-600 rounded-xl text-sm font-semibold hover:bg-emerald-100 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+            title="Accept request">
+            Accept
+          </button>
+          }
+        </div>
+      </div>
+      }
+      }
+      }
+
+      <!-- REQUESTS SENT TAB - Booking requests I created -->
+      @if (activeTab === 'requestsSent' && !loading()) {
+      @if (sentRequests().length === 0) {
+      <div class="bg-white rounded-2xl p-12 shadow-sm text-center">
+        <div class="text-5xl mb-4">📝</div>
+        <h3 class="text-xl font-bold text-gray-800 mb-2">No outgoing requests</h3>
+        <p class="text-gray-500">Your booking requests for other items will show up here</p>
+      </div>
+      } @else {
+      @for (request of sentRequests(); track request.id) {
+      <div
+        class="bg-white rounded-2xl p-5 shadow-sm hover:shadow-lg transition-all duration-300 flex items-start gap-5 group">
+        <img [src]="getItemImage(request)" [alt]="getItemTitle(request)"
+          class="w-20 h-20 rounded-xl object-cover shadow-md group-hover:scale-105 transition-transform" />
+        <div class="flex-1 min-w-0 space-y-2">
+          <div class="flex items-center gap-3">
+            <h3 class="text-lg font-bold text-gray-800 truncate">{{ getItemTitle(request) }}</h3>
+            <span class="px-2.5 py-1 rounded-full text-xs font-semibold"
+              [ngClass]="getRequestStatusBadge(request.status).class">
+              {{ getRequestStatusBadge(request.status).text }}
+            </span>
+          </div>
+          <div class="flex flex-wrap gap-x-6 gap-y-2 text-sm text-gray-500">
+            <span class="flex items-center gap-1.5">
+              <lucide-icon [img]="UserIcon" class="w-4 h-4"></lucide-icon>
+              Owner: {{ getOwnerName(request) }}
+            </span>
+            @if (getOwnerEmail(request)) {
+            <span class="flex items-center gap-1.5">
+              <lucide-icon [img]="MailIcon" class="w-4 h-4"></lucide-icon>
+              {{ getOwnerEmail(request) }}
+            </span>
+            }
+            <span class="flex items-center gap-1.5">
+              <lucide-icon [img]="CalendarIcon" class="w-4 h-4"></lucide-icon>
+              {{ formatDateRange(request.startDate, request.endDate) }}
+            </span>
+            @if (request.createdAt) {
+            <span class="flex items-center gap-1.5">
+              <lucide-icon [img]="ClockIcon" class="w-4 h-4"></lucide-icon>
+              Sent on {{ formatDate(request.createdAt) }}
+            </span>
+            }
+          </div>
+          @if (request.notes) {
+          <p class="text-sm text-gray-600 bg-[#F5F7FA] rounded-xl px-4 py-3">{{ request.notes }}</p>
+          }
+        </div>
       </div>
       }
       }
@@ -349,6 +500,29 @@
 }
 
 <!-- Review Modal -->
+@if (showReturnConfirmModal()) {
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+  <div class="bg-white rounded-3xl p-8 shadow-2xl w-full max-w-md animate-fadeIn">
+    <h2 class="text-2xl font-bold text-gray-800 mb-3 text-center">Confirm Item Return</h2>
+    <p class="text-gray-600 text-center mb-8">
+      Are you sure you received
+      <span class="font-semibold text-[#3949AB]">{{ returnConfirmationItem()?.title }}</span>
+      back from the borrower?
+    </p>
+    <div class="flex gap-4">
+      <button (click)="cancelReturnConfirmation()"
+        class="flex-1 px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200 transition-colors">
+        Cancel
+      </button>
+      <button (click)="confirmReturn()"
+        class="flex-1 px-6 py-3 bg-gradient-to-r from-[#3949AB] to-[#5C6BC0] text-white rounded-xl font-semibold hover:shadow-lg transition-all">
+        Yes, Continue
+      </button>
+    </div>
+  </div>
+</div>
+}
+
 @if (showReviewModal) {
 <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
   <div class="bg-white rounded-3xl p-8 shadow-2xl w-full max-w-md relative animate-fadeIn">
@@ -378,6 +552,93 @@
       (click)="submitReview()" [disabled]="reviewStars === 0">
       Submit Review
     </button>
+  </div>
+</div>
+}
+
+<!-- Booking Request Detail Modal -->
+@if (showRequestModal()) {
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+  <div class="bg-white rounded-3xl p-8 shadow-2xl w-full max-w-2xl relative animate-fadeIn">
+    <button
+      class="absolute top-4 right-4 w-9 h-9 flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+      (click)="closeRequestModal()">✕</button>
+    <div class="flex flex-col md:flex-row gap-6">
+      <img [src]="selectedRequest() ? getItemImage(selectedRequest()!) : ''"
+        [alt]="selectedRequest() ? getItemTitle(selectedRequest()!) : 'Requested Item'"
+        class="w-full md:w-48 h-48 object-cover rounded-2xl shadow-md" />
+      <div class="flex-1 space-y-4">
+        <div class="flex items-center gap-3">
+          <h2 class="text-2xl font-bold text-gray-800">{{ selectedRequest() ? getItemTitle(selectedRequest()!) : '' }}</h2>
+          @if (selectedRequest()) {
+          <span class="px-3 py-1 rounded-full text-xs font-semibold"
+            [ngClass]="getRequestStatusBadge(selectedRequest()!.status).class">
+            {{ getRequestStatusBadge(selectedRequest()!.status).text }}
+          </span>
+          }
+        </div>
+        <div class="grid gap-3 text-sm text-gray-600">
+          <div class="flex items-center gap-2">
+            <lucide-icon [img]="UserIcon" class="w-4 h-4 text-[#3949AB]"></lucide-icon>
+            <span>
+              Borrower: {{ selectedRequest() ? getBorrowerName(selectedRequest()!) : '' }}
+            </span>
+          </div>
+          @if (selectedRequest() && getBorrowerEmail(selectedRequest()!)) {
+          <div class="flex items-center gap-2">
+            <lucide-icon [img]="MailIcon" class="w-4 h-4 text-[#3949AB]"></lucide-icon>
+            <span>{{ getBorrowerEmail(selectedRequest()!) }}</span>
+          </div>
+          }
+          <div class="flex items-center gap-2">
+            <lucide-icon [img]="CalendarIcon" class="w-4 h-4 text-[#3949AB]"></lucide-icon>
+            <span>{{ selectedRequest() ? formatDateRange(selectedRequest()!.startDate, selectedRequest()!.endDate) : '' }}</span>
+          </div>
+          @if (selectedRequest()?.createdAt) {
+          <div class="flex items-center gap-2">
+            <lucide-icon [img]="ClockIcon" class="w-4 h-4 text-[#3949AB]"></lucide-icon>
+            <span>Requested on {{ formatDate(selectedRequest()!.createdAt!) }}</span>
+          </div>
+          }
+        </div>
+        @if (selectedRequest()?.notes) {
+        <div class="bg-[#F5F7FA] rounded-2xl p-4 text-sm text-gray-700">
+          <p class="font-semibold text-[#1A237E] mb-2">Borrower Notes</p>
+          <p>{{ selectedRequest()!.notes }}</p>
+        </div>
+        }
+      </div>
+    </div>
+    <div class="mt-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div class="flex gap-3">
+        <button (click)="selectedRequest() ? goToBorrowerProfile(selectedRequest()!) : null"
+          class="px-5 py-3 bg-[#E8EAF6] text-[#3949AB] rounded-xl font-semibold hover:bg-[#3949AB] hover:text-white transition-all">
+          View Borrower Profile
+        </button>
+        <button (click)="closeRequestModal()"
+          class="px-5 py-3 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200 transition-colors">
+          Close
+        </button>
+      </div>
+      @if (canRespondToRequest(selectedRequest())) {
+      <div class="flex gap-3">
+        <button (click)="selectedRequest() ? rejectRequest(selectedRequest()!) : null"
+          [disabled]="requestActionLoading()"
+          class="px-5 py-3 bg-red-50 text-red-600 rounded-xl font-semibold hover:bg-red-100 transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
+          Reject Request
+        </button>
+        <button (click)="selectedRequest() ? acceptRequest(selectedRequest()!) : null"
+          [disabled]="requestActionLoading()"
+          class="px-5 py-3 bg-emerald-500 text-white rounded-xl font-semibold hover:bg-emerald-600 transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
+          @if (requestActionLoading()) {
+          Processing...
+          } @else {
+          Accept Request
+          }
+        </button>
+      </div>
+      }
+    </div>
   </div>
 </div>
 }
