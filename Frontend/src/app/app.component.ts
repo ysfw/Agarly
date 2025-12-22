@@ -4,18 +4,23 @@ import { EventService } from './services/event-service';
 import { AuthService } from './services/auth.service';
 import { AdminService } from './services/admin.service';
 import { ModalService } from './services/modal.service';
+import { NotificationService } from './services/notification.service';
 import { AlertModalComponent } from './components/alert-modal/alert-modal.component';
 import { VerificationBannerComponent } from './components/verification-banner/verification-banner.component';
+import { ToastContainerComponent } from './components/toast-container/toast-container.component';
 import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterModule, AlertModalComponent, CommonModule, VerificationBannerComponent],
+  imports: [RouterModule, AlertModalComponent, CommonModule, VerificationBannerComponent, ToastContainerComponent],
   template: `
     <app-verification-banner></app-verification-banner>
     <router-outlet></router-outlet>
+
+    <!-- Toast Notifications -->
+    <app-toast-container></app-toast-container>
 
     <!-- Global Modal -->
     @if (modalState$ | async; as modalState) {
@@ -38,6 +43,7 @@ export class AppComponent implements OnDestroy {
 
   private eventService = inject(EventService);
   public modalService = inject(ModalService);
+  private notificationService = inject(NotificationService); // Initialize notification service
   private sseSubscription?: Subscription;
 
   modalState$ = this.modalService.modalState$;
@@ -49,3 +55,4 @@ export class AppComponent implements OnDestroy {
     this.eventService.stopEvents();
   }
 }
+

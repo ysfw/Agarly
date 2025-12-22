@@ -54,12 +54,28 @@ public class UserController {
     }
 
     // Public profile endpoint for viewing other users
+    // Accepts optional Authorization header to identify the viewer for privacy filtering
     @GetMapping("/{id}")
-    public ResponseEntity<PublicUserProfileDTO> getUserProfile(@PathVariable Long id) {
+    public ResponseEntity<PublicUserProfileDTO> getUserProfile(
+            @PathVariable Long id,
+            @RequestHeader(value = "Authorization", required = false) String authHeader) {
         User user = userService.findById(id);
 
         if (user == null) {
             return ResponseEntity.notFound().build();
+        }
+
+        // Try to get the viewer from the auth token (if present)
+        User viewer = null;
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            try {
+                String token = authHeader.substring(7);
+                String viewerUsername = jwtService.extractUsername(token);
+                viewer = userService.findByUsername(viewerUsername);
+            } catch (Exception e) {
+                // Token extraction failed - treat as anonymous viewer
+                viewer = null;
+            }
         }
 
         // Count total items posted by user
@@ -68,8 +84,8 @@ public class UserController {
         // Get live average rating from reviews
         Double avgRating = reviewRepository.findAverageRatingByUserId(id).orElse(0.0);
 
-        // Return safe DTO without sensitive data
-        PublicUserProfileDTO profile = new PublicUserProfileDTO(user, totalItems, avgRating);
+        // Return safe DTO with privacy filtering applied
+        PublicUserProfileDTO profile = new PublicUserProfileDTO(user, totalItems, avgRating, viewer, true);
         return ResponseEntity.ok(profile);
     }
 

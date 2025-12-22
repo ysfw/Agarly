@@ -22,6 +22,24 @@
             ← Back
         </button>
 
+        <!-- Restricted Profile Notice -->
+        @if (profile()!.isRestricted) {
+        <div class="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4">
+            <div class="flex items-center gap-2 text-amber-800">
+                <lucide-icon [img]="ShieldAlertIcon" class="w-5 h-5"></lucide-icon>
+                <span class="font-medium">
+                    @if (profile()!.profileVisibility === 'PRIVATE') {
+                    This profile is private.
+                    } @else if (profile()!.profileVisibility === 'VERIFIED_ONLY') {
+                    This profile is only visible to verified members.
+                    } @else {
+                    Limited profile information is available.
+                    }
+                </span>
+            </div>
+        </div>
+        }
+
         <!-- Profile Card -->
         <div class="bg-white rounded-lg shadow-md overflow-hidden">
             <!-- Header Section -->
@@ -41,12 +59,35 @@
                             <span class="text-4xl font-bold text-[#3949AB]">{{ getInitials() }}</span>
                         </div>
                         }
+
+                        <!-- Verified Badge -->
+                        @if (profile()!.verified) {
+                        <div class="absolute bottom-0 right-0 bg-green-500 rounded-full p-1.5 border-2 border-white"
+                            title="Verified Member">
+                            <lucide-icon [img]="BadgeCheckIcon" class="w-4 h-4 text-white"></lucide-icon>
+                        </div>
+                        }
                     </div>
 
                     <!-- Name and Info -->
                     <div class="ml-6 mt-20 flex-1">
-                        <h1 class="text-3xl font-bold text-slate-800">{{ getFullName() }}</h1>
+                        <div class="flex items-center gap-2">
+                            <h1 class="text-3xl font-bold text-slate-800">{{ getFullName() }}</h1>
+                            @if (profile()!.verified) {
+                            <span
+                                class="bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-full font-medium">Verified</span>
+                            }
+                        </div>
+
+                        <!-- Email (only if visible) -->
+                        @if (profile()!.email) {
                         <p class="text-gray-600">{{ profile()!.email }}</p>
+                        }
+
+                        <!-- Phone (only if visible) -->
+                        @if (profile()!.phoneNumber) {
+                        <p class="text-gray-500 text-sm">{{ profile()!.phoneNumber }}</p>
+                        }
 
                         <!-- Stats Row -->
                         <div class="flex items-center gap-6 mt-4">
@@ -71,6 +112,16 @@
                     </div>
                 </div>
 
+                <!-- Full Address (only if not hidden) -->
+                @if (profile()!.address) {
+                <div class="mb-4 p-3 bg-slate-50 rounded-lg">
+                    <div class="flex items-center gap-2 text-gray-600">
+                        <lucide-icon [img]="MapPinIcon" class="w-4 h-4"></lucide-icon>
+                        <span class="text-sm">{{ profile()!.address }}</span>
+                    </div>
+                </div>
+                }
+
                 <!-- Bio Section -->
                 @if (profile()!.bio) {
                 <div class="mt-6 p-4 bg-slate-50 rounded-lg">
@@ -79,7 +130,8 @@
                 </div>
                 }
 
-                <!-- Listed Items Section -->
+                <!-- Listed Items Section (only if not restricted) -->
+                @if (!profile()!.isRestricted) {
                 <div class="mt-8">
                     <h2 class="text-xl font-bold text-slate-800 mb-4">Listed Items</h2>
                     @if (items().length === 0) {
@@ -111,6 +163,13 @@
                     </div>
                     }
                 </div>
+                } @else {
+                <!-- Restricted Items Message -->
+                <div class="mt-8 text-center py-12 bg-slate-50 rounded-lg">
+                    <lucide-icon [img]="LockIcon" class="w-12 h-12 mx-auto text-gray-300 mb-2"></lucide-icon>
+                    <p class="text-gray-500">Items are not visible due to privacy settings.</p>
+                </div>
+                }
             </div>
         </div>
     </div>

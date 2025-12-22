@@ -1,4 +1,4 @@
-import { Component, signal, computed, effect, ViewChildren, QueryList, AfterViewInit, ElementRef, inject, NgZone, HostListener } from '@angular/core';
+import { Component, signal, computed, effect, ViewChildren, QueryList, AfterViewInit, ElementRef, inject, NgZone, HostListener, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -14,7 +14,7 @@ import { HttpErrorResponse } from '@angular/common/http';
   imports: [CommonModule, FormsModule, LucideAngularModule],
   templateUrl: 'verify-email.component.html'
 })
-export class VerifyEmailComponent implements AfterViewInit {
+export class VerifyEmailComponent implements AfterViewInit, OnInit {
   @ViewChildren('otpInput') otpInputs!: QueryList<ElementRef>;
 
   readonly MailIcon = Mail;
@@ -25,9 +25,10 @@ export class VerifyEmailComponent implements AfterViewInit {
   private ngZone = inject(NgZone)
   private apiService = inject(ApiService)
   private router = inject(Router);
-  private authService = inject(AuthService);
+  authService = inject(AuthService); // Public for template access
 
-  email = signal<string>(this.authService.email());
+  // Get email from localStorage (logged-in user) or from registration flow
+  email = signal<string>(localStorage.getItem('userEmail') || this.authService.email());
   userData = signal<UserDTO>(this.authService.userData())
 
   // Signals
@@ -62,6 +63,15 @@ export class VerifyEmailComponent implements AfterViewInit {
         clearInterval(this.countdownInterval);
       }
     });
+  }
+
+  ngOnInit(): void {
+    // Redirect if user is already verified
+    if (this.authService.isLoggedIn() && this.authService.isVerified()) {
+      console.log('User already verified, redirecting to profile');
+      this.router.navigate(['/profile'], { replaceUrl: true });
+      return;
+    }
   }
 
   ngAfterViewInit(): void {
@@ -192,8 +202,19 @@ export class VerifyEmailComponent implements AfterViewInit {
         console.log(response)
         const message = response?.status || response?.message || 'Email verified successfully!';
         this.successMessage.set(message);
+
+        // Update verification status for logged-in users
+        if (this.authService.isLoggedIn()) {
+          this.authService.setVerified(true);
+        }
+
         setTimeout(() => {
-          this.router.navigate(['/login']);
+          // Redirect based on login state
+          if (this.authService.isLoggedIn()) {
+            this.router.navigate(['/profile']); // Verified users go to profile
+          } else {
+            this.router.navigate(['/login']); // Non-logged-in users go to login
+          }
         }, 2000);
       },
       error: (err: HttpErrorResponse) => {
@@ -242,7 +263,13 @@ export class VerifyEmailComponent implements AfterViewInit {
   }
 
   goBack(): void {
-    this.router.navigate(['/register']);
+    // If logged in (came from banner), go back to previous page
+    // If not logged in (came from signup), go to register
+    if (this.authService.isLoggedIn()) {
+      window.history.back();
+    } else {
+      this.router.navigate(['/register']);
+    }
   }
 
   skipVerification(): void {

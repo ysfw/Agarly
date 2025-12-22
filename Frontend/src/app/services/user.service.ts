@@ -7,14 +7,22 @@ export interface UserProfile {
     id: number;
     firstName: string;
     lastName: string;
-    email: string;
+    username?: string;
+    email?: string | null; // Null if hidden by privacy settings
+    phoneNumber?: string | null; // Null if hidden by privacy settings
     profileImageUrl?: string;
     rating: number;
-    bio?: string;
+    bio?: string | null;
     city?: string;
     state?: string;
+    address?: string | null; // Null if hidden by privacy settings
     totalItemsPosted: number;
     joinedDate?: string;
+    blocked?: boolean;
+    verified?: boolean;
+    // Privacy settings info
+    profileVisibility?: string;
+    isRestricted?: boolean; // True if viewer cannot see full profile
 }
 
 @Injectable({
@@ -25,6 +33,7 @@ export class UserService {
     private baseUrl = 'http://localhost:8080';
 
     getUserProfile(id: number): Observable<UserProfile> {
+        // The auth interceptor will automatically add the Authorization header if logged in
         return this.http.get<UserProfile>(`${this.baseUrl}/users/${id}`);
     }
 

@@ -36,7 +36,7 @@ export const routes: Routes = [
   { path: 'home', component: HomeComponent },
   { path: 'login', component: LoginComponent, canActivate: [GuestGuard] },
   { path: 'register', component: RegisterComponent, canActivate: [GuestGuard] },
-  { path: 'verify-email', component: VerifyEmailComponent, canActivate: [GuestGuard] },
+  { path: 'verify-email', component: VerifyEmailComponent }, // No guard - accessible to both logged-in and guests
   { path: 'admin-login', component: AdminLoginComponent, canActivate: [GuestGuard] },
   // Admin routes (should require AdminAuthGuard)
   { path: 'admin-dashboard', component: AdminDashboardComponent, canActivate: [AdminAuthGuard] },

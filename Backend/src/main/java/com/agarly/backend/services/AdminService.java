@@ -99,6 +99,9 @@ public class AdminService {
                 .orElseThrow(() -> new RuntimeException("Item not found"));
         item.setStatus(ItemStatus.APPROVED);
         itemRepository.save(item);
+        // Notify item owner
+        String ownerUsername = item.getOwner().getUsername();
+        eventService.publishEvent(new SSE("ITEM_APPROVED", List.of(ownerUsername)));
     }
 
     public void rejectItem(Long id) {
@@ -106,6 +109,9 @@ public class AdminService {
                 .orElseThrow(() -> new RuntimeException("Item not found"));
         item.setStatus(ItemStatus.REJECTED);
         itemRepository.save(item);
+        // Notify item owner
+        String ownerUsername = item.getOwner().getUsername();
+        eventService.publishEvent(new SSE("ITEM_REJECTED", List.of(ownerUsername)));
     }
 
     public void deleteItem(Long id) {
@@ -132,6 +138,9 @@ public class AdminService {
                 .orElseThrow(() -> new RuntimeException("Request not found"));
         request.setStatus("APPROVED");
         itemRequestRepository.save(request);
+        // Notify requester
+        String requesterUsername = request.getRequester().getUsername();
+        eventService.publishEvent(new SSE("REQUEST_APPROVED", List.of(requesterUsername)));
     }
 
     public void rejectRequest(Long id) {

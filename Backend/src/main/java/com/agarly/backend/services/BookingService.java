@@ -5,6 +5,7 @@ import com.agarly.backend.dtos.UpdateBookingRequest;
 import com.agarly.backend.models.Booking;
 import com.agarly.backend.models.Enums.BookingStatus;
 import com.agarly.backend.models.Item;
+import com.agarly.backend.models.SSE;
 import com.agarly.backend.models.User;
 import com.agarly.backend.repos.BookingRepository;
 import com.agarly.backend.repos.ItemRepository;
@@ -25,6 +26,9 @@ public class BookingService {
 
     @Autowired
     private ItemRepository itemRepository;
+
+    @Autowired
+    private EventService eventService;
 
     public Booking createBooking(Long borrowerId, CreateBookingRequest request) {
         // Validates availability and creates booking
@@ -60,7 +64,13 @@ public class BookingService {
         booking.setEndDate(end);
         booking.setStatus(BookingStatus.PENDING);
 
-        return bookingRepository.save(booking);
+        Booking savedBooking = bookingRepository.save(booking);
+
+        // Publish SSE event to notify item owner
+        String ownerUsername = item.getOwner().getUsername();
+        eventService.publishEvent(new SSE("BOOKING_CREATED", List.of(ownerUsername)));
+
+        return savedBooking;
     }
 
     private boolean datesOverlap(LocalDate s1, LocalDate e1, LocalDate s2, LocalDate e2) {
@@ -77,15 +87,26 @@ public class BookingService {
         }
 
         BookingStatus currentStatus = booking.getStatus();
+        String borrowerUsername = booking.getBorrower().getUsername();
 
         if (currentStatus == BookingStatus.PENDING && target == BookingStatus.APPROVED) {
             booking.getItem().setBorrower(booking.getBorrower());
             itemRepository.save(booking.getItem());
+            // Notify borrower that booking was approved
+            eventService.publishEvent(new SSE("BOOKING_APPROVED", List.of(borrowerUsername)));
+        }
+
+        if (currentStatus == BookingStatus.PENDING && target == BookingStatus.REJECTED) {
+            // Notify borrower that booking was rejected
+            eventService.publishEvent(new SSE("BOOKING_REJECTED", List.of(borrowerUsername)));
         }
 
         if (currentStatus == BookingStatus.APPROVED && target == BookingStatus.COMPLETED) {
             booking.getItem().setBorrower(null);
             itemRepository.save(booking.getItem());
+            // Notify both parties that item was returned
+            String ownerUsername = booking.getItem().getOwner().getUsername();
+            eventService.publishEvent(new SSE("ITEM_RETURNED", List.of(ownerUsername, borrowerUsername)));
         }
 
         booking.setStatus(target);

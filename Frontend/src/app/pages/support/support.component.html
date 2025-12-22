@@ -1,16 +1,9 @@
-<div
-  class="min-h-screen w-full bg-gradient-to-br from-[#F5F7FA] via-[#E8EAF6] to-[#C5CAE9]"
->
+<div class="min-h-screen w-full bg-gradient-to-br from-[#F5F7FA] via-[#E8EAF6] to-[#C5CAE9]">
   <div class="max-w-3xl mx-auto px-6 py-8">
     <div class="flex items-center gap-4 mb-8">
-      <button
-        (click)="goBack()"
-        class="w-10 h-10 flex items-center justify-center hover:bg-white/60 rounded-full transition-colors"
-      >
-        <lucide-icon
-          [img]="ArrowLeftIcon"
-          class="w-5 h-5 text-[#1A237E]"
-        ></lucide-icon>
+      <button (click)="goBack()"
+        class="w-10 h-10 flex items-center justify-center hover:bg-white/60 rounded-full transition-colors">
+        <lucide-icon [img]="ArrowLeftIcon" class="w-5 h-5 text-[#1A237E]"></lucide-icon>
       </button>
       <div>
         <h1 class="text-3xl font-bold text-[#1A237E]">Help & Support</h1>
@@ -21,49 +14,26 @@
     </div>
 
     <div class="space-y-6">
-      <div
-        class="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/60"
-      >
-        <h2
-          class="text-xl font-semibold text-[#1A237E] mb-4 flex items-center gap-2"
-        >
-          <lucide-icon
-            [img]="BookOpenIcon"
-            class="w-5 h-5 text-[#3949AB]"
-          ></lucide-icon>
+      <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/60">
+        <h2 class="text-xl font-semibold text-[#1A237E] mb-4 flex items-center gap-2">
+          <lucide-icon [img]="BookOpenIcon" class="w-5 h-5 text-[#3949AB]"></lucide-icon>
           Quick Help
         </h2>
         <div class="grid md:grid-cols-2 gap-4">
-          <button
-            type="button"
-            (click)="openUserGuide()"
-            class="flex items-center gap-3 p-4 rounded-2xl bg-[#E8EAF6] hover:bg-[#C5CAE9] transition-colors shadow-sm"
-          >
-            <div
-              class="w-10 h-10 rounded-xl bg-white/70 flex items-center justify-center"
-            >
-              <lucide-icon
-                [img]="BookOpenIcon"
-                class="w-5 h-5 text-[#3949AB]"
-              ></lucide-icon>
+          <button type="button" (click)="openUserGuide()"
+            class="flex items-center gap-3 p-4 rounded-2xl bg-[#E8EAF6] hover:bg-[#C5CAE9] transition-colors shadow-sm">
+            <div class="w-10 h-10 rounded-xl bg-white/70 flex items-center justify-center">
+              <lucide-icon [img]="BookOpenIcon" class="w-5 h-5 text-[#3949AB]"></lucide-icon>
             </div>
             <div class="text-left">
               <p class="font-semibold text-[#1A237E]">User Guide</p>
               <p class="text-sm text-gray-600">Learn how to use Agarly</p>
             </div>
           </button>
-          <button
-            type="button"
-            (click)="scrollToFaq()"
-            class="flex items-center gap-3 p-4 rounded-2xl bg-[#E8EAF6] hover:bg-[#C5CAE9] transition-colors shadow-sm"
-          >
-            <div
-              class="w-10 h-10 rounded-xl bg-white/70 flex items-center justify-center"
-            >
-              <lucide-icon
-                [img]="HelpCircleIcon"
-                class="w-5 h-5 text-[#3949AB]"
-              ></lucide-icon>
+          <button type="button" (click)="scrollToFaq()"
+            class="flex items-center gap-3 p-4 rounded-2xl bg-[#E8EAF6] hover:bg-[#C5CAE9] transition-colors shadow-sm">
+            <div class="w-10 h-10 rounded-xl bg-white/70 flex items-center justify-center">
+              <lucide-icon [img]="HelpCircleIcon" class="w-5 h-5 text-[#3949AB]"></lucide-icon>
             </div>
             <div class="text-left">
               <p class="font-semibold text-[#1A237E]">FAQs</p>
@@ -73,44 +43,22 @@
         </div>
       </div>
 
-      <div
-        #faqSection
-        class="bg-white/80 backdrop-blur-sm rounded-2xl overflow-hidden shadow-lg border border-white/60"
-      >
-        <div
-          class="px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-[#3949AB]/5 to-transparent"
-        >
-          <h2
-            class="text-lg font-semibold text-[#1A237E] flex items-center gap-2"
-          >
-            <lucide-icon
-              [img]="HelpCircleIcon"
-              class="w-5 h-5 text-[#3949AB]"
-            ></lucide-icon>
+      <div #faqSection
+        class="bg-white/80 backdrop-blur-sm rounded-2xl overflow-hidden shadow-lg border border-white/60">
+        <div class="px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-[#3949AB]/5 to-transparent">
+          <h2 class="text-lg font-semibold text-[#1A237E] flex items-center gap-2">
+            <lucide-icon [img]="HelpCircleIcon" class="w-5 h-5 text-[#3949AB]"></lucide-icon>
             Frequently Asked Questions
           </h2>
         </div>
         <div class="divide-y divide-gray-100">
           <details class="group px-6 py-4">
-            <summary
-              class="flex items-center justify-between cursor-pointer list-none"
-            >
-              <span class="font-medium text-[#1A237E]"
-                >How do I list an item?</span
-              >
+            <summary class="flex items-center justify-between cursor-pointer list-none">
+              <span class="font-medium text-[#1A237E]">How do I list an item?</span>
               <span class="transition group-open:rotate-180">
-                <svg
-                  fill="none"
-                  height="24"
-                  shape-rendering="geometricPrecision"
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="1.5"
-                  viewBox="0 0 24 24"
-                  width="24"
-                  class="text-[#3949AB]"
-                >
+                <svg fill="none" height="24" shape-rendering="geometricPrecision" stroke="currentColor"
+                  stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewBox="0 0 24 24" width="24"
+                  class="text-[#3949AB]">
                   <path d="M6 9l6 6 6-6"></path>
                 </svg>
               </span>
@@ -123,25 +71,12 @@
           </details>
 
           <details class="group px-6 py-4">
-            <summary
-              class="flex items-center justify-between cursor-pointer list-none"
-            >
-              <span class="font-medium text-[#1A237E]"
-                >How does verification work?</span
-              >
+            <summary class="flex items-center justify-between cursor-pointer list-none">
+              <span class="font-medium text-[#1A237E]">How does verification work?</span>
               <span class="transition group-open:rotate-180">
-                <svg
-                  fill="none"
-                  height="24"
-                  shape-rendering="geometricPrecision"
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="1.5"
-                  viewBox="0 0 24 24"
-                  width="24"
-                  class="text-[#3949AB]"
-                >
+                <svg fill="none" height="24" shape-rendering="geometricPrecision" stroke="currentColor"
+                  stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewBox="0 0 24 24" width="24"
+                  class="text-[#3949AB]">
                   <path d="M6 9l6 6 6-6"></path>
                 </svg>
               </span>
@@ -154,25 +89,12 @@
           </details>
 
           <details class="group px-6 py-4">
-            <summary
-              class="flex items-center justify-between cursor-pointer list-none"
-            >
-              <span class="font-medium text-[#1A237E]"
-                >What if an item is damaged?</span
-              >
+            <summary class="flex items-center justify-between cursor-pointer list-none">
+              <span class="font-medium text-[#1A237E]">What if an item is damaged?</span>
               <span class="transition group-open:rotate-180">
-                <svg
-                  fill="none"
-                  height="24"
-                  shape-rendering="geometricPrecision"
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="1.5"
-                  viewBox="0 0 24 24"
-                  width="24"
-                  class="text-[#3949AB]"
-                >
+                <svg fill="none" height="24" shape-rendering="geometricPrecision" stroke="currentColor"
+                  stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewBox="0 0 24 24" width="24"
+                  class="text-[#3949AB]">
                   <path d="M6 9l6 6 6-6"></path>
                 </svg>
               </span>
@@ -185,25 +107,12 @@
           </details>
 
           <details class="group px-6 py-4">
-            <summary
-              class="flex items-center justify-between cursor-pointer list-none"
-            >
-              <span class="font-medium text-[#1A237E]"
-                >How do I report a user?</span
-              >
+            <summary class="flex items-center justify-between cursor-pointer list-none">
+              <span class="font-medium text-[#1A237E]">How do I report a user?</span>
               <span class="transition group-open:rotate-180">
-                <svg
-                  fill="none"
-                  height="24"
-                  shape-rendering="geometricPrecision"
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="1.5"
-                  viewBox="0 0 24 24"
-                  width="24"
-                  class="text-[#3949AB]"
-                >
+                <svg fill="none" height="24" shape-rendering="geometricPrecision" stroke="currentColor"
+                  stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewBox="0 0 24 24" width="24"
+                  class="text-[#3949AB]">
                   <path d="M6 9l6 6 6-6"></path>
                 </svg>
               </span>
@@ -216,171 +125,82 @@
         </div>
       </div>
 
-      <div
-        class="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/60"
-      >
-        <h2
-          class="text-xl font-semibold text-[#1A237E] mb-4 flex items-center gap-2"
-        >
-          <lucide-icon
-            [img]="MailIcon"
-            class="w-5 h-5 text-[#3949AB]"
-          ></lucide-icon>
+      <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/60">
+        <h2 class="text-xl font-semibold text-[#1A237E] mb-4 flex items-center gap-2">
+          <lucide-icon [img]="MailIcon" class="w-5 h-5 text-[#3949AB]"></lucide-icon>
           Contact Support
         </h2>
-        <form
-          #supportForm="ngForm"
-          (ngSubmit)="handleSubmit(supportForm)"
-          class="space-y-4"
-          novalidate
-        >
+        <form #supportForm="ngForm" (ngSubmit)="handleSubmit(supportForm)" class="space-y-4" novalidate>
           <div>
-            <label
-              class="block text-sm font-semibold text-[#1A237E] mb-2"
-              for="subject"
-              >Subject</label
-            >
-            <input
-              id="subject"
-              name="subject"
-              type="text"
-              [(ngModel)]="subject"
-              #subjectField="ngModel"
-              required
-              minlength="3"
-              placeholder="Enter a short summary"
-              class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E] shadow-sm"
-            />
-            <p
-              *ngIf="
+            <label class="block text-sm font-semibold text-[#1A237E] mb-2" for="subject">Subject</label>
+            <input id="subject" name="subject" type="text" [(ngModel)]="subject" #subjectField="ngModel" required
+              minlength="3" placeholder="Enter a short summary"
+              class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E] shadow-sm" />
+            <p *ngIf="
                 subjectField.invalid &&
                 (subjectField.dirty || subjectField.touched)
-              "
-              class="text-sm text-red-500 mt-1"
-            >
+              " class="text-sm text-red-500 mt-1">
               Subject must be at least 3 characters long.
             </p>
           </div>
 
           <div>
-            <label
-              class="block text-sm font-semibold text-[#1A237E] mb-2"
-              for="message"
-              >How can we help?</label
-            >
-            <textarea
-              id="message"
-              name="message"
-              rows="6"
-              [(ngModel)]="message"
-              #messageField="ngModel"
-              required
-              minlength="10"
-              placeholder="Describe your issue or question..."
-              class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E] resize-none shadow-sm"
-            ></textarea>
-            <p
-              *ngIf="
+            <label class="block text-sm font-semibold text-[#1A237E] mb-2" for="message">How can we help?</label>
+            <textarea id="message" name="message" rows="6" [(ngModel)]="message" #messageField="ngModel" required
+              minlength="10" placeholder="Describe your issue or question..."
+              class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E] resize-none shadow-sm"></textarea>
+            <p *ngIf="
                 messageField.invalid &&
                 (messageField.dirty || messageField.touched)
-              "
-              class="text-sm text-red-500 mt-1"
-            >
+              " class="text-sm text-red-500 mt-1">
               Message must be at least 10 characters long.
             </p>
           </div>
 
-          <div
-            *ngIf="successMessage"
-            class="p-3 rounded-xl bg-green-100 text-green-700 shadow-sm"
-          >
+          <div *ngIf="successMessage" class="p-3 rounded-xl bg-green-100 text-green-700 shadow-sm">
             {{ successMessage }}
           </div>
-          <div
-            *ngIf="errorMessage"
-            class="p-3 rounded-xl bg-red-100 text-red-600 shadow-sm"
-          >
+          <div *ngIf="errorMessage" class="p-3 rounded-xl bg-red-100 text-red-600 shadow-sm">
             {{ errorMessage }}
           </div>
 
-          <button
-            type="submit"
-            [disabled]="supportForm.invalid || isSubmitting"
+          <button type="submit" [disabled]="supportForm.invalid || isSubmitting"
             class="w-full flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-semibold transition-all shadow-md"
             [ngClass]="
               supportForm.invalid || isSubmitting
                 ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                 : 'bg-gradient-to-r from-[#3949AB] to-[#5C6BC0] text-white hover:from-[#303F9F] hover:to-[#3949AB]'
-            "
-          >
-            <lucide-icon
-              [img]="SendIcon"
-              class="w-5 h-5"
-              [ngClass]="
+            ">
+            <lucide-icon [img]="SendIcon" class="w-5 h-5" [ngClass]="
                 supportForm.invalid || isSubmitting
                   ? 'text-gray-500'
                   : 'text-white'
-              "
-            ></lucide-icon>
+              "></lucide-icon>
             {{ isSubmitting ? "Sending..." : "Send Message" }}
           </button>
         </form>
-        <button
-          type="button"
-          (click)="viewTickets()"
-          class="mt-4 w-full flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-semibold transition-all shadow-sm border border-[#3949AB] text-[#3949AB] hover:bg-[#E8EAF6]"
-        >
+        <button type="button" (click)="viewTickets()"
+          class="mt-4 w-full flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-semibold transition-all shadow-sm border border-[#3949AB] text-[#3949AB] hover:bg-[#E8EAF6]">
           <lucide-icon [img]="MessageCircleIcon" class="w-5 h-5"></lucide-icon>
           View My Tickets
         </button>
       </div>
 
-      <div
-        class="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/60"
-      >
-        <h2
-          class="text-xl font-semibold text-[#1A237E] mb-4 flex items-center gap-2"
-        >
-          <lucide-icon
-            [img]="MessageCircleIcon"
-            class="w-5 h-5 text-[#3949AB]"
-          ></lucide-icon>
+      <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/60">
+        <h2 class="text-xl font-semibold text-[#1A237E] mb-4 flex items-center gap-2">
+          <lucide-icon [img]="MessageCircleIcon" class="w-5 h-5 text-[#3949AB]"></lucide-icon>
           Other Ways to Reach Us
         </h2>
         <div class="space-y-3">
           <div class="flex items-center gap-3">
-            <div
-              class="w-10 h-10 bg-[#E8EAF6] rounded-xl flex items-center justify-center"
-            >
-              <lucide-icon
-                [img]="MailIcon"
-                class="w-5 h-5 text-[#3949AB]"
-              ></lucide-icon>
+            <div class="w-10 h-10 bg-[#E8EAF6] rounded-xl flex items-center justify-center">
+              <lucide-icon [img]="MailIcon" class="w-5 h-5 text-[#3949AB]"></lucide-icon>
             </div>
             <div>
               <p class="font-medium text-[#1A237E]">Email</p>
-              <a
-                href="mailto:support@agarly.com"
-                class="text-sm text-[#3949AB] hover:underline"
-              >
+              <a href="mailto:support@agarly.com" class="text-sm text-[#3949AB] hover:underline">
                 support&#64;agarly.com
               </a>
-            </div>
-          </div>
-          <div class="flex items-center gap-3">
-            <div
-              class="w-10 h-10 bg-[#E8EAF6] rounded-xl flex items-center justify-center"
-            >
-              <lucide-icon
-                [img]="MessageCircleIcon"
-                class="w-5 h-5 text-[#3949AB]"
-              ></lucide-icon>
-            </div>
-            <div>
-              <p class="font-medium text-[#1A237E]">Live Chat</p>
-              <p class="text-sm text-gray-600">
-                Available Mon-Fri, 9am-5pm PST
-              </p>
             </div>
           </div>
         </div>

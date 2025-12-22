@@ -2,7 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, ArrowLeft, Bell, Shield, HelpCircle, LogOut, ChevronRight, Mail, MessageSquare, User, CreditCard, Loader2 } from 'lucide-angular';
+import { LucideAngularModule, ArrowLeft, Bell, Shield, HelpCircle, LogOut, ChevronRight, User, CreditCard, Loader2 } from 'lucide-angular';
 import { AuthService } from '../../services/auth.service';
 import { UserPreferencesService, UserPreferences } from '../../services/user-preferences.service';
 
@@ -20,8 +20,6 @@ export class SettingsComponent implements OnInit {
   readonly HelpCircleIcon = HelpCircle;
   readonly LogOutIcon = LogOut;
   readonly ChevronRightIcon = ChevronRight;
-  readonly MailIcon = Mail;
-  readonly MessageSquareIcon = MessageSquare;
   readonly UserIcon = User;
   readonly CreditCardIcon = CreditCard;
   readonly LoaderIcon = Loader2;
@@ -30,10 +28,8 @@ export class SettingsComponent implements OnInit {
   private authService = inject(AuthService);
   private preferencesService = inject(UserPreferencesService);
 
-  // Notification preferences state
+  // Notification preferences state - only push notifications now
   pushNotifications = true;
-  emailNotifications = true;
-  smsNotifications = false;
 
   // Loading states
   loading = true;
@@ -52,8 +48,6 @@ export class SettingsComponent implements OnInit {
     this.preferencesService.getPreferences().subscribe({
       next: (prefs) => {
         this.pushNotifications = prefs.pushNotificationsEnabled;
-        this.emailNotifications = prefs.emailNotificationsEnabled;
-        this.smsNotifications = prefs.smsNotificationsEnabled;
         this.loading = false;
       },
       error: (err) => {
@@ -69,24 +63,10 @@ export class SettingsComponent implements OnInit {
     await this.savePreferences();
   }
 
-  async toggleEmailNotifications(event: Event) {
-    const target = event.target as HTMLInputElement;
-    this.emailNotifications = target.checked;
-    await this.savePreferences();
-  }
-
-  async toggleSmsNotifications(event: Event) {
-    const target = event.target as HTMLInputElement;
-    this.smsNotifications = target.checked;
-    await this.savePreferences();
-  }
-
   savePreferences() {
     this.saving = true;
     const prefs: UserPreferences = {
-      pushNotificationsEnabled: this.pushNotifications,
-      emailNotificationsEnabled: this.emailNotifications,
-      smsNotificationsEnabled: this.smsNotifications
+      pushNotificationsEnabled: this.pushNotifications
     };
 
     this.preferencesService.updatePreferences(prefs).subscribe({
