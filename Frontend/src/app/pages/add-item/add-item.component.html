@@ -7,7 +7,7 @@
         aria-label="Go back">
         <lucide-icon [img]="ArrowLeftIcon" class="w-5 h-5 text-[#1A237E]"></lucide-icon>
       </button>
-      <h1 class="text-3xl font-bold text-[#1A237E]">Add New Item</h1>
+      <h1 class="text-3xl font-bold text-[#1A237E]">{{ isEditMode ? 'Edit Item' : 'Add New Item' }}</h1>
     </div>
 
     <!-- Step Indicator -->
@@ -198,10 +198,10 @@
                         ">
           @if (isSubmitting) {
           <lucide-icon [img]="LoaderIcon" class="w-5 h-5 animate-spin"></lucide-icon>
-          Creating...
+          {{ isEditMode ? 'Saving...' : 'Creating...' }}
           } @else {
           <lucide-icon [img]="CheckIcon" class="w-5 h-5"></lucide-icon>
-          List Item
+          {{ isEditMode ? 'Save Changes' : 'List Item' }}
           }
         </button>
         }

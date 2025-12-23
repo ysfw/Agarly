@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { Location, CommonModule } from '@angular/common';
-import { LucideAngularModule, ArrowLeft, MapPin, CheckCircle, MessageCircle, ChevronLeft, ChevronRight, User } from 'lucide-angular';
+import { LucideAngularModule, ArrowLeft, MapPin, CheckCircle, MessageCircle, ChevronLeft, ChevronRight, User, Edit } from 'lucide-angular';
 import { ItemService } from '../../services/item.service';
 import { Item } from '../../models/item.model';
 import { MapDisplayComponent } from '../../components/map-display/map-display.component';
@@ -20,6 +20,7 @@ export class ItemDetailsComponent implements OnInit {
   readonly ChevronLeftIcon = ChevronLeft;
   readonly ChevronRightIcon = ChevronRight;
   readonly UserIcon = User;
+  readonly EditIcon = Edit;
 
   router = inject(Router);
   route = inject(ActivatedRoute);
@@ -95,6 +96,23 @@ export class ItemDetailsComponent implements OnInit {
   viewOwnerProfile(): void {
     if (this.item?.owner?.id) {
       this.router.navigate(['/user', this.item.owner.id]);
+    }
+  }
+
+  // Check if current user is the owner of this item
+  get isOwner(): boolean {
+    const currentUsername = localStorage.getItem('username');
+    return !!this.item?.owner?.username && this.item.owner.username === currentUsername;
+  }
+
+  // Check if item can be edited (only PENDING items can be edited)
+  get canEdit(): boolean {
+    return this.isOwner && this.item?.status === 'PENDING';
+  }
+
+  editItem(): void {
+    if (this.id) {
+      this.router.navigate(['/add-item'], { queryParams: { edit: this.id } });
     }
   }
 }

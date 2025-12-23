@@ -149,7 +149,8 @@
                                 <h3 class="font-semibold text-gray-800 truncate">{{ item.title }}</h3>
                                 <p class="text-sm text-gray-500">{{ item.category }}</p>
                                 <div class="flex items-center justify-between mt-2">
-                                    <span class="text-[#3949AB] font-bold">${{ item.pricePerDay }}/{{
+                                    <span class="text-[#3949AB] font-bold">{{ item.pricePerDay |
+                                        currency:'EGP':'symbol-narrow' }}/{{
                                         item.priceUnit.toLowerCase() || 'day' }}</span>
                                     <div class="flex items-center gap-1">
                                         <lucide-icon [img]="StarIcon" class="w-4 h-4 text-yellow-500"></lucide-icon>

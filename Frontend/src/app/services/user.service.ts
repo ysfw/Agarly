@@ -40,4 +40,8 @@ export class UserService {
     getUserItems(id: number): Observable<Item[]> {
         return this.http.get<Item[]>(`${this.baseUrl}/users/${id}/items`);
     }
+
+    getUserByUsername(username: string): Observable<any> {
+        return this.http.get<any>(`${this.baseUrl}/users/username/${username}`);
+    }
 }

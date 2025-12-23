@@ -1,25 +1,30 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
-import { LucideAngularModule, Calendar, User, Wallet, TrendingUp, TrendingDown, ArrowUpRight, ArrowDownLeft, Clock, CreditCard, ChevronRight, Package, Eye, Edit, Trash2, AlertCircle, CheckCircle, XCircle, Plus, Mail } from 'lucide-angular';
+import { Router, ActivatedRoute, Params } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { LucideAngularModule, Calendar, User, Wallet, TrendingUp, TrendingDown, ArrowUpRight, ArrowDownLeft, Clock, CreditCard, ChevronRight, Package, Eye, Edit, Trash2, AlertCircle, CheckCircle, XCircle, Plus, Mail, ShoppingBag, ArrowRightLeft, Settings, LogOut, Star } from 'lucide-angular';
+import { NavbarLoggedInComponent } from '../../components/navbar-logged-in/navbar-logged-in.component';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { AuthService } from '../../services/auth.service';
-import { NavbarLoggedInComponent } from 'src/app/components/navbar-logged-in/navbar-logged-in.component';
 import { ReviewService } from '../../services/review.service';
 import { PaymentApiService, Transaction } from '../../services/payment-api.service';
 import { ItemService } from '../../services/item.service';
+import { UserService } from '../../services/user.service';
 import { Item } from '../../models/item.model';
 import { ModalService } from '../../services/modal.service';
 import { BookingService, Booking } from '../../services/booking.service';
+import { EventService } from '../../services/event-service';
+import { SSE_EVENT_TYPES } from '../../models/sse-event.model';
+import { ItemStatus } from '../../models/enums/item-status.emun';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule, NavbarComponent, NavbarLoggedInComponent],
+  imports: [CommonModule, LucideAngularModule, NavbarLoggedInComponent, NavbarComponent],
   templateUrl: './dashboard.component.html',
-  styleUrl: './dashboard.component.css'
+  styleUrls: ['./dashboard.component.css']
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
   activeTab: 'myitems' | 'pending' | 'borrowed' | 'lent' | 'requestsReceived' | 'requestsSent' | 'wallet' = 'myitems';
   authService = inject(AuthService);
   reviewService = inject(ReviewService);
@@ -27,8 +32,12 @@ export class DashboardComponent implements OnInit {
   itemService = inject(ItemService);
   router = inject(Router);
   modalService = inject(ModalService);
+  userService = inject(UserService); // Add injection
   bookingService = inject(BookingService);
+  eventService = inject(EventService);
   auth = this.authService.isLoggedIn;
+
+  private sseSubscription?: Subscription;
 
   // Icons
   readonly CalendarIcon = Calendar;
@@ -81,18 +90,82 @@ export class DashboardComponent implements OnInit {
   itemToDelete: Item | null = null;
   itemBeingReviewed: Item | null = null;
 
+  route = inject(ActivatedRoute); // Add this injection
+
   ngOnInit() {
+    this.checkForPaymentVerification();
     this.loadAllData();
+
+    // Subscribe to SSE updates
+    this.sseSubscription = this.eventService.getEvents().subscribe({
+      next: (event) => {
+        if (event && (event.type === SSE_EVENT_TYPES.ITEM_APPROVED || event.type === SSE_EVENT_TYPES.ITEM_REJECTED)) {
+          console.log('Item status changed, refreshing dashboard...');
+          // Refresh items to reflect status change (e.g. pending -> approved)
+          this.loadMyItems();
+          this.loadPendingItems();
+        }
+      }
+    });
+  }
+
+  checkForPaymentVerification() {
+    this.route.queryParams.subscribe((params: Params) => {
+      if (params['success'] === 'true' && (params['id'] || params['order'])) {
+        this.loading.set(true);
+        this.paymentService.verifyPayment(params).subscribe({
+          next: (res) => {
+            console.log('Payment verified:', res);
+            // Clear query params to prevent re-verification on reload
+            this.router.navigate([], {
+              relativeTo: this.route,
+              queryParams: {},
+              replaceUrl: true
+            });
+            this.modalService.alert('Payment verified successfully!', 'Success');
+            this.loadAllData(); // Reload data to show updated wallet/history
+          },
+          error: (err) => {
+            console.error('Payment verification failed:', err);
+            this.modalService.alert('Payment verification failed or pending.', 'Notice');
+            this.loading.set(false);
+          }
+        });
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    if (this.sseSubscription) {
+      this.sseSubscription.unsubscribe();
+    }
   }
 
   loadAllData() {
     this.loading.set(true);
+    this.loadUserData(); // Load wallet balance
     this.loadMyItems();
     this.loadPendingItems();
     this.loadBorrowedItems();
     this.loadTransactions();
     this.loadReceivedRequests();
     this.loadSentRequests();
+  }
+
+  loadUserData() {
+    const username = localStorage.getItem('username');
+    if (username) {
+      this.userService.getUserByUsername(username).subscribe({
+        next: (user) => {
+          if (user) {
+            if (user.walletBalance !== undefined) this.walletBalance.set(user.walletBalance);
+            if (user.totalEarnings !== undefined) this.totalEarnings.set(user.totalEarnings);
+            if (user.totalSpent !== undefined) this.totalSpent.set(user.totalSpent);
+          }
+        },
+        error: (err) => console.error('Error loading user data:', err)
+      });
+    }
   }
 
   loadMyItems() {
@@ -141,8 +214,11 @@ export class DashboardComponent implements OnInit {
   loadReceivedRequests() {
     this.bookingService.getReceivedRequests().subscribe({
       next: (requests) => {
-        const pending = requests.filter(req => (req.status || '').toUpperCase() === 'PENDING');
-        const others = requests.filter(req => (req.status || '').toUpperCase() !== 'PENDING');
+        // Filter out AWAITING_PAYMENT requests from owner view
+        const validRequests = requests.filter(req => (req.status || '').toUpperCase() !== 'AWAITING_PAYMENT');
+
+        const pending = validRequests.filter(req => (req.status || '').toUpperCase() === 'PENDING');
+        const others = validRequests.filter(req => (req.status || '').toUpperCase() !== 'PENDING');
         this.receivedRequests.set([...pending, ...others]);
       },
       error: (err) => console.error('Error loading received booking requests:', err)
@@ -290,7 +366,7 @@ export class DashboardComponent implements OnInit {
   getTransactionIcon(type: string) {
     switch (type) {
       case 'PAYMENT': return this.ArrowUpRightIcon;
-      case 'EARNING': return this.ArrowDownLeftIcon;
+      case 'PAYOUT': return this.ArrowDownLeftIcon;
       case 'REFUND': return this.ArrowDownLeftIcon;
       case 'DEPOSIT': return this.ClockIcon;
       default: return this.WalletIcon;
@@ -300,7 +376,7 @@ export class DashboardComponent implements OnInit {
   getTransactionColor(type: string): string {
     switch (type) {
       case 'PAYMENT': return 'text-red-500 bg-red-50';
-      case 'EARNING': return 'text-emerald-500 bg-emerald-50';
+      case 'PAYOUT': return 'text-emerald-500 bg-emerald-50';
       case 'REFUND': return 'text-[#3949AB] bg-[#E8EAF6]';
       case 'DEPOSIT': return 'text-amber-500 bg-amber-50';
       default: return 'text-gray-500 bg-gray-50';
@@ -310,7 +386,7 @@ export class DashboardComponent implements OnInit {
   getAmountPrefix(type: string): string {
     switch (type) {
       case 'PAYMENT': return '-';
-      case 'EARNING': return '+';
+      case 'PAYOUT': return '+';
       case 'REFUND': return '+';
       default: return '';
     }
@@ -343,6 +419,8 @@ export class DashboardComponent implements OnInit {
         return { class: 'bg-red-100 text-red-700', text: 'Rejected' };
       case 'CANCELLED':
         return { class: 'bg-gray-100 text-gray-600', text: 'Cancelled' };
+      case 'AWAITING_PAYMENT':
+        return { class: 'bg-blue-50 text-blue-600', text: 'Awaiting Payment' };
       case 'PENDING':
       default:
         return { class: 'bg-amber-100 text-amber-700', text: status || 'Pending' };
@@ -512,7 +590,7 @@ export class DashboardComponent implements OnInit {
   }
 
   navigateToPayment() {
-    this.router.navigate(['/payment']);
+    this.router.navigate(['/payment-methods']);
   }
 
   // Review modal

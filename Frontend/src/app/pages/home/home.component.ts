@@ -1,7 +1,8 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { LucideAngularModule, Search, Plus, Wrench, Utensils, Sparkles, Monitor, MessageSquare, ArrowUp, MapPin, Dumbbell, Sprout, Package } from 'lucide-angular';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { ItemCardComponent } from '../../components/item-card/item-card.component';
@@ -11,9 +12,11 @@ import { Item } from '../../models/item.model';
 import { NavbarLoggedInComponent } from 'src/app/components/navbar-logged-in/navbar-logged-in.component';
 import { AuthService } from 'src/app/services/auth.service';
 import { SearchService } from 'src/app/services/search.service';
+import { EventService } from 'src/app/services/event-service';
 import { ItemCategory } from '../../models/enums/item.category.enum';
 import { ItemStatus } from '../../models/enums/item-status.emun';
-import {SearchCriteria} from '../../models/search.criteria.model';
+import { SearchCriteria } from '../../models/search.criteria.model';
+import { SSE_EVENT_TYPES } from '../../models/sse-event.model';
 
 @Component({
   selector: 'app-home',
@@ -22,11 +25,14 @@ import {SearchCriteria} from '../../models/search.criteria.model';
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private itemService = inject(ItemService);
   private authService = inject(AuthService);
   private searchService = inject(SearchService);
+  private eventService = inject(EventService);
+
+  private sseSubscription?: Subscription;
 
   auth = this.authService.isLoggedIn;
 
@@ -35,7 +41,7 @@ export class HomeComponent implements OnInit {
   searchLat: number | null = null;
   searchLng: number | null = null;
 
-  selectedCategory: ItemCategory | undefined  = undefined;
+  selectedCategory: ItemCategory | undefined = undefined;
   items: Item[] = [];
   isMapOpen = false;
 
@@ -56,11 +62,34 @@ export class HomeComponent implements OnInit {
   ];
 
   ngOnInit() {
+    this.loadItems();
+
+    // Subscribe to SSE events for real-time updates
+    this.sseSubscription = this.eventService.getEvents().subscribe({
+      next: (event) => {
+        if (event && event.type === SSE_EVENT_TYPES.ITEM_APPROVED) {
+          console.log('Item approved, refreshing feed...');
+          this.loadItems();
+        }
+      },
+      error: (err) => {
+        console.error('SSE Error in HomeComponent:', err);
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    if (this.sseSubscription) {
+      this.sseSubscription.unsubscribe();
+    }
+  }
+
+  private loadItems() {
     this.searchService.getFeed().subscribe({
       next: (items) => {
         this.items = items ?? [];
       },
-      error : () => {
+      error: () => {
         this.items = [];
       }
     });

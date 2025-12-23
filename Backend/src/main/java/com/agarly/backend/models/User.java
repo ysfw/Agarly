@@ -41,6 +41,12 @@ public class User {
     @JsonManagedReference
     private UserProfile profile;
 
+    @Transient
+    private java.math.BigDecimal totalEarnings;
+
+    @Transient
+    private java.math.BigDecimal totalSpent;
+
     private BigDecimal walletBalance = BigDecimal.ZERO;
 
     // Notification preferences - push only via SSE

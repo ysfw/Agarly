@@ -1,17 +1,18 @@
 package com.agarly.backend.services.payment;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
 import java.util.Map;
 
-
 @Component
 public class FawryPaymentStrategy implements PaymentStrategy {
 
     private final RestTemplate restTemplate = new RestTemplate();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     public PaymentResult initiatePayment(PaymentContext context) {
@@ -29,8 +30,9 @@ public class FawryPaymentStrategy implements PaymentStrategy {
             body.put("source", source);
             body.put("payment_token", context.getPaymentKey());
 
-            // Call Paymob's pay endpoint
-            JsonNode response = restTemplate.postForObject(url, body, JsonNode.class);
+            // Call Paymob's pay endpoint - use String and parse with ObjectMapper
+            String responseStr = restTemplate.postForObject(url, body, String.class);
+            JsonNode response = objectMapper.readTree(responseStr);
 
             if (response != null && response.has("data")) {
                 JsonNode data = response.get("data");
@@ -46,10 +48,14 @@ public class FawryPaymentStrategy implements PaymentStrategy {
                 }
             }
 
+            String errorMsg = "No bill reference received from Paymob";
+            if (response != null && response.has("message")) {
+                errorMsg = response.get("message").asText();
+            }
             return PaymentResult.builder()
                     .providerName(getProviderName())
                     .success(false)
-                    .errorMessage("No bill reference received from Paymob")
+                    .errorMessage(errorMsg)
                     .build();
 
         } catch (Exception e) {

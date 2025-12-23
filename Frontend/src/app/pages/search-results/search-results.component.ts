@@ -15,6 +15,8 @@ import { ItemStatus } from '../../models/enums/item-status.emun';
 import { ModalService } from '../../services/modal.service';
 
 
+import { ItemRentalStatus } from '../../models/enums/item-rental-status.enum';
+
 @Component({
   selector: 'app-search-results',
   standalone: true,
@@ -29,6 +31,7 @@ export class SearchResultsComponent implements OnInit {
   readonly MapPinIcon = MapPin;
   protected readonly ItemCategory = ItemCategory;
   protected readonly ItemStatus = ItemStatus;
+  protected readonly ItemRentalStatus = ItemRentalStatus;
 
   router = inject(Router);
   route = inject(ActivatedRoute);
@@ -50,11 +53,12 @@ export class SearchResultsComponent implements OnInit {
     category: undefined,
     minPrice: undefined,
     maxPrice: undefined,
-    priceUnit: PriceUnit.DAY,
+    priceUnit: undefined,
     latitude: undefined,
     longitude: undefined,
     radius: 5,
-    approvalStatus: undefined,
+    approvalStatus: ItemStatus.APPROVED, // Default to APPROVED items only
+    rentalStatus: undefined,
     sortBy: 'newest',
     sortDirection: 'desc'
   };

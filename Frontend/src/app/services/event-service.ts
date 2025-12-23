@@ -22,6 +22,12 @@ export class EventService {
       this.initializeSSE();
     });
 
+    // Check if ALREADY logged in (for page refresh case)
+    if (this.authService.isLoggedIn()) {
+      console.log('User already logged in, initializing SSE immediately');
+      this.initializeSSE();
+    }
+
     // Listen for logout events to stop SSE
     this.authService.logout$.subscribe(() => {
       console.log('Logout detected, stopping SSE');

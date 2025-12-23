@@ -21,6 +21,9 @@ public class Booking {
     private LocalDate startDate;
     private LocalDate endDate;
 
+    private java.time.LocalTime startTime;
+    private java.time.LocalTime endTime;
+
     @Enumerated(EnumType.STRING)
     private BookingStatus status;
 }

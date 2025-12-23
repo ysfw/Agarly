@@ -24,6 +24,9 @@ public interface ItemRepository extends JpaRepository<Item, Long>, JpaSpecificat
 
     List<Item> findByStatus(com.agarly.backend.models.Enums.ItemStatus status);
 
+    List<Item> findByStatusAndRentalStatus(com.agarly.backend.models.Enums.ItemStatus status,
+            com.agarly.backend.models.Enums.ItemRentalStatus rentalStatus);
+
     Long countByOwner(User owner);
 
     Long countByBorrower(User borrower);
