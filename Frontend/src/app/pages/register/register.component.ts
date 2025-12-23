@@ -189,7 +189,7 @@ export class RegisterComponent {
       address: this.formData.address,
       activated: true,
       blocked: false,
-      verified : false
+      verified: false
     }
 
     this.api.registerUser(userData).subscribe({
@@ -198,7 +198,8 @@ export class RegisterComponent {
         console.log("Response from backend: ", response)
         this.loading = false;
         this.success = true;
-        this.authService.login();
+        // Don't call authService.login() here - user isn't logged in yet, just registered
+        // Store userData for verification page to use
         this.authService.register(userData)
         this.router.navigate(['/verify-email'], { replaceUrl: true });
       },

@@ -16,4 +16,5 @@ public class PaymobKeyRequest {
     private JSONObject billing_data;
     private String currency = "EGP";
     private String integration_id; // THIS IS THE IMPORTANT PART
+    private String redirection_url;
 }

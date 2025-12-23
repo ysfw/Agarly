@@ -36,7 +36,7 @@ export const routes: Routes = [
   { path: 'home', component: HomeComponent },
   { path: 'login', component: LoginComponent, canActivate: [GuestGuard] },
   { path: 'register', component: RegisterComponent, canActivate: [GuestGuard] },
-  { path: 'verify-email', component: VerifyEmailComponent, canActivate: [GuestGuard] },
+  { path: 'verify-email', component: VerifyEmailComponent }, // No guard - accessible to both logged-in and guests
   { path: 'admin-login', component: AdminLoginComponent, canActivate: [GuestGuard] },
   // Admin routes (should require AdminAuthGuard)
   { path: 'admin-dashboard', component: AdminDashboardComponent, canActivate: [AdminAuthGuard] },
@@ -54,6 +54,7 @@ export const routes: Routes = [
   { path: 'request/:id', component: RequestDetailsComponent, canActivate: [AuthGuard] },
   { path: 'privacy-safety', component: PrivacySafetyComponent, canActivate: [AuthGuard] },
   { path: 'payment', component: PaymentComponent, canActivate: [AuthGuard] },
+  { path: 'payment-methods', loadComponent: () => import('./pages/payment-methods/payment-methods.component').then(m => m.PaymentMethodsComponent), canActivate: [AuthGuard] },
   { path: 'edit-profile', component: EditProfileComponent, canActivate: [AuthGuard] },
   { path: 'search', component: SearchResultsComponent, canActivate: [AuthGuard] },
   { path: 'request-item', component: RequestItemComponent, canActivate: [AuthGuard] },

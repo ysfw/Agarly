@@ -41,12 +41,22 @@ public class User {
     @JsonManagedReference
     private UserProfile profile;
 
+    @Transient
+    private java.math.BigDecimal totalEarnings;
+
+    @Transient
+    private java.math.BigDecimal totalSpent;
+
     private BigDecimal walletBalance = BigDecimal.ZERO;
 
-    // Notification preferences
+    // Notification preferences - push only via SSE
     private boolean pushNotificationsEnabled = true;
-    private boolean emailNotificationsEnabled = true;
-    private boolean smsNotificationsEnabled = false;
+
+    // Privacy settings
+    private String profileVisibility = "EVERYONE"; // EVERYONE, VERIFIED_ONLY, PRIVATE
+    private boolean showContactInfo = false;
+    private boolean hideAddress = true;
+    private boolean onlyVerifiedMembers = true;
 
     // Account status
     private boolean banned = false;

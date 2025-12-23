@@ -21,7 +21,7 @@ public class JWTService {
 
     private String secretKey;
 
-    public JWTService(){
+    public JWTService() {
         try {
             KeyGenerator keygen = KeyGenerator.getInstance("HmacSHA256");
             SecretKey sk = keygen.generateKey();
@@ -38,7 +38,7 @@ public class JWTService {
                 .add(claims)
                 .subject(username)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 24*60*60*1000)) // expires after 24 hours
+                .expiration(new Date(System.currentTimeMillis() + 24 * 60 * 60 * 1000)) // expires after 24 hours
                 .and()
                 .signWith(getKey())
                 .compact();

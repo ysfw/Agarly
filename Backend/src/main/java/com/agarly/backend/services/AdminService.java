@@ -41,9 +41,9 @@ public class AdminService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         user.setBlocked(Boolean.TRUE);
-        List <String> bannedUsersList = new ArrayList<>(); // it's only one user really but to match the SSE DTO
+        List<String> bannedUsersList = new ArrayList<>(); // it's only one user really but to match the SSE DTO
         bannedUsersList.add(user.getUsername());
-        eventService.publishEvent(new SSE("Banned",bannedUsersList));
+        eventService.publishEvent(new SSE("Banned", bannedUsersList));
         userRepository.save(user);
     }
 
@@ -99,6 +99,12 @@ public class AdminService {
                 .orElseThrow(() -> new RuntimeException("Item not found"));
         item.setStatus(ItemStatus.APPROVED);
         itemRepository.save(item);
+
+        // Notify the item owner and broadcast to all users (so home pages update)
+        List<String> recipients = new ArrayList<>();
+        recipients.add(item.getOwner().getUsername());
+        recipients.add("*"); // Broadcast to all for home page updates
+        eventService.publishEvent(new SSE("ITEM_APPROVED", recipients, item.getId()));
     }
 
     public void rejectItem(Long id) {
@@ -106,6 +112,11 @@ public class AdminService {
                 .orElseThrow(() -> new RuntimeException("Item not found"));
         item.setStatus(ItemStatus.REJECTED);
         itemRepository.save(item);
+
+        // Notify only the item owner
+        List<String> recipients = new ArrayList<>();
+        recipients.add(item.getOwner().getUsername());
+        eventService.publishEvent(new SSE("ITEM_REJECTED", recipients, item.getId()));
     }
 
     public void deleteItem(Long id) {
@@ -132,6 +143,9 @@ public class AdminService {
                 .orElseThrow(() -> new RuntimeException("Request not found"));
         request.setStatus("APPROVED");
         itemRequestRepository.save(request);
+        // Notify requester
+        String requesterUsername = request.getRequester().getUsername();
+        eventService.publishEvent(new SSE("REQUEST_APPROVED", List.of(requesterUsername)));
     }
 
     public void rejectRequest(Long id) {

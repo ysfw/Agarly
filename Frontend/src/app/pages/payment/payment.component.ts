@@ -5,8 +5,10 @@ import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { LucideAngularModule, ArrowLeft, CreditCard, Lock, Wallet, Plus, Check, Trash2, Smartphone, Store } from 'lucide-angular';
 import { PaymentApiService, PaymentMethod, InitiatePaymentRequest, InitiatePaymentResponse } from '../../services/payment-api.service';
+import { UserService } from '../../services/user.service';
+import { ModalService } from '../../services/modal.service';
 
-type PaymentMethodType = 'CARD' | 'WALLET' | 'FAWRY';
+type PaymentMethodType = 'CARD' | 'WALLET' | 'FAWRY' | 'INTERNAL_WALLET';
 
 @Component({
   selector: 'app-payment',
@@ -33,6 +35,8 @@ export class PaymentComponent implements OnInit {
   location = inject(Location);
   paymentService = inject(PaymentApiService);
   sanitizer = inject(DomSanitizer);
+  modalService = inject(ModalService);
+  userService = inject(UserService);
 
   // State
   savedCards = signal<PaymentMethod[]>([]);
@@ -49,6 +53,9 @@ export class PaymentComponent implements OnInit {
   // Wallet phone number
   walletPhoneNumber = signal('');
 
+  // Wallet Balance
+  walletBalance = signal<number>(0);
+
   // Paymob iframe
   showPaymobIframe = signal(false);
   paymobIframeUrl = signal<SafeResourceUrl | null>(null);
@@ -62,14 +69,17 @@ export class PaymentComponent implements OnInit {
     saveCard: true
   };
 
-  // Rental summary (would come from route params in real app)
+  // Booking ID (from navigation state)
+  bookingId: number | null = null;
+
+  // Rental summary - populated from route state
   rentalSummary = {
-    itemName: 'Power Drill',
-    itemImage: 'https://images.unsplash.com/photo-1504148455328-c376907d081c?w=400',
-    duration: '3 days',
-    rentalFee: 75.00,
-    serviceFee: 5.00,
-    securityDeposit: 20.00
+    itemName: 'Item',
+    itemImage: 'https://via.placeholder.com/400',
+    duration: '1 day',
+    rentalFee: 0,
+    serviceFee: 0,
+    securityDeposit: 0
   };
 
   totalAmount = computed(() =>
@@ -77,7 +87,42 @@ export class PaymentComponent implements OnInit {
   );
 
   ngOnInit() {
+    // Load booking data from router state
+    const state = history.state;
+    if (state?.bookingId) {
+      this.bookingId = state.bookingId;
+      const totalAmount = state.totalAmount || 0;
+      const serviceFee = Math.round(totalAmount * 0.05 * 100) / 100; // 5% platform fee
+
+      this.rentalSummary = {
+        itemName: state.itemTitle || 'Item',
+        itemImage: state.itemImage || 'https://via.placeholder.com/400',
+        duration: `${state.totalDays || 1} ${state.totalDays === 1 ? 'day' : 'days'}`,
+        rentalFee: totalAmount,
+        serviceFee: serviceFee,
+        securityDeposit: 0 // No deposit per business model
+      };
+    } else {
+      // Manage Mode (Add Card from Dashboard)
+      this.showAddCard.set(true); // Default to adding card
+    }
+
     this.loadSavedCards();
+    this.loadWalletBalance();
+  }
+
+  loadWalletBalance() {
+    const username = localStorage.getItem('username');
+    if (username) {
+      this.userService.getUserByUsername(username).subscribe({
+        next: (user) => {
+          if (user && user.walletBalance !== undefined) {
+            this.walletBalance.set(user.walletBalance);
+          }
+        },
+        error: (err) => console.error('Failed to load wallet balance', err)
+      });
+    }
   }
 
   loadSavedCards() {
@@ -159,6 +204,18 @@ export class PaymentComponent implements OnInit {
       return;
     }
 
+    // If in manage mode (no booking), we can't pay yet without a dedicated 'Save Card' flow
+    if (!this.bookingId) {
+      if (this.showPaymobIframe()) {
+        // If iframe is already open, do nothing
+        return;
+      }
+      // Temporary workaround: Alert user that they cannot pay/save purely from here yet
+      // OR better: Implement a 1 EGP auth request.
+      this.modalService.alert('To save a card, please clear a booking transaction. Card management without booking is coming soon.', 'Feature Unavailable');
+      return;
+    }
+
     this.isProcessing.set(true);
     this.errorMessage.set('');
     this.fawryReference.set(null);
@@ -168,6 +225,7 @@ export class PaymentComponent implements OnInit {
       amount: this.totalAmount(),
       method: method,
       description: `Rental: ${this.rentalSummary.itemName} - ${this.rentalSummary.duration}`,
+      bookingId: this.bookingId || undefined,
       phoneNumber: method === 'WALLET' ? this.walletPhoneNumber() : undefined
     };
 
@@ -177,7 +235,7 @@ export class PaymentComponent implements OnInit {
         this.isProcessing.set(false);
         this.handlePaymentResponse(response);
       },
-      error: (err) => {
+      error: (err: any) => {
         this.isProcessing.set(false);
         this.errorMessage.set(err.error?.errorMessage || 'Payment failed. Please try again.');
         console.error('Payment error:', err);
@@ -218,6 +276,16 @@ export class PaymentComponent implements OnInit {
           this.fawryReference.set(response.fawryReference);
           this.successMessage.set('Fawry payment initiated! Use the reference below at any Fawry store.');
         }
+        break;
+
+      case 'INTERNAL_WALLET':
+        // Immediate success
+        this.successMessage.set('Payment successful!');
+        this.modalService.alert('Payment successful using your wallet balance!', 'Success');
+        // Redirect to dashboard or bookings
+        setTimeout(() => {
+          this.router.navigate(['/dashboard']);
+        }, 1500);
         break;
     }
   }

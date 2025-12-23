@@ -66,7 +66,7 @@
             <span>{{ item.location }}</span>
           </div>
           <div class="mt-2 text-xl font-bold text-[#3949AB]">
-            {{ item.pricePerDay | currency:'EGP' }} / {{ item.priceUnit }}
+            {{ item.pricePerDay | currency:'EGP':'symbol-narrow' }} / {{ item.priceUnit }}
           </div>
         </div>
         <span class="px-4 py-2 bg-[#C6FF00] text-[#1A237E] rounded-full font-semibold">
@@ -156,6 +156,8 @@
       }
 
       <div class="flex gap-4">
+        @if (!isOwner) {
+        <!-- Non-owner: Show Book Now and Message buttons -->
         <button (click)="navigateToBook()"
           class="flex-1 px-6 py-4 bg-[#3949AB] text-white rounded-xl font-semibold text-lg hover:bg-[#1A237E] transition-colors shadow-md">
           Book Now
@@ -165,6 +167,26 @@
           <lucide-icon [img]="MessageCircleIcon" class="w-5 h-5"></lucide-icon>
           Message
         </button>
+        } @else {
+        <!-- Owner: Show Edit button (if pending) or message (if approved) -->
+        @if (canEdit) {
+        <button (click)="editItem()"
+          class="flex-1 px-6 py-4 bg-[#3949AB] text-white rounded-xl font-semibold text-lg hover:bg-[#1A237E] transition-colors shadow-md flex items-center justify-center gap-2">
+          <lucide-icon [img]="EditIcon" class="w-5 h-5"></lucide-icon>
+          Edit Item
+        </button>
+        } @else {
+        <div class="flex-1 px-6 py-4 bg-gray-100 text-gray-600 rounded-xl font-semibold text-center">
+          @if (item.status === 'APPROVED') {
+          This item is approved and cannot be edited
+          } @else if (item.status === 'REJECTED') {
+          This item was rejected - contact support
+          } @else {
+          This is your item
+          }
+        </div>
+        }
+        }
       </div>
     </div>
   </div>

@@ -24,6 +24,9 @@ public class UserService {
     @Autowired
     private JWTService jwtService;
 
+    @Autowired
+    private com.agarly.backend.repos.TransactionRepository transactionRepository;
+
     public User findByUsername(String username) {
         return userRepository.findByUsername(username);
     }
@@ -42,6 +45,19 @@ public class UserService {
 
     public Boolean existsByEmail(String email) {
         return userRepository.existsByEmail(email);
+    }
+
+    public java.math.BigDecimal getTransactionSum(Long userId, com.agarly.backend.models.Enums.TransactionType type) {
+        java.math.BigDecimal sum = transactionRepository.sumAmountByUserIdAndType(userId, type);
+        return sum != null ? sum : java.math.BigDecimal.ZERO;
+    }
+
+    public java.math.BigDecimal getNetSpent(Long userId) {
+        java.math.BigDecimal totalPayment = getTransactionSum(userId,
+                com.agarly.backend.models.Enums.TransactionType.PAYMENT);
+        java.math.BigDecimal totalRefund = getTransactionSum(userId,
+                com.agarly.backend.models.Enums.TransactionType.REFUND);
+        return totalPayment.subtract(totalRefund);
     }
 
     public User save(User user) {

@@ -11,6 +11,4 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UserPreferencesDTO {
     private boolean pushNotificationsEnabled;
-    private boolean emailNotificationsEnabled;
-    private boolean smsNotificationsEnabled;
 }

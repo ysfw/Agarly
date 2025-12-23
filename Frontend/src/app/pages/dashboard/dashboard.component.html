@@ -105,7 +105,8 @@
             </div>
             <p class="text-gray-500 text-sm mb-2 line-clamp-1">{{ item.description }}</p>
             <div class="flex items-center gap-4 text-sm text-gray-500">
-              <span class="font-semibold text-[#3949AB]">${{ item.pricePerDay }}/{{ item.priceUnit.toLowerCase()
+              <span class="font-semibold text-[#3949AB]">{{ item.pricePerDay | currency:'EGP':'symbol-narrow' }}/{{
+                item.priceUnit.toLowerCase()
                 }}</span>
               <span>{{ item.location }}</span>
             </div>
@@ -157,7 +158,8 @@
                   {{ getItemStatusBadge(item.status).text }}
                 </span>
               </div>
-              <p class="text-gray-500 text-sm mb-1">{{ item.category }} • ${{ item.pricePerDay }}/{{
+              <p class="text-gray-500 text-sm mb-1">{{ item.category }} • {{ item.pricePerDay |
+                currency:'EGP':'symbol-narrow' }}/{{
                 item.priceUnit.toLowerCase() }}</p>
             </div>
 
@@ -325,14 +327,12 @@
             View
           </button>
           @if (canRespondToRequest(request)) {
-          <button (click)="rejectRequest(request)"
-            [disabled]="requestActionLoading()"
+          <button (click)="rejectRequest(request)" [disabled]="requestActionLoading()"
             class="px-4 py-2 bg-red-50 text-red-600 rounded-xl text-sm font-semibold hover:bg-red-100 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
             title="Reject request">
             Reject
           </button>
-          <button (click)="acceptRequest(request)"
-            [disabled]="requestActionLoading()"
+          <button (click)="acceptRequest(request)" [disabled]="requestActionLoading()"
             class="px-4 py-2 bg-emerald-50 text-emerald-600 rounded-xl text-sm font-semibold hover:bg-emerald-100 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
             title="Accept request">
             Accept
@@ -408,7 +408,7 @@
             </div>
             <span class="text-white/80 font-medium">Current Balance</span>
           </div>
-          <p class="text-3xl font-bold">${{ walletBalance().toFixed(2) }}</p>
+          <p class="text-3xl font-bold">{{ walletBalance() | currency:'EGP':'symbol-narrow' }}</p>
         </div>
         <div class="bg-white rounded-2xl p-6 shadow-sm">
           <div class="flex items-center gap-3 mb-3">
@@ -417,7 +417,7 @@
             </div>
             <span class="text-gray-500 font-medium">Total Earnings</span>
           </div>
-          <p class="text-3xl font-bold text-gray-800">${{ totalEarnings().toFixed(2) }}</p>
+          <p class="text-3xl font-bold text-gray-800">{{ totalEarnings() | currency:'EGP':'symbol-narrow' }}</p>
         </div>
         <div class="bg-white rounded-2xl p-6 shadow-sm">
           <div class="flex items-center gap-3 mb-3">
@@ -426,7 +426,7 @@
             </div>
             <span class="text-gray-500 font-medium">Total Spent</span>
           </div>
-          <p class="text-3xl font-bold text-gray-800">${{ totalSpent().toFixed(2) }}</p>
+          <p class="text-3xl font-bold text-gray-800">{{ totalSpent() | currency:'EGP':'symbol-narrow' }}</p>
         </div>
       </div>
 
@@ -455,8 +455,8 @@
             </div>
             <div class="text-right">
               <p class="font-bold text-lg"
-                [ngClass]="tx.type === 'PAYMENT' ? 'text-red-600' : tx.type === 'EARNING' || tx.type === 'REFUND' ? 'text-emerald-600' : 'text-gray-800'">
-                {{ getAmountPrefix(tx.type) }}${{ tx.amount.toFixed(2) }}
+                [ngClass]="tx.type === 'PAYMENT' ? 'text-red-600' : tx.type === 'PAYOUT' || tx.type === 'REFUND' ? 'text-emerald-600' : 'text-gray-800'">
+                {{ getAmountPrefix(tx.type) }}{{ tx.amount | currency:'EGP':'symbol-narrow' }}
               </p>
               <span class="inline-block px-2 py-0.5 rounded-full text-xs font-medium"
                 [ngClass]="getStatusBadgeClass(tx.status)">{{ tx.status }}</span>
@@ -569,7 +569,8 @@
         class="w-full md:w-48 h-48 object-cover rounded-2xl shadow-md" />
       <div class="flex-1 space-y-4">
         <div class="flex items-center gap-3">
-          <h2 class="text-2xl font-bold text-gray-800">{{ selectedRequest() ? getItemTitle(selectedRequest()!) : '' }}</h2>
+          <h2 class="text-2xl font-bold text-gray-800">{{ selectedRequest() ? getItemTitle(selectedRequest()!) : '' }}
+          </h2>
           @if (selectedRequest()) {
           <span class="px-3 py-1 rounded-full text-xs font-semibold"
             [ngClass]="getRequestStatusBadge(selectedRequest()!.status).class">
@@ -592,7 +593,8 @@
           }
           <div class="flex items-center gap-2">
             <lucide-icon [img]="CalendarIcon" class="w-4 h-4 text-[#3949AB]"></lucide-icon>
-            <span>{{ selectedRequest() ? formatDateRange(selectedRequest()!.startDate, selectedRequest()!.endDate) : '' }}</span>
+            <span>{{ selectedRequest() ? formatDateRange(selectedRequest()!.startDate, selectedRequest()!.endDate) : ''
+              }}</span>
           </div>
           @if (selectedRequest()?.createdAt) {
           <div class="flex items-center gap-2">

@@ -1,6 +1,7 @@
 package com.agarly.backend.services.payment;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -11,6 +12,7 @@ import java.util.Map;
 public class WalletPaymentStrategy implements PaymentStrategy {
 
     private final RestTemplate restTemplate = new RestTemplate();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     public PaymentResult initiatePayment(PaymentContext context) {
@@ -27,8 +29,9 @@ public class WalletPaymentStrategy implements PaymentStrategy {
             body.put("source", source);
             body.put("payment_token", context.getPaymentKey());
 
-            // Call Paymob's pay endpoint
-            JsonNode response = restTemplate.postForObject(url, body, JsonNode.class);
+            // Call Paymob's pay endpoint - use String and parse with ObjectMapper
+            String responseStr = restTemplate.postForObject(url, body, String.class);
+            JsonNode response = objectMapper.readTree(responseStr);
 
             if (response != null && response.has("redirect_url")) {
                 String redirectUrl = response.get("redirect_url").asText();
@@ -40,10 +43,14 @@ public class WalletPaymentStrategy implements PaymentStrategy {
                         .orderId(context.getOrderId())
                         .build();
             } else {
+                String errorMsg = "No redirect URL received from Paymob";
+                if (response != null && response.has("message")) {
+                    errorMsg = response.get("message").asText();
+                }
                 return PaymentResult.builder()
                         .providerName(getProviderName())
                         .success(false)
-                        .errorMessage("No redirect URL received from Paymob")
+                        .errorMessage(errorMsg)
                         .build();
             }
         } catch (Exception e) {

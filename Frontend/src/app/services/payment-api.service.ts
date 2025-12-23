@@ -20,7 +20,7 @@ export interface PaymentMethod {
 export interface Transaction {
     id: number;
     amount: number;
-    type: 'PAYMENT' | 'EARNING' | 'REFUND' | 'DEPOSIT';
+    type: 'PAYMENT' | 'PAYOUT' | 'REFUND' | 'DEPOSIT' | 'WITHDRAWAL';
     status: 'PENDING' | 'COMPLETED' | 'FAILED' | 'REFUNDED';
     description: string;
     createdAt: string;
@@ -40,7 +40,7 @@ export interface ChargeRequest {
  */
 export interface InitiatePaymentRequest {
     amount: number;
-    method: 'CARD' | 'WALLET' | 'FAWRY';
+    method: 'CARD' | 'WALLET' | 'FAWRY' | 'INTERNAL_WALLET';
     phoneNumber?: string;  // Required for WALLET payments
     bookingId?: number;
     description: string;
@@ -119,10 +119,14 @@ export class PaymentApiService {
         return this.http.post<Transaction>(`${this.baseUrl}/charge`, request);
     }
 
+    verifyPayment(params: any): Observable<any> {
+        const url = `${this.baseUrl}/verify`;
+        return this.http.get<any>(url, { params });
+    }
+
     getTransactionHistory(page: number = 0, size: number = 10): Observable<any> {
         return this.http.get<any>(`${this.baseUrl}/history`, {
             params: { page: page.toString(), size: size.toString() }
         });
     }
 }
-

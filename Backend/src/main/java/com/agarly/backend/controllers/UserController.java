@@ -36,6 +36,14 @@ public class UserController {
         User user = userService.findByUsername(username);
 
         if (user != null) {
+            // Populate transient fields for financial dashboard
+            java.math.BigDecimal totalEarnings = userService.getTransactionSum(user.getId(),
+                    com.agarly.backend.models.Enums.TransactionType.PAYOUT);
+            java.math.BigDecimal totalSpent = userService.getNetSpent(user.getId());
+
+            user.setTotalEarnings(totalEarnings);
+            user.setTotalSpent(totalSpent);
+
             return new ResponseEntity<>(user, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -54,22 +62,46 @@ public class UserController {
     }
 
     // Public profile endpoint for viewing other users
+    // Accepts optional Authorization header to identify the viewer for privacy
+    // filtering
     @GetMapping("/{id}")
-    public ResponseEntity<PublicUserProfileDTO> getUserProfile(@PathVariable Long id) {
+    public ResponseEntity<PublicUserProfileDTO> getUserProfile(
+            @PathVariable Long id,
+            @RequestHeader(value = "Authorization", required = false) String authHeader) {
         User user = userService.findById(id);
 
         if (user == null) {
             return ResponseEntity.notFound().build();
         }
 
+        // Try to get the viewer from the auth token (if present)
+        User viewer = null;
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            try {
+                String token = authHeader.substring(7);
+                String viewerUsername = jwtService.extractUsername(token);
+                viewer = userService.findByUsername(viewerUsername);
+            } catch (Exception e) {
+                // Token extraction failed - treat as anonymous viewer
+                viewer = null;
+            }
+        }
+
         // Count total items posted by user
-        Long totalItems = itemRepository.countByOwner(user);
+        Long totalItemsPosted = itemRepository.countByOwner(user);
 
         // Get live average rating from reviews
         Double avgRating = reviewRepository.findAverageRatingByUserId(id).orElse(0.0);
 
+        // Get total earnings (PAYOUT transactions) and total spent (Net: PAYMENT -
+        // REFUND)
+        java.math.BigDecimal totalEarnings = userService.getTransactionSum(id,
+                com.agarly.backend.models.Enums.TransactionType.PAYOUT);
+        java.math.BigDecimal totalSpent = userService.getNetSpent(id);
+
         // Return safe DTO without sensitive data
-        PublicUserProfileDTO profile = new PublicUserProfileDTO(user, totalItems, avgRating);
+        PublicUserProfileDTO profile = new PublicUserProfileDTO(user, totalItemsPosted, avgRating, totalEarnings,
+                totalSpent, viewer, true);
         return ResponseEntity.ok(profile);
     }
 
@@ -82,8 +114,8 @@ public class UserController {
         }
 
         // Get only approved items published by this user
-        List<Item> items = itemRepository.findByOwnerAndStatus(user, 
-            com.agarly.backend.models.Enums.ItemStatus.APPROVED);
+        List<Item> items = itemRepository.findByOwnerAndStatus(user,
+                com.agarly.backend.models.Enums.ItemStatus.APPROVED);
         return ResponseEntity.ok(items);
     }
 
@@ -94,16 +126,16 @@ public class UserController {
         try {
             String token = authHeader.substring(7);
             String username = jwtService.extractUsername(token);
-            
+
             User user = userService.findByUsername(username);
             if (user == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new com.agarly.backend.models.StatusResponse("User not found"));
+                        .body(new com.agarly.backend.models.StatusResponse("User not found"));
             }
 
             if (Boolean.TRUE.equals(user.getVerified())) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new com.agarly.backend.models.StatusResponse("Email already verified"));
+                        .body(new com.agarly.backend.models.StatusResponse("Email already verified"));
             }
 
             com.agarly.backend.utils.OtpGenerator generator = new com.agarly.backend.utils.OtpGenerator();
@@ -113,10 +145,11 @@ public class UserController {
 
             emailService.sendVerificationEmail(user.getEmail(), newOtp);
 
-            return ResponseEntity.ok(new com.agarly.backend.models.StatusResponse("Verification email sent successfully"));
+            return ResponseEntity
+                    .ok(new com.agarly.backend.models.StatusResponse("Verification email sent successfully"));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new com.agarly.backend.models.StatusResponse("Failed to send verification email"));
+                    .body(new com.agarly.backend.models.StatusResponse("Failed to send verification email"));
         }
     }
 }

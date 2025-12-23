@@ -6,7 +6,7 @@
             class="flex items-center gap-2 text-[#1A237E] font-medium text-sm mb-8 hover:opacity-80 transition-opacity group">
             <lucide-icon [img]="ArrowLeftIcon"
                 class="w-4 h-4 group-hover:-translate-x-1 transition-transform"></lucide-icon>
-            Back to Sign Up
+            {{ authService.isLoggedIn() ? 'Go Back' : 'Back to Sign Up' }}
         </button>
 
         <!-- Main Card -->

@@ -270,6 +270,9 @@ export class AdminDashboardComponent implements OnInit {
         }
     }
 
+    private eventService = inject(EventService);
+    private sseSubscription?: Subscription;
+
     ngOnInit(): void {
         // Check if admin is authenticated
         if (!this.adminService.isAuthenticated()) {
@@ -277,6 +280,42 @@ export class AdminDashboardComponent implements OnInit {
             return;
         }
         this.loadData();
+
+        // Subscribe to real-time events filters
+        this.sseSubscription = this.eventService.getEvents().subscribe({
+            next: (event) => {
+                if (event) {
+                    console.log('Admin Dashboard received event:', event.type);
+
+                    if (event.type === 'ITEM_CREATED') {
+                        // New item posted -> refresh pending posts & stats
+                        this.adminService.getPendingItems().subscribe(items => this.posts.set(items)); // Assuming posts signal holds pending items
+                        this.loadStats();
+                    }
+                    else if (event.type === 'ITEM_APPROVED' || event.type === 'ITEM_REJECTED') {
+                        // Item processed (possibly by another admin) -> refresh pending list
+                        this.adminService.getPendingItems().subscribe(items => this.posts.set(items)); // Assuming posts signal holds pending items
+                        this.loadStats();
+                    }
+                    else if (event.type === 'Banned') {
+                        // User banned -> refresh users list
+                        this.adminService.getUsers().subscribe(users => this.users.set(users));
+                    }
+                }
+            }
+        });
+    }
+
+    ngOnDestroy() {
+        if (this.sseSubscription) {
+            this.sseSubscription.unsubscribe();
+        }
+    }
+
+    private loadStats() {
+        this.adminService.getDashboardStats().subscribe(stats => {
+            this.stats.set(stats); // Update the main stats signal
+        });
     }
 
     loadData(): void {

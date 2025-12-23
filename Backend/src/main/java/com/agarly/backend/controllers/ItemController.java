@@ -1,5 +1,6 @@
 package com.agarly.backend.controllers;
 
+import com.agarly.backend.dtos.UpdateItemRequest;
 import com.agarly.backend.models.Enums.ItemCategory;
 import com.agarly.backend.models.Item;
 import com.agarly.backend.models.User;
@@ -36,8 +37,8 @@ public class ItemController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> editItem(@PathVariable Long id, @RequestBody Item item) {
-        itemService.editItem(id, item, getCurrentUser());
+    public ResponseEntity<Void> editItem(@PathVariable Long id, @RequestBody UpdateItemRequest request) {
+        itemService.editItem(id, request, getCurrentUser());
         return ResponseEntity.ok().build();
     }
 

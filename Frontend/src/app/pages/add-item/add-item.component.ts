@@ -1,5 +1,5 @@
-import { Component, inject } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, inject, OnInit } from '@angular/core';
+import { Router, ActivatedRoute } from '@angular/router';
 import { Location, CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, ArrowLeft, ArrowRight, Check, MapPin, Package, Image as ImageIcon, Loader2 } from 'lucide-angular';
@@ -16,7 +16,7 @@ import { ModalService } from '../../services/modal.service';
   templateUrl: './add-item.component.html',
   styleUrl: './add-item.component.css'
 })
-export class AddItemComponent {
+export class AddItemComponent implements OnInit {
   readonly ArrowLeftIcon = ArrowLeft;
   readonly ArrowRightIcon = ArrowRight;
   readonly CheckIcon = Check;
@@ -26,9 +26,14 @@ export class AddItemComponent {
   readonly LoaderIcon = Loader2;
 
   router = inject(Router);
+  route = inject(ActivatedRoute);
   location = inject(Location);
   itemService = inject(ItemService);
   modalService = inject(ModalService);
+
+  // Edit mode
+  isEditMode = false;
+  editItemId: number | null = null;
 
   // Wizard state
   currentStep = 1;
@@ -57,6 +62,45 @@ export class AddItemComponent {
 
   images: string[] = [];
   isMapOpen = false;
+
+  ngOnInit(): void {
+    const editId = this.route.snapshot.queryParams['edit'];
+    if (editId) {
+      this.editItemId = Number(editId);
+      this.isEditMode = true;
+      this.loadItemForEdit(this.editItemId);
+    }
+  }
+
+  private loadItemForEdit(id: number): void {
+    this.itemService.getById(id).subscribe({
+      next: (item) => {
+        // Only PENDING items can be edited
+        if (item.status && item.status !== 'PENDING') {
+          this.modalService.alert('Only pending items can be edited.', 'Cannot Edit');
+          this.router.navigate(['/dashboard']);
+          return;
+        }
+        // Populate form with existing data
+        this.formData = {
+          title: item.title,
+          category: item.category,
+          description: item.description,
+          condition: item.condition,
+          pricePerDay: item.pricePerDay,
+          priceUnit: item.priceUnit,
+          location: item.location,
+          latitude: item.latitude,
+          longitude: item.longitude
+        };
+        this.images = item.imageUrls || [];
+      },
+      error: () => {
+        this.modalService.alert('Failed to load item for editing.', 'Error');
+        this.router.navigate(['/dashboard']);
+      }
+    });
+  }
 
   goBack() {
     if (this.currentStep > 1) {
@@ -125,7 +169,7 @@ export class AddItemComponent {
 
     this.isSubmitting = true;
 
-    const newItem: Item = {
+    const itemData: Item = {
       title: this.formData.title,
       category: this.formData.category as any,
       description: this.formData.description,
@@ -138,19 +182,39 @@ export class AddItemComponent {
       imageUrls: this.images
     };
 
-    console.log('Submitting item:', newItem);
-    this.itemService.create(newItem).subscribe({
-      next: (id) => {
-        console.log('Item created with ID:', id);
-        this.isSubmitting = false;
-        this.router.navigate(['/dashboard']);
-      },
-      error: (err) => {
-        console.error('Error creating item:', err);
-        this.isSubmitting = false;
-        this.modalService.alert('Failed to create item. Please try again.', 'Error');
-      }
-    });
+    if (this.isEditMode && this.editItemId) {
+      // UPDATE existing item
+      console.log('Updating item:', this.editItemId, itemData);
+      this.itemService.update(this.editItemId, itemData).subscribe({
+        next: () => {
+          console.log('Item updated successfully');
+          this.isSubmitting = false;
+          this.modalService.alert('Item updated successfully!', 'Success').then(() => {
+            this.router.navigate(['/dashboard']);
+          });
+        },
+        error: (err) => {
+          console.error('Error updating item:', err);
+          this.isSubmitting = false;
+          this.modalService.alert('Failed to update item. Please try again.', 'Error');
+        }
+      });
+    } else {
+      // CREATE new item
+      console.log('Creating item:', itemData);
+      this.itemService.create(itemData).subscribe({
+        next: (id) => {
+          console.log('Item created with ID:', id);
+          this.isSubmitting = false;
+          this.router.navigate(['/dashboard']);
+        },
+        error: (err) => {
+          console.error('Error creating item:', err);
+          this.isSubmitting = false;
+          this.modalService.alert('Failed to create item. Please try again.', 'Error');
+        }
+      });
+    }
   }
 
   openMap() {

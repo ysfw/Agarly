@@ -3,7 +3,7 @@ import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserService, UserProfile } from '../../services/user.service';
 import { Item } from '../../models/item.model';
-import { LucideAngularModule, User, MapPin, Calendar, Package, Star, Loader2 } from 'lucide-angular';
+import { LucideAngularModule, User, MapPin, Calendar, Package, Star, Loader2, ShieldAlert, BadgeCheck, Lock } from 'lucide-angular';
 
 @Component({
   selector: 'app-user-profile',
@@ -25,6 +25,9 @@ export class UserProfileComponent implements OnInit {
   readonly PackageIcon = Package;
   readonly StarIcon = Star;
   readonly LoaderIcon = Loader2;
+  readonly ShieldAlertIcon = ShieldAlert;
+  readonly BadgeCheckIcon = BadgeCheck;
+  readonly LockIcon = Lock;
 
   // State
   profile = signal<UserProfile | null>(null);
@@ -50,7 +53,12 @@ export class UserProfileComponent implements OnInit {
     this.userService.getUserProfile(userId).subscribe({
       next: (profile) => {
         this.profile.set(profile);
-        this.loadUserItems(userId);
+        // Only load items if profile is not restricted
+        if (!profile.isRestricted) {
+          this.loadUserItems(userId);
+        } else {
+          this.loading.set(false);
+        }
       },
       error: (err) => {
         console.error('Error loading profile:', err);

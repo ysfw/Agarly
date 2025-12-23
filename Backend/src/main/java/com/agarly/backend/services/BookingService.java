@@ -212,8 +212,8 @@ public class BookingService {
                 refund.setAmount(paymentTx.getAmount());
                 refund.setType(com.agarly.backend.models.Enums.TransactionType.REFUND);
                 refund.setStatus(com.agarly.backend.models.Enums.TransactionStatus.COMPLETED); // Assuming instant
-                                                                                               // wallet refund or
-                                                                                               // manual process
+                // wallet refund or
+                // manual process
                 refund.setDescription("Refund for rejected booking: " + booking.getItem().getTitle());
                 refund.setReferenceNumber("REF-" + System.currentTimeMillis());
                 refund.setBooking(booking);
@@ -234,6 +234,9 @@ public class BookingService {
         if (currentStatus == BookingStatus.APPROVED && target == BookingStatus.COMPLETED) {
             booking.getItem().setBorrower(null);
             itemRepository.save(booking.getItem());
+            // Notify both parties that item was returned
+            String ownerUsername = booking.getItem().getOwner().getUsername();
+            eventService.publishEvent(new SSE("ITEM_RETURNED", List.of(ownerUsername, borrowerUsername)));
         }
 
         booking.setStatus(target);

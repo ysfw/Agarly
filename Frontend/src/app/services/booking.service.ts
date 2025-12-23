@@ -7,6 +7,8 @@ export interface CreateBookingRequest {
     itemId: number;
     startDate: string;
     endDate: string;
+    startTime?: string;
+    endTime?: string;
 }
 
 export interface Booking {

@@ -4,8 +4,13 @@ import { Observable } from 'rxjs';
 
 export interface UserPreferences {
     pushNotificationsEnabled: boolean;
-    emailNotificationsEnabled: boolean;
-    smsNotificationsEnabled: boolean;
+}
+
+export interface PrivacySettings {
+    profileVisibility: 'EVERYONE' | 'VERIFIED_ONLY' | 'PRIVATE';
+    showContactInfo: boolean;
+    hideAddress: boolean;
+    onlyVerifiedMembers: boolean;
 }
 
 @Injectable({
@@ -31,5 +36,14 @@ export class UserPreferencesService {
 
     deleteAccount(): Observable<{ message: string }> {
         return this.http.delete<{ message: string }>(`${this.baseUrl}/account`);
+    }
+
+    // Privacy settings methods
+    getPrivacySettings(): Observable<PrivacySettings> {
+        return this.http.get<PrivacySettings>(`${this.baseUrl}/privacy`);
+    }
+
+    updatePrivacySettings(settings: PrivacySettings): Observable<PrivacySettings> {
+        return this.http.put<PrivacySettings>(`${this.baseUrl}/privacy`, settings);
     }
 }

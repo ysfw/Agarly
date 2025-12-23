@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -11,7 +12,7 @@ import { Item } from '../../models/item.model';
 @Component({
   selector: 'app-book-item',
   standalone: true,
-  imports: [FormsModule, LucideAngularModule],
+  imports: [CommonModule, FormsModule, LucideAngularModule],
   templateUrl: './book-item.component.html',
   styleUrl: './book-item.component.css'
 })
@@ -25,6 +26,8 @@ export class BookItemComponent implements OnInit {
   bookingData = {
     startDate: '',
     endDate: '',
+    startTime: '09:00',
+    endTime: '17:00',
     notes: '',
     agreeToTerms: false
   };
@@ -78,8 +81,24 @@ export class BookItemComponent implements OnInit {
         return;
       }
 
-      if (!this.isDateRangeValid()) {
-        this.modalService.alert('End date must be on or after the start date.', 'Invalid Dates');
+      if (this.item?.priceUnit === 'HOUR') {
+        if (!this.bookingData.startTime || !this.bookingData.endTime) {
+          this.modalService.alert('Select both start and end times before continuing.', 'Missing Times');
+          return;
+        }
+        // Validate time range if needed, e.g. start < end on same day
+        if (this.bookingData.startDate === this.bookingData.endDate) {
+          if (this.bookingData.startTime >= this.bookingData.endTime) {
+            this.modalService.alert('End time must be after start time on the same day.', 'Invalid Times');
+            return;
+          }
+        }
+      }
+
+      const validRange = this.item?.priceUnit === 'HOUR' ? this.isDateTimeRangeValid() : this.isDateRangeValid();
+
+      if (!validRange) {
+        this.modalService.alert('End date/time must be on or after the start date/time.', 'Invalid Dates');
         return;
       }
 
@@ -99,7 +118,8 @@ export class BookItemComponent implements OnInit {
       return;
     }
 
-    if (!this.isDateRangeValid()) {
+    const validRange = this.item?.priceUnit === 'HOUR' ? this.isDateTimeRangeValid() : this.isDateRangeValid();
+    if (!validRange) {
       this.modalService.alert('The booking dates are invalid. Please review them before submitting.', 'Invalid Dates');
       return;
     }
@@ -107,28 +127,79 @@ export class BookItemComponent implements OnInit {
     const payload: CreateBookingRequest = {
       itemId: this.itemId,
       startDate: this.bookingData.startDate,
-      endDate: this.bookingData.endDate
+      endDate: this.bookingData.endDate,
+      startTime: this.item?.priceUnit === 'HOUR' ? this.bookingData.startTime : undefined,
+      endTime: this.item?.priceUnit === 'HOUR' ? this.bookingData.endTime : undefined
     };
 
     this.isSubmitting = true;
     this.bookingService.createBooking(payload).subscribe({
-      next: () => {
+      next: (booking) => {
         this.isSubmitting = false;
-        this.modalService.alert('Booking request sent! The owner will review and respond.', 'Success')
-          .then(() => this.router.navigate(['/dashboard']));
+
+        const duration = this.calculateDuration();
+
+        // Navigate to payment page with booking details
+        this.router.navigate(['/payment'], {
+          state: {
+            bookingId: booking.id,
+            itemId: this.itemId,
+            itemTitle: this.item?.title,
+            itemImage: this.itemPrimaryImage,
+            ownerName: this.ownerDisplayName,
+            startDate: this.bookingData.startDate,
+            endDate: this.bookingData.endDate,
+            pricePerDay: this.item?.priceUnit === 'HOUR' ? this.item?.pricePerDay : this.item?.pricePerDay, // pricePerDay variable name reuse for rate
+            priceUnit: this.item?.priceUnit || 'DAY',
+            totalDays: duration.value, // Reuse totalDays field for quantity/hours
+            totalAmount: this.calculateTotalAmount()
+          }
+        });
       },
-      error: (error) => {
+      error: (error: any) => {
         this.isSubmitting = false;
         console.error('Booking request failed', error);
         let message = 'Unable to send booking request. Please try again.';
         if (error?.status === 400) {
-          message = 'Please check the booking details and try again.';
+          message = error.error?.message || 'Please check the booking details and try again.';
         } else if (error?.status === 409) {
           message = 'The selected dates are no longer available. Choose different dates.';
         }
         this.modalService.alert(message, 'Booking Failed');
       }
     });
+  }
+
+  calculateDuration(): { value: number; unit: string } {
+    if (!this.bookingData.startDate || !this.bookingData.endDate) {
+      return { value: 0, unit: 'days' };
+    }
+
+    if (this.item?.priceUnit === 'HOUR') {
+      const start = new Date(`${this.bookingData.startDate}T${this.bookingData.startTime}`);
+      const end = new Date(`${this.bookingData.endDate}T${this.bookingData.endTime}`);
+      const diffTime = end.getTime() - start.getTime();
+      const diffHours = Math.ceil(diffTime / (1000 * 60 * 60));
+      return { value: Math.max(1, diffHours), unit: 'Hour(s)' };
+    } else {
+      const start = new Date(this.bookingData.startDate);
+      const end = new Date(this.bookingData.endDate);
+      const diffTime = Math.abs(end.getTime() - start.getTime());
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+      return { value: Math.max(1, diffDays), unit: 'Day(s)' };
+    }
+  }
+
+  calculateTotalAmount(): number {
+    const duration = this.calculateDuration();
+    return duration.value * (this.item?.pricePerDay || 0);
+  }
+
+  private isDateTimeRangeValid(): boolean {
+    if (!this.bookingData.startDate || !this.bookingData.endDate || !this.bookingData.startTime || !this.bookingData.endTime) return false;
+    const start = new Date(`${this.bookingData.startDate}T${this.bookingData.startTime}`);
+    const end = new Date(`${this.bookingData.endDate}T${this.bookingData.endTime}`);
+    return end > start;
   }
 
   private isDateRangeValid(): boolean {

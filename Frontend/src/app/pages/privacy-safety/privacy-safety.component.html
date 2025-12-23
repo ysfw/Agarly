@@ -40,11 +40,11 @@
               <p class="text-sm text-gray-500">Who can see your profile</p>
             </div>
           </div>
-          <select
+          <select [(ngModel)]="privacySettings.profileVisibility" (change)="savePrivacySettings()"
             class="px-4 py-2 rounded-xl border-2 border-gray-200 text-[#1A237E] focus:border-[#3949AB] focus:outline-none bg-white">
-            <option>Everyone</option>
-            <option>Verified Members Only</option>
-            <option>Private</option>
+            <option value="EVERYONE">Everyone</option>
+            <option value="VERIFIED_ONLY">Verified Members Only</option>
+            <option value="PRIVATE">Private</option>
           </select>
         </div>
         <div class="px-6 py-4 flex items-center justify-between border-b border-gray-100">
@@ -58,7 +58,8 @@
             </div>
           </div>
           <label class="relative inline-flex items-center cursor-pointer">
-            <input type="checkbox" class="sr-only peer" />
+            <input type="checkbox" class="sr-only peer" [checked]="privacySettings.showContactInfo"
+              (change)="toggleShowContactInfo($event)" />
             <div
               class="w-12 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-[#3949AB] peer-checked:to-[#5C6BC0] shadow-inner">
             </div>
@@ -75,7 +76,8 @@
             </div>
           </div>
           <label class="relative inline-flex items-center cursor-pointer">
-            <input type="checkbox" class="sr-only peer" checked />
+            <input type="checkbox" class="sr-only peer" [checked]="privacySettings.hideAddress"
+              (change)="toggleHideAddress($event)" />
             <div
               class="w-12 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-[#3949AB] peer-checked:to-[#5C6BC0] shadow-inner">
             </div>
@@ -88,7 +90,7 @@
         <div class="px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-[#3949AB]/5 to-transparent">
           <h2 class="text-lg font-semibold text-[#1A237E]">Safety Features</h2>
         </div>
-        <div class="px-6 py-4 flex items-center justify-between border-b border-gray-100">
+        <div class="px-6 py-4 flex items-center justify-between">
           <div class="flex items-center gap-3">
             <div class="w-10 h-10 bg-[#E8EAF6] rounded-xl flex items-center justify-center">
               <lucide-icon [img]="ShieldCheckIcon" class="w-5 h-5 text-[#3949AB]"></lucide-icon>
@@ -99,42 +101,12 @@
             </div>
           </div>
           <label class="relative inline-flex items-center cursor-pointer">
-            <input type="checkbox" class="sr-only peer" checked />
+            <input type="checkbox" class="sr-only peer" [checked]="privacySettings.onlyVerifiedMembers"
+              (change)="toggleOnlyVerifiedMembers($event)" />
             <div
               class="w-12 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-[#3949AB] peer-checked:to-[#5C6BC0] shadow-inner">
             </div>
           </label>
-        </div>
-        <div class="px-6 py-4 flex items-center justify-between">
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 bg-[#E8EAF6] rounded-xl flex items-center justify-center">
-              <lucide-icon [img]="AlertTriangleIcon" class="w-5 h-5 text-[#3949AB]"></lucide-icon>
-            </div>
-            <div>
-              <p class="text-[#1A237E] font-medium">Require Deposit for Items</p>
-              <p class="text-sm text-gray-500">Add security deposit requirement</p>
-            </div>
-          </div>
-          <label class="relative inline-flex items-center cursor-pointer">
-            <input type="checkbox" class="sr-only peer" />
-            <div
-              class="w-12 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-[#3949AB] peer-checked:to-[#5C6BC0] shadow-inner">
-            </div>
-          </label>
-        </div>
-      </div>
-
-      <!-- Blocked Users -->
-      <div class="bg-white/80 backdrop-blur-sm rounded-2xl overflow-hidden shadow-lg border border-white/50">
-        <div class="px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-[#3949AB]/5 to-transparent">
-          <h2 class="text-lg font-semibold text-[#1A237E]">Blocked Users</h2>
-        </div>
-        <div class="px-6 py-8 text-center">
-          <div class="w-16 h-16 bg-[#E8EAF6] rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <lucide-icon [img]="UserXIcon" class="w-8 h-8 text-[#3949AB]"></lucide-icon>
-          </div>
-          <p class="text-[#1A237E] font-medium">No blocked users</p>
-          <p class="text-sm text-gray-500 mt-1">Users you block will not be able to contact you or see your items</p>
         </div>
       </div>
 

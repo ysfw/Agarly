@@ -47,6 +47,12 @@ public class PaymentController {
         }
     }
 
+    @GetMapping("/verify")
+    public ResponseEntity<Map<String, Object>> verifyPayment(@RequestParam Map<String, String> params) {
+        boolean verified = paymentService.verifyPayment(params);
+        return ResponseEntity.ok(Map.of("verified", verified));
+    }
+
     @GetMapping("/methods")
     public ResponseEntity<List<PaymentMethodDTO>> getPaymentMethods(
             @AuthenticationPrincipal UserPrincipal principal) {

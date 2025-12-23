@@ -28,7 +28,23 @@
           </div>
 
           <!-- Payment Type Buttons -->
-          <div class="grid grid-cols-3 gap-3 mb-6">
+          <div class="grid grid-cols-2 gap-3 mb-6">
+            <!-- Internal Wallet Option -->
+            <button (click)="selectPaymentMethod('INTERNAL_WALLET')"
+              class="flex flex-col items-center gap-2 p-4 rounded-2xl border-2 transition-all duration-300 col-span-2"
+              [ngClass]="selectedPaymentMethod() === 'INTERNAL_WALLET' 
+                ? 'border-[#3949AB] bg-[#E8EAF6] shadow-lg shadow-[#E8EAF6]' 
+                : 'border-gray-100 hover:border-[#C5CAE9] hover:bg-gray-50'">
+              <lucide-icon [img]="WalletIcon" class="w-8 h-8"
+                [ngClass]="selectedPaymentMethod() === 'INTERNAL_WALLET' ? 'text-[#3949AB]' : 'text-gray-400'"></lucide-icon>
+              <div class="text-center">
+                <span class="block text-sm font-semibold"
+                  [ngClass]="selectedPaymentMethod() === 'INTERNAL_WALLET' ? 'text-[#3949AB]' : 'text-gray-600'">Agarly
+                  Wallet</span>
+                <span class="text-xs text-gray-500">Balance: {{ walletBalance() | currency:'EGP':'symbol-narrow'
+                  }}</span>
+              </div>
+            </button>
             <!-- Card Option -->
             <button (click)="selectPaymentMethod('CARD')"
               class="flex flex-col items-center gap-2 p-4 rounded-2xl border-2 transition-all duration-300" [ngClass]="selectedPaymentMethod() === 'CARD' 
