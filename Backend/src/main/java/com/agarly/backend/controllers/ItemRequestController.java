@@ -5,6 +5,7 @@ import com.agarly.backend.models.User;
 import com.agarly.backend.models.UserPrincipal;
 import com.agarly.backend.repos.ItemRequestRepository;
 import com.agarly.backend.repos.UserRepository;
+import com.agarly.backend.services.ItemRequestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -21,6 +22,9 @@ public class ItemRequestController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private ItemRequestService itemRequestService;
 
     @GetMapping
     public ResponseEntity<List<ItemRequest>> getAllRequests() {
@@ -52,4 +56,13 @@ public class ItemRequestController {
         itemRequestRepository.deleteById(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ItemRequest> getRequestById(@PathVariable Long id) {
+        return itemRequestService.getRequestById(id)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+
 }

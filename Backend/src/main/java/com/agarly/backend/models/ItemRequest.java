@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Data
@@ -29,6 +31,12 @@ public class ItemRequest {
     
     private String category; // e.g., "Tools", "Sports", "Cleaning"
     private String urgency; // URGENT, SOON, FLEXIBLE
+
+    @OneToMany(mappedBy = "itemRequest", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Offer> offers = new ArrayList<>();
+
+    @Column(name = "borrower_user_id")
+    private Long borrowerUserId;
 
     public ItemRequest(String title, String description) {
         this.title = title;

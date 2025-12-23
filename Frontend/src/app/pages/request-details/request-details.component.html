@@ -6,87 +6,164 @@
       </button>
       <h1 class="text-3xl font-bold text-[#1A237E]">Request Details</h1>
     </div>
-    <div class="space-y-6">
-      <div class="bg-white rounded-2xl p-8 shadow-sm">
-        <div class="flex items-start justify-between mb-6">
-          <div>
-            <h2 class="text-2xl font-bold text-[#1A237E] mb-2">Pressure Washer</h2>
-            <span class="px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-sm font-semibold">Soon</span>
+    @if (loading()) {
+      <div class="bg-white rounded-2xl p-8 shadow-sm text-center">
+        <p class="text-gray-600">Loading request details...</p>
+      </div>
+    } @else if (error()) {
+      <div class="bg-red-50 border border-red-200 rounded-2xl p-8 text-center">
+        <p class="text-red-700 font-medium">{{ error() }}</p>
+        <button (click)="router.navigate(['/requests'])" class="mt-4 px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
+          Back to Requests
+        </button>
+      </div>
+    } @else if (request()) {
+      <div class="space-y-6">
+        <div class="bg-white rounded-2xl p-8 shadow-sm">
+          <div class="flex items-start justify-between mb-6">
+            <div class="flex-1">
+              <div class="flex flex-wrap items-center gap-3 mb-3">
+                <h2 class="text-2xl font-bold text-[#1A237E]">{{ request()!.title }}</h2>
+                <span class="px-3 py-1 rounded-full text-sm font-semibold" [ngClass]="getUrgencyBadgeClass(request()!.urgency)">
+                  {{ getUrgencyText(request()!.urgency) }}
+                </span>
+                @if (request()!.category) {
+                <span class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-semibold">
+                  {{ request()!.category }}
+                </span>
+                }
+              </div>
+              <div class="flex items-center gap-2 text-sm text-gray-600">
+                <span>Status:</span>
+                <span class="px-3 py-1 rounded-full text-xs font-semibold" [ngClass]="getStatusBadgeClass(request()!.status)">
+                  {{ request()!.status || 'PENDING' }}
+                </span>
+              </div>
+            </div>
           </div>
+          <div class="bg-[#F5F7FA] rounded-xl p-6 mb-6">
+            <h3 class="text-lg font-semibold text-[#1A237E] mb-3">Description</h3>
+            <p class="text-gray-700 leading-relaxed">
+              {{ request()!.description || 'No description provided.' }}
+            </p>
+          </div>
+          <div class="grid md:grid-cols-2 gap-6 mb-6">
+            <div class="flex items-start gap-3">
+              <lucide-icon [img]="CalendarIcon" class="w-5 h-5 text-[#3949AB] mt-0.5"></lucide-icon>
+              <div>
+                <p class="font-semibold text-[#1A237E] mb-1">Dates Needed</p>
+                <p class="text-gray-600">
+                  {{ formatDate(request()!.startDate) }} - {{ formatDate(request()!.endDate) }}
+                </p>
+              </div>
+            </div>
+            <div class="flex items-start gap-3">
+              <lucide-icon [img]="UserIcon" class="w-5 h-5 text-[#3949AB] mt-0.5"></lucide-icon>
+              <div>
+                <p class="font-semibold text-[#1A237E] mb-1">Requested By</p>
+                <div class="flex items-center gap-2">
+                  <span class="text-gray-600">{{ getRequesterName(request()) }}</span>
+                  <lucide-icon [img]="CheckCircleIcon" class="w-4 h-4 text-[#3949AB]"></lucide-icon>
+                </div>
+              </div>
+            </div>
+          </div>
+          @if (!showOfferForm) {
+            <button (click)="showOfferForm = true" class="w-full px-6 py-4 bg-[#3949AB] text-white rounded-xl font-semibold hover:bg-[#1A237E] transition-colors shadow-md">
+              Offer Your Item
+            </button>
+          } @else {
+            <form (ngSubmit)="handleSubmitOffer()" class="space-y-4">
+              <div>
+                <label class="block text-sm font-semibold text-[#1A237E] mb-2">Your Message</label>
+                <textarea [(ngModel)]="offerMessage" name="offerMessage" placeholder="Let them know what you can offer and any details..." rows="4" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E] resize-none" required></textarea>
+              </div>
+              <div class="flex gap-4">
+                <button type="button" (click)="showOfferForm = false" class="flex-1 px-6 py-3 bg-gray-200 text-[#1A237E] rounded-xl font-semibold hover:bg-gray-300 transition-colors">Cancel</button>
+                <button type="submit" class="flex-1 px-6 py-3 bg-[#3949AB] text-white rounded-xl font-semibold hover:bg-[#1A237E] transition-colors shadow-md disabled:opacity-60 disabled:cursor-not-allowed" [disabled]="submittingOffer()">
+                  @if (submittingOffer()) {
+                  Sending...
+                  } @else {
+                  Send Offer
+                  }
+                </button>
+              </div>
+            </form>
+          }
         </div>
-        <div class="bg-[#F5F7FA] rounded-xl p-6 mb-6">
-          <h3 class="text-lg font-semibold text-[#1A237E] mb-3">Description</h3>
-          <p class="text-gray-700 leading-relaxed">
-            Need to clean my driveway and patio this weekend. Looking for a pressure washer with at least 2000 PSI. Would prefer one with different nozzle attachments if possible.
+        <div class="bg-white rounded-2xl p-6 shadow-sm">
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="text-lg font-semibold text-[#1A237E]">Offers</h3>
+            <span class="text-sm text-gray-500">{{ request()!.responses ?? getOffers().length }} total</span>
+          </div>
+          @if (getOffers().length === 0) {
+          <p class="text-gray-600 text-sm">
+            No offers yet. Be the first to help your neighbor!
           </p>
-        </div>
-        <div class="grid md:grid-cols-2 gap-6 mb-6">
-          <div class="flex items-start gap-3">
-            <lucide-icon [img]="CalendarIcon" class="w-5 h-5 text-[#3949AB] mt-0.5"></lucide-icon>
-            <div>
-              <p class="font-semibold text-[#1A237E] mb-1">Dates Needed</p>
-              <p class="text-gray-600">Jan 27, 2025 - Jan 28, 2025</p>
-            </div>
-          </div>
-          <div class="flex items-start gap-3">
-            <lucide-icon [img]="UserIcon" class="w-5 h-5 text-[#3949AB] mt-0.5"></lucide-icon>
-            <div>
-              <p class="font-semibold text-[#1A237E] mb-1">Requested By</p>
-              <div class="flex items-center gap-2">
-                <span class="text-gray-600">Mike Johnson</span>
-                <lucide-icon [img]="CheckCircleIcon" class="w-4 h-4 text-[#3949AB]"></lucide-icon>
-              </div>
-            </div>
-          </div>
-        </div>
-        @if (!showOfferForm) {
-          <button (click)="showOfferForm = true" class="w-full px-6 py-4 bg-[#3949AB] text-white rounded-xl font-semibold hover:bg-[#1A237E] transition-colors shadow-md">
-            Offer Your Item
-          </button>
-        } @else {
-          <form (ngSubmit)="handleSubmitOffer()" class="space-y-4">
-            <div>
-              <label class="block text-sm font-semibold text-[#1A237E] mb-2">Your Message</label>
-              <textarea [(ngModel)]="offerMessage" name="offerMessage" placeholder="Let them know what you can offer and any details..." rows="4" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3949AB] focus:outline-none text-[#1A237E] resize-none" required></textarea>
-            </div>
-            <div class="flex gap-4">
-              <button type="button" (click)="showOfferForm = false" class="flex-1 px-6 py-3 bg-gray-200 text-[#1A237E] rounded-xl font-semibold hover:bg-gray-300 transition-colors">Cancel</button>
-              <button type="submit" class="flex-1 px-6 py-3 bg-[#3949AB] text-white rounded-xl font-semibold hover:bg-[#1A237E] transition-colors shadow-md">Send Offer</button>
-            </div>
-          </form>
-        }
-      </div>
-      <div class="bg-white rounded-2xl p-6 shadow-sm">
-        <h3 class="text-lg font-semibold text-[#1A237E] mb-4">Offers (3)</h3>
-        <div class="space-y-4">
-          <div class="p-4 bg-[#F5F7FA] rounded-xl">
-            <div class="flex items-start gap-3 mb-2">
-              <div class="w-10 h-10 bg-[#90CAF9] rounded-full flex items-center justify-center text-white font-bold">SM</div>
-              <div class="flex-1">
-                <div class="flex items-center gap-2 mb-1">
-                  <p class="font-semibold text-[#1A237E]">Sarah Mitchell</p>
-                  <lucide-icon [img]="CheckCircleIcon" class="w-4 h-4 text-[#3949AB]"></lucide-icon>
+          } @else {
+          <div class="space-y-4">
+            @for (offer of getOffers(); track offer.id ?? offer.description) {
+            <div class="p-4 bg-[#F5F7FA] rounded-xl">
+              <div class="flex items-start gap-3">
+                <div class="w-10 h-10 bg-[#90CAF9] rounded-full flex items-center justify-center text-white font-bold">
+                  {{ getOfferInitials(offer) }}
                 </div>
-                <p class="text-sm text-gray-600 mb-2">I have a 2500 PSI pressure washer with multiple nozzles. Available for the dates you need!</p>
-                <p class="text-xs text-gray-500">2 hours ago</p>
-              </div>
-            </div>
-          </div>
-          <div class="p-4 bg-[#F5F7FA] rounded-xl">
-            <div class="flex items-start gap-3 mb-2">
-              <div class="w-10 h-10 bg-[#90CAF9] rounded-full flex items-center justify-center text-white font-bold">DL</div>
-              <div class="flex-1">
-                <div class="flex items-center gap-2 mb-1">
-                  <p class="font-semibold text-[#1A237E]">David Lee</p>
-                  <lucide-icon [img]="CheckCircleIcon" class="w-4 h-4 text-[#3949AB]"></lucide-icon>
+                <div class="flex-1">
+                  <div class="flex flex-wrap items-center justify-between gap-2 mb-1">
+                    <div class="flex items-center gap-2">
+                      <p class="font-semibold text-[#1A237E]">{{ getOfferResponderName(offer) }}</p>
+                      <lucide-icon [img]="CheckCircleIcon" class="w-4 h-4 text-[#3949AB]"></lucide-icon>
+                    </div>
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold" [ngClass]="getOfferStatusBadgeClass(offer.status)">
+                      {{ getOfferStatusText(offer.status) }}
+                    </span>
+                  </div>
+                  <p class="text-sm text-gray-600 mb-2">{{ offer.description || 'No details provided.' }}</p>
+                  @if (formatOfferTimestamp(offer.createdAt)) {
+                  <p class="text-xs text-gray-500">{{ formatOfferTimestamp(offer.createdAt) }}</p>
+                  }
+                  @if (isRequestOwner()) {
+                    @if ((offer.status || 'PENDING').toUpperCase() === 'PENDING') {
+                    <div class="flex flex-wrap gap-3 mt-4">
+                      <button type="button"
+                        class="px-4 py-2 bg-emerald-600 text-white rounded-lg font-semibold hover:bg-emerald-700 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                        (click)="handleOfferStatusChange(offer, 'ACCEPTED')"
+                        [disabled]="isOfferProcessing(offer)">
+                        @if (isOfferProcessing(offer)) {
+                        Processing...
+                        } @else {
+                        Accept
+                        }
+                      </button>
+                      <button type="button"
+                        class="px-4 py-2 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                        (click)="handleOfferStatusChange(offer, 'REJECTED')"
+                        [disabled]="isOfferProcessing(offer)">
+                        @if (isOfferProcessing(offer)) {
+                        Processing...
+                        } @else {
+                        Reject
+                        }
+                      </button>
+                    </div>
+                    } @else {
+                    <p class="mt-4 text-xs font-semibold text-[#1A237E]">
+                      You have {{ getOfferStatusText(offer.status).toLowerCase() }} this offer.
+                    </p>
+                    }
+                  }
                 </div>
-                <p class="text-sm text-gray-600 mb-2">I have one you can borrow. It is electric, 2200 PSI. Let me know!</p>
-                <p class="text-xs text-gray-500">3 hours ago</p>
               </div>
             </div>
+            }
           </div>
+          }
         </div>
       </div>
-    </div>
+    } @else {
+      <div class="bg-white rounded-2xl p-8 text-center shadow-sm">
+        <p class="text-gray-600">Request information is unavailable.</p>
+      </div>
+    }
   </div>
 </div>

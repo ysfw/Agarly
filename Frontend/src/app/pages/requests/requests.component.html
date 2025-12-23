@@ -17,6 +17,30 @@
       </button>
     </div>
 
+    <div class="flex gap-2 mb-6">
+      <button (click)="selectTab('all')"
+        class="px-5 py-3 rounded-xl font-semibold text-sm transition-all duration-300"
+        [ngClass]="activeTab() === 'all'
+          ? 'bg-gradient-to-r from-[#3949AB] to-[#5C6BC0] text-white shadow-md'
+          : 'bg-white text-gray-600 hover:bg-gray-50 shadow-sm'">
+        All Requests
+      </button>
+      <button (click)="selectTab('mine')"
+        class="px-5 py-3 rounded-xl font-semibold text-sm transition-all duration-300"
+        [ngClass]="activeTab() === 'mine'
+          ? 'bg-gradient-to-r from-[#3949AB] to-[#5C6BC0] text-white shadow-md'
+          : 'bg-white text-gray-600 hover:bg-gray-50 shadow-sm'">
+        My Requests
+      </button>
+      <button (click)="selectTab('offers')"
+        class="px-5 py-3 rounded-xl font-semibold text-sm transition-all duration-300"
+        [ngClass]="activeTab() === 'offers'
+          ? 'bg-gradient-to-r from-[#3949AB] to-[#5C6BC0] text-white shadow-md'
+          : 'bg-white text-gray-600 hover:bg-gray-50 shadow-sm'">
+        My Offers
+      </button>
+    </div>
+
     <!-- Loading State -->
     @if (loading()) {
     <div class="flex flex-col items-center justify-center py-16">
@@ -29,64 +53,139 @@
     @else if (error()) {
     <div class="bg-red-50 border border-red-200 rounded-2xl p-6 text-center">
       <p class="text-red-700 font-medium">{{ error() }}</p>
-      <button (click)="loadRequests()"
+      <button (click)="loadRequests(activeTab())"
         class="mt-4 px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
         Try Again
       </button>
     </div>
     }
 
-    <!-- Requests List -->
-    @else if (requests().length === 0) {
-    <div class="bg-white rounded-2xl p-12 text-center shadow-sm">
-      <p class="text-gray-600 text-lg mb-4">No requests available yet</p>
-      <p class="text-gray-500 text-sm">Be the first to post a request!</p>
-    </div>
-    }
-
     @else {
-    <div class="space-y-4">
-      @for (request of requests(); track request.id) {
-      <div (click)="router.navigate(['/request', request.id])"
-        class="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
-        <div class="flex items-start justify-between mb-4">
-          <div class="flex-1">
-            <div class="flex items-center gap-3 mb-2">
-              <h3 class="text-xl font-semibold text-[#1A237E]">{{request.title}}</h3>
-              <span class="px-3 py-1 rounded-full text-xs font-semibold" [class]="getUrgencyColor(request.urgency)">
-                {{getUrgencyText(request.urgency)}}
-              </span>
-              @if (request.category) {
-              <span class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-semibold">
-                {{request.category}}
+      @if (activeTab() === 'offers') {
+      @if (offers().length === 0) {
+      <div class="bg-white rounded-2xl p-12 text-center shadow-sm">
+        <p class="text-gray-600 text-lg mb-4">You have not made any offers yet</p>
+        <p class="text-gray-500 text-sm">Browse requests and offer your help to see them here.</p>
+      </div>
+      } @else {
+      <div class="space-y-4">
+        @for (offer of offers(); track offer.id ?? offer.description) {
+        <div (click)="openOfferRequest(offer)"
+          class="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+          <div class="flex items-start justify-between mb-4">
+            <div class="flex-1">
+              <div class="flex items-center gap-3 mb-2">
+                <h3 class="text-xl font-semibold text-[#1A237E]">{{ getOfferRequestTitle(offer) }}</h3>
+                @if (offer.request?.category) {
+                <span class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-semibold">
+                  {{ offer.request?.category }}
+                </span>
+                }
+              </div>
+              <p class="text-gray-600 mb-3">{{ offer.description || 'No message provided.' }}</p>
+            </div>
+            <span class="px-3 py-1 rounded-full text-xs font-semibold" [ngClass]="getOfferStatusBadgeClass(offer.status)">
+              {{ getOfferStatusText(offer.status) }}
+            </span>
+          </div>
+          <div class="flex flex-wrap items-center gap-4 text-sm text-gray-600">
+            <div class="flex items-center gap-2">
+              <lucide-icon [img]="UserIcon" class="w-4 h-4"></lucide-icon>
+              <span>{{ getOfferRequestOwnerName(offer) }}</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <lucide-icon [img]="CalendarIcon" class="w-4 h-4"></lucide-icon>
+              <span>{{ getOfferRequestDates(offer) }}</span>
+            </div>
+            @if (formatOfferTimestamp(offer.createdAt)) {
+            <div class="flex items-center gap-2">
+              <lucide-icon [img]="ClockIcon" class="w-4 h-4"></lucide-icon>
+              <span>Sent {{ formatOfferTimestamp(offer.createdAt) }}</span>
+            </div>
+            }
+          </div>
+          <div class="mt-4 pt-4 border-t border-gray-200 flex items-center justify-between">
+            <span class="text-sm text-gray-600">
+              Offer Status: {{ getOfferStatusText(offer.status) }}
+            </span>
+            <button
+              type="button"
+              class="px-4 py-2 bg-[#3949AB] text-white rounded-lg font-semibold hover:bg-[#1A237E] transition-colors"
+              (click)="openOfferRequest(offer, $event)">
+              View Request
+            </button>
+          </div>
+        </div>
+        }
+      </div>
+      }
+      } @else {
+      @if (requests().length === 0) {
+      <div class="bg-white rounded-2xl p-12 text-center shadow-sm">
+        <p class="text-gray-600 text-lg mb-4">{{ activeTab() === 'mine' ? 'You have not posted any requests yet' : 'No requests available yet' }}</p>
+        <p class="text-gray-500 text-sm">{{ activeTab() === 'mine' ? 'Post a request to get started.' : 'Be the first to post a request!' }}</p>
+      </div>
+      } @else {
+      <div class="space-y-4">
+        @for (request of requests(); track request.id) {
+        <div (click)="openRequestDetails(request)"
+          class="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+          <div class="flex items-start justify-between mb-4">
+            <div class="flex-1">
+              <div class="flex items-center gap-3 mb-2">
+                <h3 class="text-xl font-semibold text-[#1A237E]">{{request.title}}</h3>
+                <span class="px-3 py-1 rounded-full text-xs font-semibold" [class]="getUrgencyColor(request.urgency)">
+                  {{getUrgencyText(request.urgency)}}
+                </span>
+                @if (request.category) {
+                <span class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-semibold">
+                  {{request.category}}
+                </span>
+                }
+              </div>
+              <p class="text-gray-600 mb-3">{{request.description}}</p>
+            </div>
+          </div>
+          <div class="flex flex-wrap items-center gap-4 text-sm text-gray-600">
+            <div class="flex items-center gap-2">
+              <lucide-icon [img]="UserIcon" class="w-4 h-4"></lucide-icon>
+              <span>{{getRequesterName(request)}}</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <lucide-icon [img]="CalendarIcon" class="w-4 h-4"></lucide-icon>
+              <span>{{getFormattedDate(request.startDate)}} - {{getFormattedDate(request.endDate)}}</span>
+            </div>
+          </div>
+          <div class="mt-4 pt-4 border-t border-gray-200 flex items-center justify-between">
+            <div class="flex items-center gap-3 text-sm text-gray-600">
+              <span>{{request.status || 'PENDING'}}</span>
+              @if (activeTab() === 'mine') {
+              <span class="px-3 py-1 bg-[#E8EAF6] text-[#3949AB] rounded-full text-xs font-semibold">
+                {{ getOfferCount(request) }} {{ getOfferCount(request) === 1 ? 'Offer' : 'Offers' }}
               </span>
               }
             </div>
-            <p class="text-gray-600 mb-3">{{request.description}}</p>
+            @if (activeTab() === 'mine') {
+            <button
+              type="button"
+              class="px-4 py-2 bg-[#3949AB] text-white rounded-lg font-semibold hover:bg-[#1A237E] transition-colors"
+              (click)="openRequestDetails(request, $event)">
+              View
+            </button>
+            } @else {
+            <button
+              type="button"
+              class="px-4 py-2 bg-[#C6FF00] text-[#1A237E] rounded-lg font-semibold hover:bg-[#B0E600] transition-colors"
+              (click)="openRequestDetails(request, $event)">
+              Offer Item
+            </button>
+            }
           </div>
         </div>
-        <div class="flex flex-wrap items-center gap-4 text-sm text-gray-600">
-          <div class="flex items-center gap-2">
-            <lucide-icon [img]="UserIcon" class="w-4 h-4"></lucide-icon>
-            <span>{{getRequesterName(request)}}</span>
-          </div>
-          <div class="flex items-center gap-2">
-            <lucide-icon [img]="CalendarIcon" class="w-4 h-4"></lucide-icon>
-            <span>{{getFormattedDate(request.startDate)}} - {{getFormattedDate(request.endDate)}}</span>
-          </div>
-        </div>
-        <div class="mt-4 pt-4 border-t border-gray-200 flex items-center justify-between">
-          <span class="text-sm text-gray-600">
-            {{request.status || 'PENDING'}}
-          </span>
-          <button
-            class="px-4 py-2 bg-[#C6FF00] text-[#1A237E] rounded-lg font-semibold hover:bg-[#B0E600] transition-colors">
-            Offer Item
-          </button>
-        </div>
+        }
       </div>
       }
-    </div>
+      }
     }
   </div>
 </div>

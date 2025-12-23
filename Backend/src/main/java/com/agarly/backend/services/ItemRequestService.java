@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ItemRequestService {
@@ -32,8 +33,8 @@ public class ItemRequestService {
         return repository.save(request);
     }
 
-    private boolean datesOverlap(LocalDate s1, LocalDate e1, LocalDate s2, LocalDate e2) {
-        return !e1.isBefore(s2) && !e2.isBefore(s1);
+    public Optional<ItemRequest> getRequestById(Long id) {
+        return repository.findById(id);
     }
 
     public List<ItemRequest> getAllRequests() {

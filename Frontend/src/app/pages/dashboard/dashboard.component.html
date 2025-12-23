@@ -252,17 +252,17 @@
           class="px-5 py-2.5 bg-[#E8EAF6] text-indigo-700 rounded-xl font-semibold hover:bg-[#3949AB] hover:text-white transition-all duration-300">
           Contact
         </button>
-        @if (!isAwaitingReturnConfirmation(item) && returningItemId() !== item.id) {
+        @if (isItemMarkedReturned(item) || returningItemId() === item.id) {
+        <span
+          class="px-5 py-2.5 bg-emerald-100 text-emerald-700 rounded-xl font-semibold opacity-70 cursor-not-allowed">
+          Returned
+        </span>
+        } @else if (!isAwaitingReturnConfirmation(item)) {
         <button
           class="px-5 py-2.5 bg-emerald-100 text-emerald-700 rounded-xl font-semibold hover:bg-emerald-600 hover:text-white transition-all duration-300"
           (click)="promptReturnConfirmation(item)">
           Mark Returned
         </button>
-        }
-        @if (returningItemId() === item.id) {
-        <span class="px-5 py-2.5 bg-emerald-100 text-emerald-700 rounded-xl font-semibold">
-          Processing...
-        </span>
         }
       </div>
       }
@@ -507,7 +507,7 @@
     <p class="text-gray-600 text-center mb-8">
       Are you sure you received
       <span class="font-semibold text-[#3949AB]">{{ returnConfirmationItem()?.title }}</span>
-      back from the borrower?
+      back?
     </p>
     <div class="flex gap-4">
       <button (click)="cancelReturnConfirmation()"
@@ -613,7 +613,7 @@
       <div class="flex gap-3">
         <button (click)="selectedRequest() ? goToBorrowerProfile(selectedRequest()!) : null"
           class="px-5 py-3 bg-[#E8EAF6] text-[#3949AB] rounded-xl font-semibold hover:bg-[#3949AB] hover:text-white transition-all">
-          View Borrower Profile
+          View Profile
         </button>
         <button (click)="closeRequestModal()"
           class="px-5 py-3 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200 transition-colors">

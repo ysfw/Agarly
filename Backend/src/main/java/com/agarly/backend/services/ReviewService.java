@@ -19,7 +19,7 @@ public class ReviewService {
     @Autowired
     private ItemRepository itemRepository;
 
-    public void addItemReview(Long reviewerId, Long itemId, int rating) {
+    public void addItemReview(Long reviewerId, Long itemId, Double rating) {
         User reviewer = userRepository.findById(reviewerId).orElseThrow(()->new RuntimeException("User not found"));
         Item item = itemRepository.findById(itemId).orElse(null);
 
@@ -31,7 +31,8 @@ public class ReviewService {
         reviewRepository.save(review);
     }
 
-    public void addUserReview(Long reviewerId, Long targetUserId, int rating) {
+    public void addUserReview(Long reviewerId, Long targetUserId, Double rating) {
+        System.out.println("Adding user review: reviewerId=" + reviewerId + ", targetUserId=" + targetUserId + ", rating=" + rating);
         User reviewer = userRepository.findById(reviewerId).orElseThrow(()->new RuntimeException("User not found"));
         User targetUser = userRepository.findById(targetUserId).orElseThrow(()->new RuntimeException("User not found"));
 

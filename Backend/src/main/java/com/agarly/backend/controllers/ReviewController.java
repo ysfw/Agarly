@@ -16,16 +16,16 @@ public class ReviewController {
     @PostMapping("item/{itemId}")
     public ResponseEntity<?> addItemReview(@PathVariable Long itemId,
                                            @AuthenticationPrincipal UserPrincipal principal,
-                                           @RequestParam int rating) {
-        reviewService.addItemReview(principal.getId(), itemId, rating);
+                                           @RequestParam String rating) {
+        reviewService.addItemReview(principal.getId(), itemId, Double.parseDouble(rating));
         return ResponseEntity.ok("Item review added successfully");
     }
 
     @PostMapping("user/{targetUserId}")
     public ResponseEntity<?> addUserReview(@PathVariable Long targetUserId,
                                            @AuthenticationPrincipal UserPrincipal principal,
-                                           @RequestParam int rating) {
-        reviewService.addUserReview(principal.getId(), targetUserId, rating);
+                                           @RequestParam String rating) {
+        reviewService.addUserReview(principal.getId(), targetUserId, Double.parseDouble(rating));
         return ResponseEntity.ok("User review added successfully");
     }
 

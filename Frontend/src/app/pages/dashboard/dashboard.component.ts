@@ -65,6 +65,7 @@ export class DashboardComponent implements OnInit {
   showReturnConfirmModal = signal(false);
   returnConfirmationItem = signal<Item | null>(null);
   returningItemId = signal<number | null>(null);
+  returnedItemIds = signal<number[]>([]);
 
   walletBalance = signal(125.50);
   totalEarnings = signal(450.00);
@@ -233,6 +234,10 @@ export class DashboardComponent implements OnInit {
       return;
     }
 
+    if (pendingItem.id) {
+      this.markItemAsReturned(pendingItem.id);
+    }
+
     this.showReturnConfirmModal.set(false);
     this.returnConfirmationItem.set(null);
     this.openReviewModal(pendingItem);
@@ -243,12 +248,22 @@ export class DashboardComponent implements OnInit {
     return !!pendingItem?.id && pendingItem.id === item.id;
   }
 
+  isItemMarkedReturned(item: Item): boolean {
+    if (!item?.id) {
+      return false;
+    }
+
+    return this.returnedItemIds().includes(item.id);
+  }
+
   markAsReturned(item: Item, options: { skipConfirm?: boolean; skipStatusUpdate?: boolean } = {}) {
     const { skipStatusUpdate = false } = options;
 
     if (!item?.id) {
       return;
     }
+
+    this.markItemAsReturned(item.id);
 
     const proceed = () => {
       const booking = this.findActiveBookingForItem(item);
@@ -574,15 +589,19 @@ export class DashboardComponent implements OnInit {
 
   submitReview() {
     if (this.reviewBorrowerId !== null && this.reviewStars > 0) {
-      this.reviewService.addUserReview(this.reviewBorrowerId, this.reviewStars).subscribe({
+      const borrowerId = this.reviewBorrowerId;
+      const stars = this.reviewStars;
+      const itemId = this.reviewItemId || this.itemBeingReviewed?.id || null;
+
+      this.closeReviewModal();
+
+      this.reviewService.addUserReview(borrowerId, stars).subscribe({
         next: () => {
           console.log('Review submitted successfully');
-          if (this.itemBeingReviewed) {
-            this.markAsReturned(this.itemBeingReviewed, { skipConfirm: true, skipStatusUpdate: true });
-          } else if (this.reviewItemId) {
-            this.markAsReturned({ id: this.reviewItemId } as Item, { skipConfirm: true, skipStatusUpdate: true });
+          if (itemId) {
+            this.removeLentItemFromUi(itemId);
+            this.markAsReturned({ id: itemId } as Item, { skipConfirm: true, skipStatusUpdate: true });
           }
-          this.closeReviewModal();
         },
         error: (err) => console.error('Error submitting review', err)
       });
@@ -625,5 +644,18 @@ export class DashboardComponent implements OnInit {
     this.reviewItemId = item.id || null;
     this.reviewStars = 0;
     this.showReviewModal = true;
+  }
+
+  private removeLentItemFromUi(itemId: number): void {
+    this.lentItems.update(items => items.filter(item => item.id !== itemId));
+    this.returnedItemIds.update(ids => ids.filter(id => id !== itemId));
+  }
+
+  private markItemAsReturned(itemId: number | null | undefined): void {
+    if (!itemId) {
+      return;
+    }
+
+    this.returnedItemIds.update(ids => ids.includes(itemId) ? ids : [...ids, itemId]);
   }
 }

@@ -5,6 +5,7 @@ import com.agarly.backend.dtos.UpdateBookingRequest;
 import com.agarly.backend.models.Booking;
 import com.agarly.backend.models.Enums.BookingStatus;
 import com.agarly.backend.models.Item;
+import com.agarly.backend.models.SSE;
 import com.agarly.backend.models.User;
 import com.agarly.backend.repos.BookingRepository;
 import com.agarly.backend.repos.ItemRepository;
@@ -25,6 +26,9 @@ public class BookingService {
 
     @Autowired
     private ItemRepository itemRepository;
+
+    @Autowired
+    private EventService eventService;
 
     public Booking createBooking(Long borrowerId, CreateBookingRequest request) {
         // Validates availability and creates booking
@@ -86,6 +90,8 @@ public class BookingService {
         if (currentStatus == BookingStatus.APPROVED && target == BookingStatus.COMPLETED) {
             booking.getItem().setBorrower(null);
             itemRepository.save(booking.getItem());
+            SSE reviewEvent = new SSE("REVIEW_REQUEST", List.of(booking.getBorrower().getUsername()));
+            eventService.publishEvent(reviewEvent);
         }
 
         booking.setStatus(target);

@@ -12,7 +12,7 @@ export class ReviewService {
   addUserReview(targetUserId: number, rating: number): Observable<any> {
     const params = new HttpParams()
       .set('rating', rating.toString());
-    
+
     return this.http.post(`${this.baseUrl}/user/${targetUserId}`, null, { params });
   }
 }
