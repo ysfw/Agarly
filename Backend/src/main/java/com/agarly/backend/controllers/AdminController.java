@@ -29,14 +29,10 @@ public class AdminController {
     @Autowired
     private ItemRepository itemRepository;
 
-    // ==================== Dashboard Stats ====================
-
     @GetMapping("/stats")
     public ResponseEntity<Map<String, Long>> getDashboardStats() {
         return ResponseEntity.ok(adminService.getDashboardStats());
     }
-
-    // ==================== User Management ====================
 
     @GetMapping("/users")
     public ResponseEntity<List<PublicUserProfileDTO>> getAllUsers() {
@@ -75,8 +71,6 @@ public class AdminController {
         adminService.unbanUser(userId);
         return ResponseEntity.ok("User unbanned successfully");
     }
-
-    // ==================== Item (Post) Management ====================
 
     @GetMapping("/items")
     public ResponseEntity<List<Item>> getAllItems() {
@@ -127,8 +121,6 @@ public class AdminController {
         }
     }
 
-    // ==================== Request Management ====================
-
     @GetMapping("/requests")
     public ResponseEntity<List<ItemRequest>> getAllRequests() {
         return ResponseEntity.ok(adminService.getAllRequests());
@@ -178,8 +170,6 @@ public class AdminController {
         }
     }
 
-    // ==================== Support Tickets ====================
-
     @GetMapping("/tickets/{id}")
     public ResponseEntity<SupportTicket> getTicket(@PathVariable Long id) {
         return ResponseEntity.ok(ticketService.getTicket(id));
@@ -190,8 +180,7 @@ public class AdminController {
             @PathVariable Long id) {
 
         return ResponseEntity.ok(
-                ticketService.closeTicket(id)
-        );
+                ticketService.closeTicket(id));
     }
 
     @GetMapping("/tickets")

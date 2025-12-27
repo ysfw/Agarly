@@ -53,7 +53,6 @@ export class ApiService {
     return this.http.post(`${this.baseUrl}/register/resend-otp`, null, { params });
   }
 
-  // Real API calls for items - now connected to backend
   getItems(): Observable<Item[]> {
     return this.http.get<Item[]>(`${this.baseUrl}/items`);
   }

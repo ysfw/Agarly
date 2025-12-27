@@ -126,7 +126,7 @@ public class PaymentService {
         request.setOrder_id(orderId);
         request.setIntegration_id(integrationId);
         request.setAmount_cents(String.valueOf((int) (amount * 100)));
-        request.setRedirection_url("http://localhost:4200/dashboard"); // Redirect to Angular app after payment
+        request.setRedirection_url("http://localhost:4200/dashboard");
 
         User user = userRepository.findByUsername(username);
         Map<String, Object> billingData = getBillingData(user);
@@ -180,11 +180,9 @@ public class PaymentService {
     @Transactional
     public InitiatePaymentResponse initiatePayment(Long userId, InitiatePaymentRequest request) {
         try {
-            // 1. Validate user exists
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new RuntimeException("User not found"));
 
-            // 2. Find the strategy for this payment method
             String method = request.getMethod().toUpperCase();
             PaymentStrategy strategy = strategyMap.get(method);
             if (strategy == null) {
@@ -194,7 +192,6 @@ public class PaymentService {
                         .build();
             }
 
-            // 3. Get Paymob authentication and create order (Skip for INTERNAL_WALLET)
             String authToken = null;
             String orderId = null;
             String paymentKey = null;
@@ -205,7 +202,6 @@ public class PaymentService {
                 paymentKey = getPaymentKey(user.getUsername(), authToken, orderId, request.getAmount(), method);
             }
 
-            // 4. Build context for strategy
             PaymentContext context = PaymentContext.builder()
                     .user(user)
                     .amount(request.getAmount())
@@ -217,10 +213,8 @@ public class PaymentService {
                     .paymentKey(paymentKey)
                     .build();
 
-            // 5. Delegate to the strategy
             PaymentResult result = strategy.initiatePayment(context);
 
-            // 6. Create transaction record
             Transaction tx = new Transaction();
             tx.setUser(user);
             tx.setAmount(BigDecimal.valueOf(request.getAmount()));
@@ -251,15 +245,8 @@ public class PaymentService {
 
             Transaction savedTx = transactionRepository.save(tx);
 
-            // If INTERNAL_WALLET success, trigger post-payment logic immediately (like
-            // booking status update)
             if ("INTERNAL_WALLET".equals(method) && result.isSuccess()) {
-                processTransaction(result.getOrderId(), true); // Re-use logic or call triggering directly?
-                // processTransaction uses orderId. For wallet, we have a fake orderId.
-                // But processTransaction relies on finding transaction by referenceNumber
-                // "ORDER-" + orderId.
-                // Let's modify processTransaction or handle it here.
-                // Handle here is cleaner:
+                processTransaction(result.getOrderId(), true);
                 if (savedTx.getBooking() != null) {
                     Booking booking = savedTx.getBooking();
                     if (booking.getStatus() == com.agarly.backend.models.Enums.BookingStatus.AWAITING_PAYMENT) {
@@ -274,7 +261,6 @@ public class PaymentService {
                 }
             }
 
-            // 7. Return response to frontend
             return InitiatePaymentResponse.builder()
                     .success(result.isSuccess())
                     .errorMessage(result.getErrorMessage())
@@ -297,12 +283,10 @@ public class PaymentService {
     @Transactional
     public boolean handleWebhook(Map<String, Object> payload, String hmacHeader) {
         try {
-            // 1. Verify HMAC signature (security check)
             if (!verifyHmac(payload, hmacHeader)) {
                 return false;
             }
 
-            // 2. Extract transaction details
             @SuppressWarnings("unchecked")
             Map<String, Object> obj = (Map<String, Object>) payload.get("obj");
             if (obj == null)
@@ -322,16 +306,10 @@ public class PaymentService {
     @Transactional
     public boolean verifyPayment(Map<String, String> params) {
         try {
-            // For localhost/testing, we trust the success param if HMAC verification is
-            // complex to reproduce from query params
-            // In production, you would re-calculate HMAC from query params similar to
-            // webhook
-
             String successStr = params.get("success");
             boolean success = "true".equalsIgnoreCase(successStr);
-            String orderId = params.get("order"); // Paymob returns 'order' param in redirect
+            String orderId = params.get("order");
 
-            // If no order in params, try 'id' (transaction id)
             if (orderId == null) {
                 orderId = params.get("id");
             }
@@ -347,7 +325,6 @@ public class PaymentService {
     }
 
     private boolean processTransaction(String orderId, boolean success) {
-        // 3. Find the transaction by reference number
         String referenceNumber = "ORDER-" + orderId;
         Optional<Transaction> txOpt = transactionRepository.findByReferenceNumber(referenceNumber);
 
@@ -363,7 +340,6 @@ public class PaymentService {
             tx.setUpdatedAt(LocalDateTime.now(ZoneId.of("Africa/Cairo")));
             transactionRepository.save(tx);
 
-            // 4. If payment succeeded, update Booking status to PENDING and notify owner.
             if (success && tx.getBooking() != null) {
                 Booking booking = tx.getBooking();
                 if (booking.getStatus() == com.agarly.backend.models.Enums.BookingStatus.AWAITING_PAYMENT) {
@@ -383,11 +359,6 @@ public class PaymentService {
         return false;
     }
 
-    /**
-     * Transfers money to the item owner when a payment succeeds.
-     * Creates an EARNING transaction for the owner and updates their wallet
-     * balance.
-     */
     public Transaction transferMoneyToOwner(Transaction paymentTx) {
         Booking booking = paymentTx.getBooking();
         if (booking == null || booking.getItem() == null)
@@ -396,12 +367,6 @@ public class PaymentService {
         User owner = booking.getItem().getOwner();
         if (owner == null)
             return null;
-
-        // Check if already paid out for this booking to prevent double payment
-        // We can check if there's any PAYOUT transaction linked to this booking
-        // BUT for now, let's assume the caller controls this logic via status checks.
-        // Actually, let's add a quick check if possible or leave it to caller logic.
-        // Better: Caller checks if status change is valid.
 
         // Calculate platform fee (5%) and owner earnings
         BigDecimal platformFee = paymentTx.getAmount().multiply(new BigDecimal("0.05"));
@@ -501,7 +466,6 @@ public class PaymentService {
         method.setUser(user);
         method.setProvider(dto.getProvider());
 
-        // SECURITY: Never store full card number!
         String lastFour = dto.getCardNumber().replaceAll("\\s", "").substring(
                 dto.getCardNumber().replaceAll("\\s", "").length() - 4);
 
@@ -511,7 +475,6 @@ public class PaymentService {
         method.setExpiryMonth(dto.getExpiryMonth());
         method.setExpiryYear(dto.getExpiryYear());
 
-        // In real app: method.setTokenizedInfo(stripeToken);
         method.setTokenizedInfo("SIMULATED_TOKEN_" + UUID.randomUUID());
 
         method.setIsActive(true);

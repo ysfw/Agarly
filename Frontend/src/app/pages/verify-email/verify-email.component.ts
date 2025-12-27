@@ -31,7 +31,6 @@ export class VerifyEmailComponent implements AfterViewInit, OnInit {
   email = signal<string>(localStorage.getItem('userEmail') || this.authService.email());
   userData = signal<UserDTO>(this.authService.userData())
 
-  // Signals
   otpDigits = signal(['', '', '', '', '', '']);
 
   countdown = signal(60);
@@ -39,7 +38,6 @@ export class VerifyEmailComponent implements AfterViewInit, OnInit {
   errorMessage = signal('');
   isResending = signal(false);
 
-  // Computed signals
   isOtpComplete = computed(() => {
     return this.otpDigits().every(digit => digit !== '');
   });
@@ -100,7 +98,7 @@ export class VerifyEmailComponent implements AfterViewInit, OnInit {
     digits[index] = value;
     this.otpDigits.set(digits);
 
-    // Update the input value (for visual sync)
+    // Update the input value
     input.value = value;
 
     // Auto-focus next input if value entered

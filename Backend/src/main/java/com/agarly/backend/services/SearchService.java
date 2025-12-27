@@ -17,7 +17,7 @@ public class SearchService {
     private ItemRepository itemRepository;
 
     public List<Item> searchItems(SearchCriteria criteria) {
-        Specification<Item> spec = ItemSpecification.withCriteria(criteria);    // build dynamic Predicates based on filters, price,..
+        Specification<Item> spec = ItemSpecification.withCriteria(criteria);
         return itemRepository.findAll(spec);
     }
 

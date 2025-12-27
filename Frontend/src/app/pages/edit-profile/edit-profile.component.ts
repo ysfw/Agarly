@@ -40,7 +40,6 @@ export class EditProfileComponent implements OnInit {
     bio: '',
     address: '',
     city: '',
-    // Stats are read-only, but required by the interface
     itemsShared: 0,
     itemsBorrowed: 0,
     averageRating: 0,

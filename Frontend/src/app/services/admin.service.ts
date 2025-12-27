@@ -89,8 +89,6 @@ export class AdminService {
         });
     }
 
-    // ==================== Authentication ====================
-
     login(credentials: AdminLoginCredentials): Observable<{ Token: string }> {
         return this.http.post<{ Token: string }>(
             `${this.baseUrl}/account/Admin-login`,
@@ -125,16 +123,12 @@ export class AdminService {
         return !!token;
     }
 
-    // ==================== Dashboard Stats ====================
-
     getDashboardStats(): Observable<DashboardStats> {
         return this.http.get<DashboardStats>(
             `${this.baseUrl}/admin/stats`,
             { headers: this.getAuthHeaders() }
         );
     }
-
-    // ==================== Item (Post) Management ====================
 
     getItems(): Observable<AdminItem[]> {
         return this.http.get<AdminItem[]>(
@@ -173,8 +167,6 @@ export class AdminService {
         );
     }
 
-    // ==================== Request Management ====================
-
     getRequests(): Observable<AdminRequest[]> {
         return this.http.get<AdminRequest[]>(
             `${this.baseUrl}/admin/requests`,
@@ -212,8 +204,6 @@ export class AdminService {
         );
     }
 
-    // ==================== User Management ====================
-
     getUsers(): Observable<any[]> {
         return this.http.get<any[]>(
             `${this.baseUrl}/admin/users`,
@@ -243,8 +233,6 @@ export class AdminService {
             { headers: this.getAuthHeaders(), responseType: 'text' }
         );
     }
-
-    // ==================== Support Tickets ====================
 
     getAllSupportTickets(): Observable<AdminSupportTicketDto[]> {
         return this.http.get<AdminSupportTicketDto[]>(

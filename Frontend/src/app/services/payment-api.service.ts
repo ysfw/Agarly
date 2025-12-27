@@ -2,8 +2,6 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-// ==================== INTERFACES ====================
-
 export interface PaymentMethod {
     id: number;
     provider?: string;
@@ -34,10 +32,6 @@ export interface ChargeRequest {
     description: string;
 }
 
-/**
- * Request to initiate a new payment.
- * method: 'CARD' | 'WALLET' | 'FAWRY'
- */
 export interface InitiatePaymentRequest {
     amount: number;
     method: 'CARD' | 'WALLET' | 'FAWRY' | 'INTERNAL_WALLET';
@@ -46,13 +40,6 @@ export interface InitiatePaymentRequest {
     description: string;
 }
 
-/**
- * Response from payment initiation.
- * Different fields are populated based on payment method:
- * - CARD: paymentKey + iframeId
- * - WALLET: redirectUrl
- * - FAWRY: fawryReference
- */
 export interface InitiatePaymentResponse {
     success: boolean;
     errorMessage?: string;
@@ -67,35 +54,18 @@ export interface InitiatePaymentResponse {
     fawryReference?: string;
 }
 
-// ==================== SERVICE ====================
-
 @Injectable({ providedIn: 'root' })
 export class PaymentApiService {
     private http = inject(HttpClient);
     private baseUrl = 'http://localhost:8080/payments';
 
-    // ==================== PAYMENT INITIATION ====================
-
-    /**
-     * Initiates a payment with the specified method.
-     * 
-     * For CARD: Returns paymentKey to open Paymob iframe
-     * For WALLET: Returns redirectUrl to redirect user
-     * For FAWRY: Returns fawryReference for user to pay at store
-     */
     initiatePayment(request: InitiatePaymentRequest): Observable<InitiatePaymentResponse> {
         return this.http.post<InitiatePaymentResponse>(`${this.baseUrl}/initiate`, request);
     }
 
-    /**
-     * Builds the Paymob iframe URL for card payments.
-     * Use the paymentKey and iframeId from InitiatePaymentResponse.
-     */
     getPaymobIframeUrl(iframeId: string, paymentKey: string): string {
         return `https://accept.paymob.com/api/acceptance/iframes/${iframeId}?payment_token=${paymentKey}`;
     }
-
-    // ==================== PAYMENT METHODS CRUD ====================
 
     getPaymentMethods(): Observable<PaymentMethod[]> {
         return this.http.get<PaymentMethod[]>(`${this.baseUrl}/methods`);
@@ -112,8 +82,6 @@ export class PaymentApiService {
     setDefaultPaymentMethod(id: number): Observable<PaymentMethod> {
         return this.http.patch<PaymentMethod>(`${this.baseUrl}/methods/${id}/default`, {});
     }
-
-    // ==================== TRANSACTIONS ====================
 
     charge(request: ChargeRequest): Observable<Transaction> {
         return this.http.post<Transaction>(`${this.baseUrl}/charge`, request);

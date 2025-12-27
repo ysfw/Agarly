@@ -83,12 +83,11 @@ public class UserProfileService {
         String username = principal.getUsername();
         String hashedPassword = principal.getPassword();
 
-        // Use matches() to compare plain password with hashed password
         if (PasswordEncoder.matches(oldPassword, hashedPassword)) {
             User user = userService.findByUsername(username);
             // Hash the new password before saving
             user.setPassword(newPassword);
-            userService.save(user);
+            userService.save(user); // the hashing happens inside this
         } else {
             throw new WrongPasswordException("The old password entered is wrong");
         }

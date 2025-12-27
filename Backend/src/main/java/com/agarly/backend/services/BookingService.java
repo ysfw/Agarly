@@ -55,7 +55,6 @@ public class BookingService {
             throw new IllegalArgumentException("End date cannot be before start date");
         }
 
-        // --- NEW LOGIC FOR HOURLY ITEMS ---
         if (item.getPriceUnit() == com.agarly.backend.models.Enums.PriceUnit.HOUR) {
             if (request.getStartTime() == null || request.getEndTime() == null) {
                 throw new IllegalArgumentException("Start time and end time are required for hourly items");
@@ -69,7 +68,6 @@ public class BookingService {
                 throw new IllegalArgumentException("End time must be after start time");
             }
 
-            // Check overlaps for hourly
             List<Booking> existing = bookingRepository.findAll();
             boolean overlaps = existing.stream().anyMatch(b -> b.getItem().getId().equals(item.getId()) &&
                     (b.getStatus() == BookingStatus.APPROVED || b.getStatus() == BookingStatus.ACTIVE) &&
@@ -80,18 +78,7 @@ public class BookingService {
             }
 
         } else {
-            // --- EXISTING LOGIC FOR DAILY ITEMS ---
             if (!reqEnd.isAfter(reqStart) && !reqEnd.isEqual(reqStart)) {
-                // Allowing same-day rentals if logic permits, but usually day rentals imply at
-                // least 1 day.
-                // This original check 'reqEnd.isAfter(reqStart)' blocked same-day.
-                // Let's stick to original strict check or allow same day?
-                // Original was: !end.isAfter(start) which means end <= start.
-                // Let's assume day rentals can be same day starts?
-                // Actually original code blocked same day: !end.isAfter(start) -> throws
-                // exception.
-                // We will keep it consistent with original or fix if needed.
-                // Assuming original intent was at least 1 day difference or overnight.
             }
 
             List<Booking> existing = bookingRepository.findAll();
@@ -122,9 +109,6 @@ public class BookingService {
 
         Booking savedBooking = bookingRepository.save(booking);
 
-        // NOTE: We do NOT notify the owner yet.
-        // We wait until payment is completed and status changes to PENDING.
-
         return savedBooking;
     }
 
@@ -153,7 +137,7 @@ public class BookingService {
 
         BookingStatus target = request.getStatus();
         BookingStatus currentStatus = booking.getStatus();
-        String borrowerUsername = booking.getBorrower().getUsername(); // Restore variable definition
+        String borrowerUsername = booking.getBorrower().getUsername();
 
         if (currentStatus == BookingStatus.AWAITING_PAYMENT && target == BookingStatus.PENDING) {
             // Payment confirmed, now we notify the owner
@@ -162,11 +146,7 @@ public class BookingService {
         }
 
         if (currentStatus == BookingStatus.PENDING && target == BookingStatus.APPROVED) {
-
-            // 1. Process Payout from Escrow
             // Find the PAYMENT transaction for this booking
-            // We assume there is exactly one successful PAYMENT transaction per booking for
-            // now
             com.agarly.backend.models.Transaction paymentTx = transactionRepository.findAll().stream()
                     .filter(t -> t.getBooking() != null && t.getBooking().getId().equals(booking.getId()) &&
                             t.getType() == com.agarly.backend.models.Enums.TransactionType.PAYMENT &&
@@ -178,7 +158,7 @@ public class BookingService {
                 paymentService.transferMoneyToOwner(paymentTx);
             } else {
                 // If no payment found (maybe free item or error?), we proceed but log it?
-                // Or maybe blocking is required? For now proceed.
+                // Or maybe blocking is required? For now proceed. (TODO)
                 System.out.println(
                         "Warning: No completed payment found for booking " + booking.getId() + " when approving.");
             }
@@ -196,9 +176,7 @@ public class BookingService {
             eventService.publishEvent(new SSE("BOOKING_REJECTED", List.of(borrowerUsername)));
 
             // Handle refund logic here
-            // For now, we just log it. A REFUND transaction should be created or Paymob
-            // refund triggered.
-            // We will create a REFUND transaction record for visibility.
+            // create a REFUND transaction record for visibility.
             com.agarly.backend.models.Transaction paymentTx = transactionRepository.findAll().stream()
                     .filter(t -> t.getBooking() != null && t.getBooking().getId().equals(booking.getId()) &&
                             t.getType() == com.agarly.backend.models.Enums.TransactionType.PAYMENT &&

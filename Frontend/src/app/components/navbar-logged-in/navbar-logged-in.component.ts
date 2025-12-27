@@ -83,8 +83,6 @@ export class NavbarLoggedInComponent implements OnInit, OnDestroy {
   private sseSubscription?: Subscription;
 
   ngOnInit() {
-    // SSE is now initialized by AuthService on login
-    // Just subscribe to events to handle them
     this.subscribeToEvents();
   }
 
@@ -157,8 +155,6 @@ export class NavbarLoggedInComponent implements OnInit, OnDestroy {
   modalState$ = this.modalService.modalState$;
 
   ngOnDestroy() {
-    // Only unsubscribe from the event subscription, don't stop SSE
-    // SSE is managed by AuthService and should stay open while logged in
     if (this.sseSubscription) {
       this.sseSubscription.unsubscribe();
     }

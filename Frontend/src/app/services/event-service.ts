@@ -34,9 +34,7 @@ export class EventService {
       this.stopEvents();
     });
   }
-  /**
-   * Main method to get the stream of typed notifications.
-   */
+
   public getEvents(): Observable<sseEvent> {
     return this.createEventObservable().pipe(
       // Parsing the json
@@ -56,9 +54,6 @@ export class EventService {
     )
   }
 
-  /**
-   * Initialize SSE connection. Can be called explicitly after login.
-   */
   public initializeSSE(): void {
     if (this.sseInitialized) {
       console.log('SSE already initialized');
@@ -90,14 +85,8 @@ export class EventService {
     });
   }
 
-  /**
-   * Sets up the EventSource connection using fetch to support Bearer auth.
-   */
   private worker: Worker | null = null;
 
-  /**
-   * Sets up the EventSource connection using a Web Worker.
-   */
   private createEventObservable(): Observable<string> {
     return new Observable<string>((observer: Observer<string>) => {
       if (typeof Worker !== 'undefined') {
@@ -131,7 +120,6 @@ export class EventService {
       else {
         // Fallback for environments without Web Worker support (though unlikely in modern browsers)
         console.warn('Web Workers are not supported in this environment. SSE might be throttled in background.');
-        // ... (Original fetch logic could go here as fallback, but for now we assume worker support)
         observer.error(new Error('Web Workers not supported'));
       }
 
@@ -142,9 +130,6 @@ export class EventService {
     });
   }
 
-  /**
-   * Stop listening to the event stream
-   */
   public stopEvents(): void {
     this.stopStream$.next();
     this.sseInitialized = false;

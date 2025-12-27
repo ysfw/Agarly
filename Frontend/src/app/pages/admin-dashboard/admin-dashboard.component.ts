@@ -369,7 +369,6 @@ export class AdminDashboardComponent implements OnInit {
         this.searchQuery.set(target.value);
     }
 
-    // Item actions
     approvePost(post: AdminItem): void {
         this.adminService.approveItem(post.id).subscribe({
             next: () => {
@@ -413,7 +412,6 @@ export class AdminDashboardComponent implements OnInit {
             });
     }
 
-    // Request actions
     approveRequest(request: AdminRequest): void {
         this.adminService.approveRequest(request.id).subscribe({
             next: () => {
@@ -505,7 +503,6 @@ export class AdminDashboardComponent implements OnInit {
         return 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=100&h=100&fit=crop';
     }
 
-    // User actions
     banUser(user: any): void {
         console.log('banUser called with user:', user);
         console.log('User ID:', user?.id);

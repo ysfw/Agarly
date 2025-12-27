@@ -151,7 +151,7 @@ export class BookItemComponent implements OnInit {
             endDate: this.bookingData.endDate,
             pricePerDay: this.item?.priceUnit === 'HOUR' ? this.item?.pricePerDay : this.item?.pricePerDay, // pricePerDay variable name reuse for rate
             priceUnit: this.item?.priceUnit || 'DAY',
-            totalDays: duration.value, // Reuse totalDays field for quantity/hours
+            totalDays: duration.value,
             totalAmount: this.calculateTotalAmount()
           }
         });

@@ -19,7 +19,7 @@ public class SupportTicketService {
     private SupportTicketRepository supportTicketRepository;
 
     public SupportTicket createSupportTicket(Long userId, String subject, String message) {
-        User user = userRepository.findById(userId).orElseThrow(()->new RuntimeException("User not found"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
         SupportTicket ticket = new SupportTicket();
         ticket.setSubject(subject);
         ticket.setMessage(message);
@@ -30,14 +30,15 @@ public class SupportTicketService {
     }
 
     public List<SupportTicket> getUserTickets(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(()->new RuntimeException("User not found"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
         return supportTicketRepository.findByCreatedBy(user);
     }
 
-    //for admin
+    // for admin
     public SupportTicket getTicket(Long ticketId) {
-        SupportTicket ticket = supportTicketRepository.findById(ticketId).orElseThrow(()->new RuntimeException("Ticket not found"));
-        if(ticket.getStatus() == TicketStatus.CLOSED) {
+        SupportTicket ticket = supportTicketRepository.findById(ticketId)
+                .orElseThrow(() -> new RuntimeException("Ticket not found"));
+        if (ticket.getStatus() == TicketStatus.CLOSED) {
             return ticket;
         }
         ticket.setStatus(TicketStatus.PENDING);
@@ -45,9 +46,9 @@ public class SupportTicketService {
         return ticket;
     }
 
-
     public SupportTicket closeTicket(Long ticketId) {
-        SupportTicket ticket = supportTicketRepository.findById(ticketId).orElseThrow(() -> new RuntimeException("Ticket not found"));
+        SupportTicket ticket = supportTicketRepository.findById(ticketId)
+                .orElseThrow(() -> new RuntimeException("Ticket not found"));
         if (ticket.getStatus() == TicketStatus.CLOSED) {
             throw new RuntimeException("Ticket already closed");
         }

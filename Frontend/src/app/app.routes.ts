@@ -29,7 +29,6 @@ import { UserProfileComponent } from './pages/user-profile/user-profile';
 import { UserGuide } from './pages/user-guide/user-guide';
 import { NotFoundComponent } from './pages/not-found/not-found.component';
 
-
 export const routes: Routes = [
   // Public routes (no AuthGuard)
   { path: '', redirectTo: 'home', pathMatch: 'full' },

@@ -35,8 +35,6 @@ public class AdminService {
     @Autowired
     private EventService eventService;
 
-    // ==================== User Management ====================
-
     public void banUser(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -79,8 +77,6 @@ public class AdminService {
         stats.put("totalTickets", Long.valueOf(supportTicketRepository.count()));
         return stats;
     }
-
-    // ==================== Item (Post) Management ====================
 
     public List<Item> getAllItems() {
         return itemRepository.findAll();

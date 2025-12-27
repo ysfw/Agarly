@@ -43,7 +43,7 @@ export class PasswordChange {
   get passwordStrength(): { level: number; text: string; color: string } {
     const password = this.newPassword;
     if (!password) return { level: 0, text: '', color: '' };
-    
+
     let strength = 0;
     if (password.length >= 8) strength++;
     if (password.length >= 12) strength++;

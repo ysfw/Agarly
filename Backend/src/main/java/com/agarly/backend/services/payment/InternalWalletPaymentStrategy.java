@@ -18,7 +18,6 @@ public class InternalWalletPaymentStrategy implements PaymentStrategy {
         User user = context.getUser();
         BigDecimal amount = BigDecimal.valueOf(context.getAmount());
 
-        // 1. Check if user has sufficient funds
         if (user.getWalletBalance().compareTo(amount) < 0) {
             return PaymentResult.builder()
                     .providerName(getProviderName())
@@ -27,11 +26,9 @@ public class InternalWalletPaymentStrategy implements PaymentStrategy {
                     .build();
         }
 
-        // 2. Deduct amount immediately
         user.setWalletBalance(user.getWalletBalance().subtract(amount));
         userRepository.save(user);
 
-        // 3. Return success
         return PaymentResult.builder()
                 .providerName(getProviderName())
                 .success(true)

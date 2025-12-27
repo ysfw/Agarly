@@ -166,12 +166,6 @@ export class RegisterComponent {
   private api = inject(ApiService);
   authService = inject(AuthService);
 
-  // handleSubmit() {      // placeholder for testing front
-  //   if (!this.validateForm()) return;
-  //   this.authService.login();
-
-  // }
-
   handleSubmit() {
     if (!this.validateForm()) return;
 

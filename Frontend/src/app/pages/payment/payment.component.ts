@@ -211,7 +211,6 @@ export class PaymentComponent implements OnInit {
         return;
       }
       // Temporary workaround: Alert user that they cannot pay/save purely from here yet
-      // OR better: Implement a 1 EGP auth request.
       this.modalService.alert('To save a card, please clear a booking transaction. Card management without booking is coming soon.', 'Feature Unavailable');
       return;
     }

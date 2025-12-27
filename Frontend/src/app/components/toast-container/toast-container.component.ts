@@ -5,10 +5,10 @@ import { NotificationService, NotificationToast } from '../../services/notificat
 import { Subscription } from 'rxjs';
 
 @Component({
-    selector: 'app-toast-container',
-    standalone: true,
-    imports: [CommonModule, LucideAngularModule],
-    template: `
+  selector: 'app-toast-container',
+  standalone: true,
+  imports: [CommonModule, LucideAngularModule],
+  template: `
     <div class="fixed top-4 right-4 z-[9999] flex flex-col gap-3 pointer-events-none">
       @for (toast of toasts; track toast.id) {
         <div class="pointer-events-auto animate-slideIn min-w-[320px] max-w-[420px] rounded-xl shadow-lg border backdrop-blur-sm p-4"
@@ -48,7 +48,7 @@ import { Subscription } from 'rxjs';
       }
     </div>
   `,
-    styles: [`
+  styles: [`
     @keyframes slideIn {
       from {
         transform: translateX(100%);
@@ -65,32 +65,32 @@ import { Subscription } from 'rxjs';
   `]
 })
 export class ToastContainerComponent implements OnInit, OnDestroy {
-    readonly CheckCircleIcon = CheckCircle;
-    readonly AlertCircleIcon = AlertCircle;
-    readonly InfoIcon = Info;
-    readonly AlertTriangleIcon = AlertTriangle;
-    readonly XIcon = X;
+  readonly CheckCircleIcon = CheckCircle;
+  readonly AlertCircleIcon = AlertCircle;
+  readonly InfoIcon = Info;
+  readonly AlertTriangleIcon = AlertTriangle;
+  readonly XIcon = X;
 
-    private notificationService = inject(NotificationService);
-    private subscription?: Subscription;
+  private notificationService = inject(NotificationService);
+  private subscription?: Subscription;
 
-    toasts: NotificationToast[] = [];
+  toasts: NotificationToast[] = [];
 
-    ngOnInit() {
-        this.subscription = this.notificationService.toasts$.subscribe(toast => {
-            this.toasts.push(toast);
+  ngOnInit() {
+    this.subscription = this.notificationService.toasts$.subscribe(toast => {
+      this.toasts.push(toast);
             // Auto-dismiss after 5 seconds
-            setTimeout(() => {
-                this.dismissToast(toast.id);
-            }, 5000);
-        });
-    }
+      setTimeout(() => {
+        this.dismissToast(toast.id);
+      }, 5000);
+    });
+  }
 
-    ngOnDestroy() {
-        this.subscription?.unsubscribe();
-    }
+  ngOnDestroy() {
+    this.subscription?.unsubscribe();
+  }
 
-    dismissToast(id: number) {
-        this.toasts = this.toasts.filter(t => t.id !== id);
-    }
+  dismissToast(id: number) {
+    this.toasts = this.toasts.filter(t => t.id !== id);
+  }
 }

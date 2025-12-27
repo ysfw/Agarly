@@ -32,7 +32,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   itemService = inject(ItemService);
   router = inject(Router);
   modalService = inject(ModalService);
-  userService = inject(UserService); // Add injection
+  userService = inject(UserService);
   bookingService = inject(BookingService);
   eventService = inject(EventService);
   auth = this.authService.isLoggedIn;
